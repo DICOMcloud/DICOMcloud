@@ -218,6 +218,8 @@ UpgradeLog*.htm
 # SQL Server files
 *.mdf
 *.ldf
+!/[Rr]esources/[Dd]atabase/*.mdf
+!/[Rr]esources/[Dd]atabase/*.ldf
 
 # Business Intelligence projects
 *.rdl.data
