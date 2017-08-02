@@ -1,0 +1,235 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "databaseName": {
+      "type": "string",
+      "defaultValue": "DICOMcloud",
+      "metadata": {
+        "description": "The name of the DICOMcloud database"
+      }
+    },
+    "databaseAdministratorUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "The user name of the SQL Server administrator account"
+
+      }
+    },
+    "databaseAdministratorUserPassword": {
+      "type": "securestring",
+      "minLength": 8,
+      "metadata": {
+        "description": "The Password of the SQL Server administrator account"
+      }
+    },
+
+    "collation": {
+      "type": "string",
+      "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
+    }
+  },
+  "variables": {
+    "hostingPlanName": "[concat('hostingplan', uniqueString(resourceGroup().id))]",
+    "webSiteName": "[concat('DICOMcloud', uniqueString(resourceGroup().id))]",
+    "StorageName": "[concat('storage', uniqueString(resourceGroup().id))]",
+    "storageAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', variables('StorageName'))]",
+    "sqlserverName": "[concat('sqlserver', uniqueString(resourceGroup().id))]",
+
+    "bacpacStorageKeyType": "SharedAccessKey",
+    "bacpacStorageKey": "?",
+    "bacpacStorageUri": "[concat(variables('_artifactsLocation'), '/', variables('WebPackageFolder'), '/', variables('bacpacPackageFileName')) ]",
+
+    "_artifactsLocation": "https://dicomwebpublic.blob.core.windows.net",
+    "_artifactsLocationSasToken": "",
+
+    "WebPackageFolder": "packages",
+    "WebPackagePackageFileName": "DICOMcloud.Wado.WebApi.zip",
+    "bacpacPackageFileName": "DICOMcloud-2017-2-10-19-27.bacpac",
+
+    "skuName": "F1",
+    "skuCapacity": 1,
+    "edition": "Basic",
+    "maxSizeBytes": "1073741824",
+    "requestedServiceObjectiveName": "Basic",
+    "StorageType": "Standard_LRS"
+  },
+  "resources": [
+    {
+      "name": "[variables('sqlserverName')]",
+      "type": "Microsoft.Sql/servers",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "SqlServer"
+      },
+      "apiVersion": "2014-04-01-preview",
+      "properties": {
+        "administratorLogin": "[parameters('databaseAdministratorUserName')]",
+        "administratorLoginPassword": "[parameters('databaseAdministratorUserPassword')]"
+      },
+      "resources": [
+        {
+          "name": "[parameters('databaseName')]",
+          "type": "databases",
+          "location": "[resourceGroup().location]",
+          "tags": {
+            "displayName": "Database"
+          },
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers/', variables('sqlserverName'))]"
+          ],
+          "properties": {
+            "edition": "[variables('edition')]",
+            "collation": "[parameters('collation')]",
+            "maxSizeBytes": "[variables('maxSizeBytes')]",
+            "requestedServiceObjectiveName": "[variables('requestedServiceObjectiveName')]"
+          },
+          "resources": [
+            {
+              "name": "Import bacpac File",
+              "type": "extensions",
+              "apiVersion": "2014-04-01-preview",
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', variables('sqlserverName'), parameters('databaseName'))]"
+              ],
+              "tags": {
+                "displayName": "Import BacPac"
+              },
+              "properties": {
+                "storageKeyType": "[variables('bacpacStorageKeyType')]",
+                "storageKey": "[variables('bacpacStorageKey')]",
+                "storageUri": "[variables('bacpacStorageUri')]",
+                "administratorLogin": "[parameters('databaseAdministratorUserName')]",
+                "administratorLoginPassword": "[parameters('databaseAdministratorUserPassword')]",
+                "operationMode": "Import"
+              }
+            }
+          ]
+        },
+        {
+          "type": "firewallrules",
+          "apiVersion": "2014-04-01-preview",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers/', variables('sqlserverName'))]"
+          ],
+          "location": "[resourceGroup().location]",
+          "name": "AllowAllWindowsAzureIps",
+          "properties": {
+            "endIpAddress": "0.0.0.0",
+            "startIpAddress": "0.0.0.0"
+          }
+        }
+      ]
+    },
+    {
+      "apiVersion": "2015-08-01",
+      "name": "[variables('hostingPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "HostingPlan"
+      },
+      "sku": {
+        "name": "[variables('skuName')]",
+        "capacity": "[variables('skuCapacity')]"
+      },
+      "properties": {
+        "name": "[variables('hostingPlanName')]"
+      }
+    },
+    {
+      "apiVersion": "2015-08-01",
+      "name": "[variables('webSiteName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverFarms/', variables('hostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts/', variables('StorageName'))]"
+      ],
+      "tags": {
+        "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', variables('hostingPlanName'))]": "empty",
+        "displayName": "Website"
+      },
+      "properties": {
+        "name": "[variables('webSiteName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "type": "config",
+          "name": "connectionstrings",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]",
+            "[resourceId('Microsoft.Web/Sites/', variables('webSiteName'))]",
+            "[concat('Microsoft.Web/Sites/', variables('webSiteName'), '/Extensions/MSDeploy')]"
+          ],
+          "properties": {
+            "DefaultConnection": {
+              "value": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseName'), ';User Id=', parameters('databaseAdministratorUserName'), '@', variables('sqlserverName'), ';Password=', parameters('databaseAdministratorUserPassword'), ';')]",
+              "type": "SQLServer"
+            }
+          }
+        },
+        {
+          "name": "MSDeploy",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('webSiteName'))]"
+          ],
+          "tags": {
+            "displayName": "WebPackage"
+          },
+          "properties": {
+            "packageUri": "[concat(variables('_artifactsLocation'), '/', variables('WebPackageFolder'), '/', variables('WebPackagePackageFileName'), variables('_artifactsLocationSasToken'))]",
+            "dbType": "None",
+            "connectionString": "",
+            "setParameters": {
+              "IIS Web Application Name": "[variables('webSiteName')]"
+            }
+          }
+        },
+        {
+          "name": "appsettings",
+          "type": "config",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]",
+            "[resourceId('Microsoft.Web/Sites/', variables('webSiteName'))]",
+            "[concat('Microsoft.Web/Sites/', variables('webSiteName'), '/Extensions/MSDeploy')]"
+          ],
+          "tags": {
+            "displayName": "appsettings"
+          },
+          "properties": {
+            "app:PacsDataArchieve": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseName'), ';User Id=', parameters('databaseAdministratorUserName'), '@', variables('sqlserverName'), ';Password=', parameters('databaseAdministratorUserPassword'), ';')]",
+            "app:PacsStorageConnection": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('StorageName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]"
+
+          }
+        }
+      ]
+    },
+    {
+      "name": "[variables('StorageName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-06-15",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "Storage"
+      },
+      "properties": {
+        "accountType": "[variables('StorageType')]"
+      }
+    }
+  ],
+  "outputs": {
+    "siteUri": {
+      "type": "string",
+      "value": "[concat('http://',reference(resourceId('Microsoft.Web/sites', variables('webSiteName'))).hostNames[0])]"
+    }
+  }
+}
