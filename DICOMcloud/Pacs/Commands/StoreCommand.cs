@@ -12,7 +12,7 @@ using DICOMcloud.Messaging;
 
 namespace DICOMcloud.Pacs.Commands
 {
-    public class StoreCommand : DCloudCommand<StoreCommandData,StoreCommandResult>, IStoreCommand
+    public class StoreCommand : DCloudCommand<StoreCommandData,DCloudCommandResult>, IStoreCommand
     {
         public StoreCommand ( ) : this ( null, null ) 
         {}
@@ -28,7 +28,7 @@ namespace DICOMcloud.Pacs.Commands
             MediaFactory = mediaFactory ;
         }
 
-        public override StoreCommandResult Execute ( StoreCommandData request )
+        public override DCloudCommandResult Execute ( StoreCommandData request )
         {
 
             //TODO: Check against supported types/association, validation, can store, return appropriate error
@@ -39,7 +39,7 @@ namespace DICOMcloud.Pacs.Commands
             
             PublisherSubscriberFactory.Instance.Publish ( this, new DicomStoreSuccessMessage ( request.Metadata ) ) ;            
             
-            return null ;
+            return new DCloudCommandResult ( ) ;
         }
 
         protected virtual DicomMediaLocations[] SaveDicomMedia 
@@ -111,7 +111,7 @@ namespace DICOMcloud.Pacs.Commands
             IEnumerable<StoreParameter>                conditions ;
 
             condFactory = new DicomStoreParameterFactory ( ) ;
-            conditions = condFactory.ProcessDataSet ( data.Dataset ) ;
+            conditions  = condFactory.ProcessDataSet ( data.Dataset ) ;
 
             DataAccess.StoreInstance ( new ObjectId ( data.Dataset ), conditions, data.Metadata ) ;
         }

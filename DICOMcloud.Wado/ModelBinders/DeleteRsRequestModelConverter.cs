@@ -14,13 +14,13 @@ using fo = Dicom;
 
 namespace DICOMcloud.Wado
 {
-    public class DeleteRsRequestModelConverter : RsRequestModelConverter<IWebDeleteRequest>
+    public class DeleteRsRequestModelConverter : RsRequestModelConverter<WebDeleteRequest>
     {
         public DeleteRsRequestModelConverter ( )
         { }
 
 
-        public override bool TryParse ( HttpRequestMessage request, ModelBindingContext bindingContext, out IWebDeleteRequest result )
+        public override bool TryParse ( HttpRequestMessage request, ModelBindingContext bindingContext, out WebDeleteRequest result )
         {
             var studyParam    = bindingContext.ValueProvider.GetValue ("studyInstanceUID") ;
             var seriesParam   = bindingContext.ValueProvider.GetValue ("seriesInstanceUID") ;

@@ -7,7 +7,7 @@ using fo = Dicom;
 
 namespace DICOMcloud.Pacs.Commands
 {
-    public interface IStoreCommand : IDCloudCommand<StoreCommandData,StoreCommandResult>
+    public interface IStoreCommand : IDCloudCommand<StoreCommandData,DCloudCommandResult>
     {
         
     }

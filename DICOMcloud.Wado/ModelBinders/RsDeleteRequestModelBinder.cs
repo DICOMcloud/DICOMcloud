@@ -10,9 +10,9 @@ using System.Web.Http.ModelBinding;
 
 namespace DICOMcloud.Wado
 {
-    public class RsDeleteRequestModelBinder : RsRequestModelBinder<IWebDeleteRequest> 
+    public class RsDeleteRequestModelBinder : RsRequestModelBinder<WebDeleteRequest> 
     {
-        protected override RsRequestModelConverter<IWebDeleteRequest> GetConverter ( )
+        protected override RsRequestModelConverter<WebDeleteRequest> GetConverter ( )
         {
             return new DeleteRsRequestModelConverter ( ) ;
         }

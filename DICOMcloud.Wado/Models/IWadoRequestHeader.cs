@@ -3,11 +3,9 @@
 
 namespace DICOMcloud.Wado.Models
 {
-    public interface IWadoRequestHeader
+   public interface IWadoRequestHeader
    {
       HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue> AcceptHeader        { get; set; }
       HttpHeaderValueCollection<StringWithQualityHeaderValue>    AcceptCharsetHeader { get; set; }
-      
-      //ObjectLevel QueryLevel { get; set; } 
    }
 }

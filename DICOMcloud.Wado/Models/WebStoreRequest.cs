@@ -15,9 +15,17 @@ namespace DICOMcloud.Wado.Models
         Collection<HttpContent> Contents { get; }
     }
 
-    public class WebStoreRequest : MultipartStreamProvider, IWebStoreRequest
+    public class WebStoreRequest : MultipartRelatedStreamProvider, IWebStoreRequest
     {
-        private Stream _tempStreamReference ;
+        public WebStoreRequest ( HttpRequestMessage request )
+        {
+            Request = request ;
+
+            AcceptCharsetHeader = Request.Headers.AcceptCharset ;
+            AcceptHeader        = Request.Headers.Accept ;
+        }
+
+        public HttpRequestMessage Request { get; private set; }
 
         public HttpHeaderValueCollection<StringWithQualityHeaderValue> AcceptCharsetHeader
         {
@@ -38,22 +46,13 @@ namespace DICOMcloud.Wado.Models
             get; set;
         }
 
-        //TODO: return a storage stream
         public override Stream GetStream(HttpContent parent, HttpContentHeaders headers)
         {
             NameValueHeaderValue dicomType = parent.Headers.ContentType.Parameters.Where ( n=>n.Name ==  "type" ).FirstOrDefault ( ) ;
 
             MediaType = dicomType.Value.Trim(new char[] {'"'}) ;
 
-            //IStorageService service = new WebStorageService ( ) ;
-
-            //IStorageContainer storage = service.GetStorageContainer ( "DicomStorage" ) ; 
-
-            //storage.GetNewLocation ( ).GetWriteStream ( out _tempStreamReference, false ) ;//TODO: this needs to be closed deleted, it is not working so far with all options I tried due to async calls
-            // =  ; //keeping a reference within the object so it doesn't get disposed immediately as this method is called async/thread
-
-            _tempStreamReference = new MemoryStream ( );
-            return _tempStreamReference ;
+            return base.GetStream ( parent, headers ) ;
         }
     }
 }

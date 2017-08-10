@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace DICOMcloud.Wado
 {
-    public class WebStoreDatasetProcessingMessage : WebStoreDatasetMessage
+    public class WebStoreDatasetProcessedMessage : WebStoreDatasetMessage
     {
-        public WebStoreDatasetProcessingMessage ( WebStoreRequest request, DicomDataset dataset )
-        : base ( request, dataset )
+        public WebStoreDatasetProcessedMessage ( WebStoreRequest request, DicomDataset dataset )
+        : base (request, dataset)
         {
         }
     }

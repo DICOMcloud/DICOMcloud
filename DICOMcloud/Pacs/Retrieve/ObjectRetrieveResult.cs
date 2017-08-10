@@ -6,7 +6,7 @@ using DICOMcloud.IO;
 namespace DICOMcloud.Pacs
 {
 
-    public class ObjectRetrieveResult : DicomOperationResult
+    public class ObjectRetrieveResult
     {
         public ObjectRetrieveResult ( IStorageLocation location, string transfer ) 
         {

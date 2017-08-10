@@ -11,4 +11,4 @@
 //      Revision
 //
 [assembly: AssemblyVersion("0.5.*")]
-[assembly: AssemblyInformationalVersion("0.5.0-beta")]
+[assembly: AssemblyInformationalVersion("0.5.1-beta")]

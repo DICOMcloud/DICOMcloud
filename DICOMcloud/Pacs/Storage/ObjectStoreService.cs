@@ -22,7 +22,7 @@ namespace DICOMcloud.Pacs
             CommandFactory = commandFactory ;
         }
         
-        public StoreResult StoreDicom
+        public DCloudCommandResult StoreDicom
         ( 
             fo.DicomDataset dataset,
             InstanceMetadata metadata
@@ -30,33 +30,8 @@ namespace DICOMcloud.Pacs
         {
             IStoreCommand    storeCommand = CommandFactory.CreateStoreCommand ( ) ;
             StoreCommandData storeData    = new StoreCommandData ( ) { Dataset = dataset, Metadata = metadata } ;
-            StoreResult      storeResult  = new StoreResult ( ) ;
-
-            try
-            {
-                //currently not used
-                StoreCommandResult result = new StoreCommandResult ( ) ;
-
-
-                result = storeCommand.Execute ( storeData ) ;
-
-                storeResult.DataSet = dataset ;
-                storeResult.Status  = CommandStatus.Success ;
-            }
-            catch ( Exception ex )
-            {
-                string errorMsg = "Error storing object" ;
-                System.Diagnostics.Trace.Fail ( errorMsg, ex.ToString ( ) );
-                storeResult.Status = CommandStatus.Failed ;
-
-                //TODO: must catch specific exception types and set status, message and "code" accoringely
-                storeResult.DataSet = dataset ;
-                storeResult.Status  = CommandStatus.Failed ;
-                storeResult.Error   = ex ;
-                storeResult.Message = errorMsg ;
-            }
             
-            return storeResult ;
+            return storeCommand.Execute ( storeData ) ;
         }
 
         //TODO: update this to return a type showing what objects got deleted e.g. IObjectId[]
@@ -75,23 +50,8 @@ namespace DICOMcloud.Pacs
                                                                                         { new ObjectId ( request ) }, 
                                                                           DeleteLevel = level } ;
 
-            try
-            {
-                deleteResult = deleteCommand.Execute ( deleteData ) ;
-            }
-            catch ( Exception ex )
-            {
-                //System.Diagnostics.Trace.Fail ( "Error deleting object", ex.ToString ( ) );
-                deleteResult.Status = CommandStatus.Failed;
-
-                //TODO: must catch specific exception types and set status, message and "code" accoringely
-                //storeResult.DataSet = dataset;
-                deleteResult.Status  = CommandStatus.Failed ;
-                deleteResult.Error   = ex ;
-                deleteResult.Message = ex.Message ;
-            }
-
-            return deleteResult ;
+            return deleteResult = deleteCommand.Execute ( deleteData ) ;
+            
         }
     }
 }

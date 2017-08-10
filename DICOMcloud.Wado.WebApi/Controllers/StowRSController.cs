@@ -21,48 +21,20 @@ namespace DICOMcloud.Wado.Controllers
         // POST api/<controller>
         [HttpPost]
         [Route("stowrs/studies/{StudyInstanceUID}")]
+        [Route("stowrs")]
         public async Task<HttpResponseMessage> Post(string StudyInstanceUID = null)
         {
 
-            WebStoreRequest webStoreRequest = new WebStoreRequest ( ) ;
+            WebStoreRequest webStoreRequest = new WebStoreRequest ( Request) ;
 
             if ( !Request.Content.IsMimeMultipartContent("related") )
             {
-                    throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
             }
 
             await Request.Content.ReadAsMultipartAsync ( webStoreRequest ) ;
 
-            webStoreRequest.AcceptCharsetHeader = Request.Headers.AcceptCharset ;
-            webStoreRequest.AcceptHeader        = Request.Headers.Accept ;
-
             return await StorageService.Store (webStoreRequest, StudyInstanceUID);
-        }
-    }
-
-    public class DicomStoreRequest 
-    {
-        public string ContentTypeHeader
-        {
-            get; set;
-        }
-
-        public MultiPartContent[] Body
-        {
-            get; set;
-        }
-    }
-
-    public class MultiPartContent
-    {
-        public string ContentTypeHeader
-        {
-            get; set;
-        }
-
-        public System.IO.Stream Content
-        {
-            get; set; 
         }
     }
 }

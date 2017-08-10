@@ -60,7 +60,7 @@ namespace DICOMcloud.Pacs.Commands
                 DataAccess.DeleteStudy ( study );
             }
                   
-            return new DCloudCommandResult ( ) { Status = CommandStatus.Success } ;//TODO: currently nothing to return    
+            return new DCloudCommandResult ( ) ;//TODO: currently nothing to return    
         }
 
         protected  virtual DCloudCommandResult DeleteSeries ( IEnumerable<ISeriesId> seriesIds )
@@ -71,7 +71,7 @@ namespace DICOMcloud.Pacs.Commands
                 DataAccess.DeleteSeries ( series );
             }
                         
-            return new DCloudCommandResult ( ) { Status = CommandStatus.Success } ;//TODO: currently nothing to return    
+            return new DCloudCommandResult ( ) ;//TODO: currently nothing to return    
         }
 
         protected  virtual DCloudCommandResult DeleteInstance ( IEnumerable<IObjectId> instances )
@@ -82,7 +82,7 @@ namespace DICOMcloud.Pacs.Commands
                 DataAccess.DeleteInstance ( instance ); //delete from DB after all dependencies are completed
             }
 
-            return new DCloudCommandResult ( ) { Status = CommandStatus.Success } ;//TODO: currently nothing to return    
+            return new DCloudCommandResult ( ) ;//TODO: currently nothing to return    
         }
 
         private void DeleteMediaLocations ( IStudyId study )

@@ -37,9 +37,9 @@ namespace DICOMcloud.Pacs.UnitTest
         [TestMethod]
         public void Pacs_Storage_Simple ( )
         {
-            Assert.AreEqual ( StoreService.StoreDicom ( DicomHelper.GetDicomDataset (0), new DataAccess.InstanceMetadata ( ) ).Status, CommandStatus.Success ) ;
-            Assert.AreEqual ( StoreService.StoreDicom ( DicomHelper.GetDicomDataset (1), new DataAccess.InstanceMetadata ( ) ).Status, CommandStatus.Success ) ;
-            Assert.AreEqual ( StoreService.StoreDicom ( DicomHelper.GetDicomDataset (2), new DataAccess.InstanceMetadata ( ) ).Status, CommandStatus.Success ) ;
+            StoreService.StoreDicom ( DicomHelper.GetDicomDataset (0), new DataAccess.InstanceMetadata ( ) ) ;
+            StoreService.StoreDicom ( DicomHelper.GetDicomDataset (1), new DataAccess.InstanceMetadata ( ) ) ;
+            StoreService.StoreDicom ( DicomHelper.GetDicomDataset (2), new DataAccess.InstanceMetadata ( ) ) ;
 
             Pacs_Delete_Simple ( ) ;
         }
@@ -57,7 +57,7 @@ namespace DICOMcloud.Pacs.UnitTest
         {
             EnsureCodecsLoaded ( ) ;
 
-            Assert.AreEqual ( StoreService.StoreDicom ( DicomHelper.GetDicomDataset (2), new DataAccess.InstanceMetadata ( ) ).Status, CommandStatus.Success ) ;
+            StoreService.StoreDicom ( DicomHelper.GetDicomDataset (2), new DataAccess.InstanceMetadata ( ) ) ;
 
             int counter = 0 ;
             
@@ -73,10 +73,8 @@ namespace DICOMcloud.Pacs.UnitTest
                 dataset.AddOrUpdate ( fo.DicomTag.SeriesInstanceUID, "Series_" + counter ) ;
                 dataset.AddOrUpdate ( fo.DicomTag.SOPInstanceUID, "Instance_" + counter ) ;
                 
-                Assert.AreEqual ( StoreService.StoreDicom ( dataset, new DataAccess.InstanceMetadata ( ) ).Status, CommandStatus.Success ) ;
+                StoreService.StoreDicom ( dataset, new DataAccess.InstanceMetadata ( ) ) ;
 
-                //Assert.AreEqual ( StoreService.Delete ( dataset, Dicom.ObjectLevel.Instance ).Status, CommandStatus.Success ) ;
-            
                 counter++ ;    
             }
         }
@@ -90,13 +88,9 @@ namespace DICOMcloud.Pacs.UnitTest
             var series3   = GetUidElement ( fo.DicomTag.SeriesInstanceUID, DicomHelper.Series3UID) ;
             var instance3 = GetUidElement ( fo.DicomTag.SOPInstanceUID, DicomHelper.Instance3UID) ;
 
-            var deleteStudyResult    = StoreService.Delete ( new fo.DicomDataset ( study1 ), ObjectQueryLevel.Study ) ;
-            var deleteSeriesResult   = StoreService.Delete ( new fo.DicomDataset ( study2, series2 ), ObjectQueryLevel.Series ) ;
-            var deleteInstanceResult = StoreService.Delete ( new fo.DicomDataset ( study3, series3, instance3 ), ObjectQueryLevel.Instance ) ;
-            
-            Assert.AreEqual ( CommandStatus.Success, deleteStudyResult.Status, deleteStudyResult.Message ) ;
-            Assert.AreEqual ( CommandStatus.Success, deleteSeriesResult.Status, deleteSeriesResult.Message ) ;
-            Assert.AreEqual ( CommandStatus.Success, deleteInstanceResult.Status, deleteInstanceResult.Message ) ;
+            StoreService.Delete ( new fo.DicomDataset ( study1 ), ObjectQueryLevel.Study ) ;
+            StoreService.Delete ( new fo.DicomDataset ( study2, series2 ), ObjectQueryLevel.Series ) ;
+            StoreService.Delete ( new fo.DicomDataset ( study3, series3, instance3 ), ObjectQueryLevel.Instance ) ;
         }
 
         private fo.DicomUniqueIdentifier GetUidElement (fo.DicomTag tag, string uid )

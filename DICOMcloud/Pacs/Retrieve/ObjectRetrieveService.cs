@@ -98,7 +98,16 @@ namespace DICOMcloud.Pacs
             }
         }
 
-        public virtual IEnumerable<IStorageLocation> TransformDataset 
+        public virtual bool ObjetInstanceExist ( IObjectId objectId, string mediaType, string transferSyntax )
+        {
+            var mediaProperties = new DicomMediaProperties ( mediaType, transferSyntax ) ;
+            var mediaID         = MediaFactory.Create      ( objectId, mediaProperties ) ;
+            
+                
+            return StorageService.Exists (  mediaID ) ;
+        }
+
+        protected virtual IEnumerable<IStorageLocation> TransformDataset 
         ( 
             fo.DicomDataset dataset, 
             string mediaType, 
@@ -122,7 +131,7 @@ namespace DICOMcloud.Pacs
             
         }
 
-        public virtual fo.DicomDataset RetrieveDicomDataset ( IObjectId objectId, DicomMediaProperties mediainfo )
+        protected virtual fo.DicomDataset RetrieveDicomDataset ( IObjectId objectId, DicomMediaProperties mediainfo )
         {
             IStorageLocation location    ;
             fo.DicomFile defaultFile ;
@@ -139,15 +148,6 @@ namespace DICOMcloud.Pacs
 
             return defaultFile.Dataset ;
 
-        }
-
-        public virtual bool ObjetInstanceExist ( IObjectId objectId, string mediaType, string transferSyntax )
-        {
-            var mediaProperties = new DicomMediaProperties ( mediaType, transferSyntax ) ;
-            var mediaID         = MediaFactory.Create      ( objectId, mediaProperties ) ;
-            
-                
-            return StorageService.Exists (  mediaID ) ;
         }
     }
 }

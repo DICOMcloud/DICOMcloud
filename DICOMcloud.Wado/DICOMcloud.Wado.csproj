@@ -127,6 +127,9 @@
     <Compile Include="Types\DefaultMediaTransferSyntax.cs" />
     <Compile Include="Types\WadoRequestHeader.cs" />
     <Compile Include="Services\IWadoUriService.cs" />
+    <Compile Include="Types\WebStoreDatasetProcessingFailureMessage.cs" />
+    <Compile Include="Types\WebStoreDatasetProcessedMessage.cs" />
+    <Compile Include="Types\WebStoreDatasetMessage.cs" />
     <Compile Include="Types\WebStoreDatasetProcessingMessage.cs" />
     <Compile Include="WadoResponse\RetieveUrlProvider.cs" />
     <Compile Include="WadoResponse\WadoStoreResponse.cs" />

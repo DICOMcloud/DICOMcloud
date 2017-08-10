@@ -3,13 +3,7 @@ using fo = Dicom;
 
 namespace DICOMcloud.Wado.Models
 {
-    public interface IWebDeleteRequest
-    {
-        ObjectQueryLevel     DeleteLevel { get; set; } 
-        fo.DicomDataset Dataset     { get; set;  }
-    }
-
-    public class WebDeleteRequest : IWebDeleteRequest
+    public class WebDeleteRequest
     {
         public fo.DicomDataset Dataset
         {

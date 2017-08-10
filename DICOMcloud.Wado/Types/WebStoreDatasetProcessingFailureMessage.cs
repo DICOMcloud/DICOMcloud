@@ -9,11 +9,14 @@ using System.Threading.Tasks;
 
 namespace DICOMcloud.Wado
 {
-    public class WebStoreDatasetProcessingMessage : WebStoreDatasetMessage
+    public class WebStoreDatasetProcessingFailureMessage : WebStoreDatasetMessage
     {
-        public WebStoreDatasetProcessingMessage ( WebStoreRequest request, DicomDataset dataset )
+        public WebStoreDatasetProcessingFailureMessage ( WebStoreRequest request, DicomDataset dataset, Exception error )
         : base ( request, dataset )
         {
+            Error = error ;
         }
+
+        public Exception Error { get; set; }
     }
 }

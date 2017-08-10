@@ -166,9 +166,9 @@ namespace DICOMcloud.Wado
                     jsonReturn.Append("]") ;
                 
                     return new HttpResponseMessage (System.Net.HttpStatusCode.OK )  { 
-                                                                Content = new StringContent ( jsonReturn.ToString ( ), 
-                                                                Encoding.UTF8, 
-                                                                MimeMediaTypes.Json) } ;    
+                                                    Content = new StringContent ( jsonReturn.ToString ( ), 
+                                                    Encoding.UTF8, 
+                                                    MimeMediaTypes.Json) } ;    
                 }
             }
 

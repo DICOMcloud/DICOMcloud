@@ -10,6 +10,7 @@ using DICOMcloud;
 using DICOMcloud.Pacs;
 using DICOMcloud.Pacs.Commands;
 using System.Net;
+using Dicom;
 
 namespace DICOMcloud.Wado
 {
@@ -37,28 +38,6 @@ namespace DICOMcloud.Wado
             HttpStatus       = HttpStatusCode.Unused ;
         }
 
-        public void AddResult ( StoreResult result ) 
-        {
-            switch ( result.Status )
-            {
-                case CommandStatus.Success:
-                {
-                    AddSuccessItem ( result ) ;
-                }
-                break;
-
-                case CommandStatus.Failed:
-                {
-                    AddFailedItem ( result ) ;
-                }
-                break;
-
-                default:
-                {}
-                break;
-            }
-        }
-
         public fo.DicomDataset GetResponseContent ( )
         {
             _dataset.AddOrUpdate<string>(fo.DicomTag.RetrieveURI, UrlProvider.GetStudyUrl ( StudyInstanceUID ?? "" ) ) ;
@@ -66,19 +45,8 @@ namespace DICOMcloud.Wado
             return _dataset ;
         }
 
-        public void AddResult ( Exception ex, Stream dicomStream )
+        public void AddResult ( DicomDataset ds, Exception ex )
         {
-            fo.DicomFile dataSet = fo.DicomFile.Open ( dicomStream ) ;
-            
-            AddFailedItem ( new StoreResult ( ) { DataSet = GetReferencedInstsance ( dataSet.Dataset ), 
-                                                  Error =  ex,
-                                                  Status = CommandStatus.Failed,
-                                                  Message = "Error" } ) ;
-        }
-
-        private void AddFailedItem ( StoreResult result )
-        {
-            var ds                 = result.DataSet ;
             var referencedInstance = GetReferencedInstsance ( ds ) ;
             var failedSeq          = new fo.DicomSequence ( fo.DicomTag.FailedSOPSequence ) ;
             var item               = new fo.DicomDataset ( ) ;
@@ -91,12 +59,8 @@ namespace DICOMcloud.Wado
 
             item.AddOrUpdate<UInt16> (fo.DicomTag.FailureReason, 272 ) ; //TODO: for now 272 == "0110 - Processing failure", must map proper result code from org. exception
             
-            if ( !string.IsNullOrEmpty (result.Message) )
-            {
-                //TODO: temp
-                item.AddOrUpdate<string> ( fo.DicomTag.RetrieveURI, result.Message );
-            }
-
+            item.AddOrUpdate<string> ( fo.DicomTag.RetrieveURI, ex.Message );
+            
             if ( _successAdded )
             {
                 HttpStatus = HttpStatusCode.Accepted ;
@@ -110,9 +74,8 @@ namespace DICOMcloud.Wado
 
         }
 
-        private void AddSuccessItem ( StoreResult result )
+        public void AddResult ( DicomDataset ds )
         {
-            var ds                 = result.DataSet ;
             var referencedInstance = GetReferencedInstsance ( ds ) ;
             var referencedSeq      = new fo.DicomSequence ( fo.DicomTag.ReferencedInstanceSequence ) ;
             var item               = new fo.DicomDataset ( ) ;

@@ -26,7 +26,7 @@ namespace DICOMcloud.Wado.Controllers
         public async Task<HttpResponseMessage> DeleteStudy
         (
             [ModelBinder(typeof(RsDeleteRequestModelBinder))] 
-            IWebDeleteRequest request 
+            WebDeleteRequest request 
         )
         {
             return await StorageService.Delete ( request );
