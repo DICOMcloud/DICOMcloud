@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net.Http ;
 using Dicom;
 using DICOMcloud.Azure.IO;
 using DICOMcloud.DataAccess;
@@ -55,7 +56,7 @@ namespace DICOMcloud.Wado
 
         protected virtual void RegisterEvents ( )
         {
-            RegisterDeIdentifier (  ) ;
+            RegisterDeIdentifier ( ) ;
         }
 
         protected virtual void RegisterDeIdentifier ( )
@@ -87,7 +88,26 @@ namespace DICOMcloud.Wado
 
                 PublisherSubscriberFactory.Instance.Subscribe<WebStoreDatasetProcessingMessage>(this, (message) =>
                 {
+                    var queryParams = message.Request.Request.RequestUri.ParseQueryString ( ) ;
+
+                    
                     anonymizer.AnonymizeInPlace(message.Dataset);
+
+                    if (null != queryParams)
+                    {
+                        foreach ( var queryKey in queryParams.OfType<String>()  )
+                        {
+                            uint tag ;
+
+
+                            if ( string.IsNullOrWhiteSpace(queryKey)) { continue; }
+                            
+                            if( uint.TryParse (queryKey, System.Globalization.NumberStyles.HexNumber, null, out tag) )
+                            {
+                                message.Dataset.AddOrUpdate(tag, queryParams[queryKey] ) ;
+                            }
+                        }
+                    }
                 });
             }
         }
