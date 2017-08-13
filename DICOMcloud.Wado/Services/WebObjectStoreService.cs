@@ -20,11 +20,12 @@ namespace DICOMcloud.Wado
     public class WebObjectStoreService : IWebObjectStoreService
     {
         private IObjectStoreService _storageService;
-
+        private IRetieveUrlProvider _urlProvider ;
         //public WebObjectStoreService ( ) : this ( new ObjectStoreDataService ( ) ) {}
-        public WebObjectStoreService ( IObjectStoreService storage ) 
+        public WebObjectStoreService ( IObjectStoreService storage, IRetieveUrlProvider urlProvider = null ) 
         {
             _storageService = storage ;
+            _urlProvider    = urlProvider ;
         }
 
         public virtual async Task<HttpResponseMessage> Store
@@ -113,7 +114,7 @@ namespace DICOMcloud.Wado
 
         private async Task<WadoStoreResponse> StoreStudy ( WebStoreRequest request, string studyInstanceUID, GetDicomHandler getDicom )
         {
-            WadoStoreResponse response = new WadoStoreResponse(studyInstanceUID);
+            WadoStoreResponse response = new WadoStoreResponse(studyInstanceUID, _urlProvider);
 
             foreach (var mediaContent in request.Contents)
             {

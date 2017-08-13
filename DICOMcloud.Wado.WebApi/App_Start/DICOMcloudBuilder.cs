@@ -56,26 +56,26 @@ namespace DICOMcloud.Wado
 
         protected virtual void RegisterEvents ( )
         {
-            RegisterDeIdentifier ( ) ;
+            RegisterAnonymizer ( ) ;
         }
 
-        protected virtual void RegisterDeIdentifier ( )
+        protected virtual void RegisterAnonymizer ( )
         {
-            string enableDeIdentifier = CloudConfigurationManager.GetSetting   ( "app:enableDeIdentifier" ) ;
+            string enableAnonymizer = CloudConfigurationManager.GetSetting   ( "app:enableAnonymizer" ) ;
             bool   enable             = true ;
             
 
-            if ( !bool.TryParse ( enableDeIdentifier, out enable ) || enable )
+            if ( !bool.TryParse ( enableAnonymizer, out enable ) || enable )
             {
-                string deIdentifierOptions = CloudConfigurationManager.GetSetting   ( "app:deIdentifierOptions" ) ;
+                string anonymizerOptions = CloudConfigurationManager.GetSetting   ( "app:anonymizerOptions" ) ;
                 var    options = DicomAnonymizer.SecurityProfileOptions.BasicProfile |
                                  DicomAnonymizer.SecurityProfileOptions.RetainUIDs |
                                  DicomAnonymizer.SecurityProfileOptions.RetainLongFullDates |
                                  DicomAnonymizer.SecurityProfileOptions.RetainPatientChars ;
 
-                if ( !string.IsNullOrWhiteSpace ( deIdentifierOptions ) )
+                if ( !string.IsNullOrWhiteSpace ( anonymizerOptions ) )
                 {
-                    options = (DicomAnonymizer.SecurityProfileOptions) Enum.Parse ( typeof (DicomAnonymizer.SecurityProfileOptions), deIdentifierOptions, true ) ;
+                    options = (DicomAnonymizer.SecurityProfileOptions) Enum.Parse ( typeof (DicomAnonymizer.SecurityProfileOptions), anonymizerOptions, true ) ;
                 }
 
                 var anonymizer = new DicomAnonymizer ( DicomAnonymizer.SecurityProfile.LoadProfile ( null, options ) ) ;
@@ -83,8 +83,8 @@ namespace DICOMcloud.Wado
                 anonymizer.Profile.PatientName = "Dcloud^Anonymized";
                 anonymizer.Profile.PatientID   = "Dcloud.Anonymized";
 
-                RemoveDeIdentifierTag ( anonymizer, DicomTag.PatientName ) ;
-                RemoveDeIdentifierTag ( anonymizer, DicomTag.PatientID ) ;
+                RemoveAnonymizerTag ( anonymizer, DicomTag.PatientName ) ;
+                RemoveAnonymizerTag ( anonymizer, DicomTag.PatientID ) ;
 
                 PublisherSubscriberFactory.Instance.Subscribe<WebStoreDatasetProcessingMessage>(this, (message) =>
                 {
@@ -114,6 +114,9 @@ namespace DICOMcloud.Wado
 
         protected virtual void RegisterComponents ( )
         {
+            IRetieveUrlProvider urlProvider = new RetieveUrlProvider ( CloudConfigurationManager.GetSetting ( RetieveUrlProvider.config_WadoRs_API_URL) ) ;
+            
+            
             For<DbSchemaProvider> ( ).Use<StorageDbSchemaProvider> ( ) ; //default constructor
 
             For<IDCloudCommandFactory> ( ).Use<DCloudCommandFactory> ( ) ;
@@ -131,6 +134,8 @@ namespace DICOMcloud.Wado
             For<IObjectStorageQueryDataAccess> ( ).Use ( @DataAccess ) ;
             
             For<IDicomMediaIdFactory> ( ).Use <DicomMediaIdFactory> ( ) ;
+
+            For<IRetieveUrlProvider> ( ).Use (urlProvider) ;
 
             if ( StorageConection.StartsWith("|datadirectory|", StringComparison.OrdinalIgnoreCase))
             {
@@ -189,7 +194,7 @@ namespace DICOMcloud.Wado
         protected CloudStorageAccount       StorageAccount   { get; private set ; }
         protected IObjectArchieveDataAccess DataAccess       { get; set; }
 
-        private static void RemoveDeIdentifierTag ( DicomAnonymizer anonymizer, DicomTag tag )
+        private static void RemoveAnonymizerTag ( DicomAnonymizer anonymizer, DicomTag tag )
         {
             var parenthesis = new[] { '(', ')' };
             var tagString = tag.ToString ( ).Trim(parenthesis);

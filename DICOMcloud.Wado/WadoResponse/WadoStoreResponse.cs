@@ -17,7 +17,7 @@ namespace DICOMcloud.Wado
     public class WadoStoreResponse
     {
         private fo.DicomDataset _dataset ;
-        public RetieveUrlProvider UrlProvider { get; set; }
+        public IRetieveUrlProvider UrlProvider { get; set; }
         public string StudyInstanceUID { get; private set; }
         public HttpStatusCode HttpStatus { get; private set ; }
 
@@ -25,15 +25,15 @@ namespace DICOMcloud.Wado
         private bool _failureAdded = false ;
 
         public WadoStoreResponse ( )
-        : this ( "" )
+        : this ( "", null )
         {
 
         }
 
-        public WadoStoreResponse ( string studyInstanceUID )
+        public WadoStoreResponse ( string studyInstanceUID, IRetieveUrlProvider urlProvider )
         {
             _dataset         = new fo.DicomDataset ( ) ;
-            UrlProvider      = new RetieveUrlProvider ( ) ;
+            UrlProvider      = urlProvider?? new RetieveUrlProvider ( ) ;
             StudyInstanceUID = studyInstanceUID ;
             HttpStatus       = HttpStatusCode.Unused ;
         }

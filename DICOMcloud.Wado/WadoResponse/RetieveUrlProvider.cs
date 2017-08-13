@@ -7,12 +7,12 @@ using DICOMcloud;
 
 namespace DICOMcloud.Wado
 {
-    public class RetieveUrlProvider
+    public class RetieveUrlProvider : IRetieveUrlProvider
     {
         public static string config_WadoRs_API_URL = "app:WadoRsUrl" ;
         public RetieveUrlProvider ( )
         {
-            string wadoRsUrl = System.Configuration.ConfigurationManager.AppSettings["wadoRsUrl"] ;
+            string wadoRsUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoRs_API_URL] ;
         
             wadoRsUrl = wadoRsUrl ?? "" ;
 
@@ -33,6 +33,7 @@ namespace DICOMcloud.Wado
         {
             return GetInstanceUrl ( instance.StudyInstanceUID, instance.SeriesInstanceUID, instance.SOPInstanceUID ) ;
         }
+        
         public string GetInstanceUrl ( string studyInstanceUID, string seriesInstanceUID, string sopInstanceUID )
         {
             return string.Format ( "{0}/{1}/studies/{2}/series/{3}/instances/{4}", BaseUrl, "wadors", studyInstanceUID, seriesInstanceUID, sopInstanceUID )  ;

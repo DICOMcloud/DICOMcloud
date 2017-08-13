@@ -131,6 +131,7 @@
     <Compile Include="Types\WebStoreDatasetProcessedMessage.cs" />
     <Compile Include="Types\WebStoreDatasetMessage.cs" />
     <Compile Include="Types\WebStoreDatasetProcessingMessage.cs" />
+    <Compile Include="WadoResponse\IRetieveUrlProvider.cs" />
     <Compile Include="WadoResponse\RetieveUrlProvider.cs" />
     <Compile Include="WadoResponse\WadoStoreResponse.cs" />
   </ItemGroup>
