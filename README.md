@@ -15,7 +15,9 @@ The DICOMcloud is can run as a Web Application in Microsoft IIS or Microsoft Azu
 For complete features reference, read more **“DICOM Support”** section.
 
 # Architecture:
-The DICOMcloud is a web server that can interface with any DICOMweb client over the current implemented features (qido-rs, wado-uri, wado-rs and stow-rs). An example DICOMweb client is implemented [here](https://github.com/Zaid-Safadi/dicom-webJS).
+The DICOMcloud is a web server that can interface with any DICOMweb client over the current implemented features (qido-rs, wado-uri, wado-rs and stow-rs).
+
+An example DICOMweb client implementation with viewer support is provided [here](https://github.com/DICOMcloud/DICOMweb-js).
 
 The implementation is customizable by using [StructureMap](https://github.com/structuremap/structuremap) as a DI (Dependency Injection) framework to provide a plug-in architecture.
 
@@ -28,6 +30,8 @@ The main layers of the DICOMcloud:
 3.	**DICOM Services**: The core DICOM code and business services that process the DICOM datasets, perform query, retrieve and store. With interfaces to classes for storage and data access. This is implemented in the “DICOMcloud” project.
 
 4. **Data Storage and Data Access**: The specific implementation layer that physically save the DICOM dataset media to a file system or Azure Blob and interface with Microsoft/Azure SQL database. This is implemented in the “DICOMcloud”, “DICOMcloud.Azure” and “DICOMcloud.DataAccess.Database” projects.
+
+![DICOMcloud Architecture](https://github.com/DICOMcloud/DICOMcloud/blob/master/Resources/Docs/DICOMcloud-Arch..png)
 
 # Platform:
 The code is written in C# .NET Framework 4.5.2 and can be built using Visual Studio 2017 and can run on Windows machine or Azure WebApp.
