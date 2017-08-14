@@ -1,67 +1,124 @@
-
 ***
 # Announcement
-
-**The DICOMcloud project will be released under a new license (MIT) in its own GitHub Organization account. This repository is provided here for reference.**
+This project is now moved from the original [repository](https://github.com/Zaid-Safadi/DICOMcloud) and is now maintained here in its own GitHub Orgnization. 
+**The  project is now licensed/owned by the DICOMcloud project Contributors. .**
 ***
 
+# Overview 
+The DICOMcloud is a standalone DICOMweb server with RESTful implementation of the DICOMweb/WADO services:
+-	WADO-URI
+-	QIDO-RS
+-	WADO-RS
+-	STOW-RS
 
-# DICOMcloud <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FZaid-Safadi%2FDICOMcloud%2Fdevelopment%2Fazuredeploy.json">
-<img src="https://camo.githubusercontent.com/9285dd3998997a0835869065bb15e5d500475034/687474703a2f2f617a7572656465706c6f792e6e65742f6465706c6f79627574746f6e2e706e67" data-canonical-src="http://azuredeploy.net/deploybutton.png" style="max-width:100%;">
-</a> 
+The DICOMcloud is can run as a Web Application in Microsoft IIS or Microsoft Azure WebApp with no infrastructure to setup. It can be configured to use Azure Blob Storage and Azure SQL database for storing and querying DICOM Datasets. 
+For complete features reference, read more **“DICOM Support”** section.
 
+# Architecture:
+The DICOMcloud is a web server that can interface with any DICOMweb client over the current implemented features (qido-rs, wado-uri, wado-rs and stow-rs). An example DICOMweb client is implemented [here](https://github.com/Zaid-Safadi/dicom-webJS).
 
-[![Join the chat at https://gitter.im/Zaid-Safadi/DICOMcloud](https://badges.gitter.im/Zaid-Safadi/DICOMcloud.svg)](https://gitter.im/Zaid-Safadi/DICOMcloud?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)  [![Build status](https://ci.appveyor.com/api/projects/status/v9c3lcjv9xymabww/branch/development?svg=true)](https://ci.appveyor.com/project/Zaid-Safadi/dicomcloud/branch/development)
+The implementation is customizable by using [StructureMap](https://github.com/structuremap/structuremap) as a DI (Dependency Injection) framework to provide a plug-in architecture.
 
-DICOMcloud is a highly customizable, open source DICOMweb server that implements RESTful services in DICOM part 18
+The main layers of the DICOMcloud:
 
-The DICOM Web server implementation uses Unity as a Dependency Injection (DI) framework to build the server components. You can extend any of these components or completely roll out your own then plug it in using your DI framework of choice. The implementation takes advantage of this architecture by providing two options for media storage: 
- 1. Local File System: A module that support storing and retrieving media files to a local file system storage using the Windows File API in .NET 
- 2. Azure Blob Storage: A module that uses the Azure Storage library for storing DICOM files and any other media to Azure Blob storage.
+1.	**WebAPI RESTFUL service**: The webservice implementation as an ASP.NET WebAPI project “DICOMcloud.Wado.WebAPI” 
 
-You can do the same with the database implementation for example to replace the existing implementation or customize it to integrate with your own database and traditional DICOM server. 
+2. **DICOMweb Services**: The DICOMweb implementation for processing web requests and returning web responses. Implemented in the “DICOMcloud.Wado” project.
 
-# Hosted server endpoints and demo
-I'm maintining an online version of the server, check the wiki [Home](https://github.com/Zaid-Safadi/DICOMcloud/wiki) page for endpoint Urls 
+3.	**DICOM Services**: The core DICOM code and business services that process the DICOM datasets, perform query, retrieve and store. With interfaces to classes for storage and data access. This is implemented in the “DICOMcloud” project.
 
-There is a client Demo that I open sourced and hosting:
-[https://github.com/Zaid-Safadi/dicom-webJS](https://github.com/Zaid-Safadi/dicom-webJS/)
+4. **Data Storage and Data Access**: The specific implementation layer that physically save the DICOM dataset media to a file system or Azure Blob and interface with Microsoft/Azure SQL database. This is implemented in the “DICOMcloud”, “DICOMcloud.Azure” and “DICOMcloud.DataAccess.Database” projects.
 
-# Deployment To Azure
-In order to simplify the deployment of the DICOMcloud server to Azure an Azure Resource Manager (ARM) Template is created on the repository root [azuredeploy.json](https://github.com/Zaid-Safadi/DICOMcloud/blob/development/azuredeploy.json).
+# Platform:
+The code is written in C# .NET Framework 4.5.2 and can be built using Visual Studio 2017 and can run on Windows machine or Azure WebApp.
 
-This template can be utilized to deploy the DICOMcloud server to your Azure subscription in multiple ways. The ARM template will take care of creating the database, the storage account, the website and configuration.
-
-Precisely the template will create the following resources in Azure:
- 1. A SQL Server with Single SQL Database. ~$5/month
- 2. Standard Storage Account. ~$0.1/month 
- 3. Free Tier App Service Plan. Free
- 
-# Implementation
-The server code is written in C# .NET 4.5.2 and Visual Studio 2015. The web services are built as ASP.NET REST WebApi Controllers.
-Check the [code and project's structure](https://github.com/Zaid-Safadi/DICOMcloud/wiki/Code-and-Projects-Structure) wiki page for more details.
-
-Physical DICOM storage is supported on both, either Windows File System or Azure Blob Storage.
-
-Query is currently implemented against a SQL database and compatible with Azure SQL Database
-
-Implementation natively support JSON and XML DICOM format.
+# Dependencies:
+The DICOMcloud project utilizes the opensource [**fo-dicom**](https://github.com/fo-dicom/fo-dicom) DICOM library for operations on the DICOM datasets, such as reading and writing elements, compress/decompress the DICOM images, anonymization feature and many others.  
 
 # DICOM Support
-The code is designed to be a complete DICOM web server implementation with storage, query and retrieve capabilities.
+A detailed endpoints URLs with parameters can be viewed here:
+[https://dicomcloud.azurewebsites.net/swagger/](https://dicomcloud.azurewebsites.net/swagger/)
 
-For detailed information about the supported services and features, check the [DICOM Support](https://github.com/Zaid-Safadi/DICOMcloud/wiki/DICOM-Support) wiki page  
+### QIDO-RS
+|Feature   |  Support | Notes  |
+|----------|----------|-------|
+| application/dicom+xml  | Y  |  |
+| application/json       | Y  | |
+| Studies                | Y  |
+| Series                 | Y  |
+| Instances              | Y  |
+| relational query       | ~  |
+| fuzzy matching| Y | Always supported |
+| ranges | Y | |  |
+| includefield | Y | |
+| sequences | Y | |
+| limit | N | |
+| offset | N | |
+| dicomKeyword group element | N | |
+| dicomKeyword name | N | |
+| TimezoneOffsetFromUTC | N | |
+
+### WADO-RS
+| Feature | Support | Notes |
+|---------|---------|-------|
+| application/dicom+xml | Y | |
+| application/json | Y | |
+| transfer-syntax | Y | |
+| Retrieve Study | Y | |
+| Retrieve Series | Y | |
+| Retrieve Instance | Y | |
+| Retreive Frames | Y | |
+| Retrieve Bulkdata | Y | header is missing Content-Location: {BulkDataURI} |
+| Retrieve Metadata | Y | |
+
+### STOW-RS
+The server can be configured to anonymize the DICOM image by default by enabling the feature in the web.config:
+
+     <add key="app:enableAnonymizer" value="true"/>
+     <add key="app:anonymizerOptions" value="BasicProfile,RetainUIDs,RetainLongFullDates,RetainPatientChars"/>
+
+| Feature | Support | Notes |
+|---------|---------|-------|
+| application/dicom | Y | |
+| application/dicom+xml | Y | |
+| application/dicom+json | Y | |
+| Multipart store | Y | can process multiple instances in single request
+
+## WADO-URI
+| Feature | Support | Notes |
+|---------|---------|-------|
+| application/dicom | Y | |
+| Frame Number | Y | |
+| Charset | N | |
+| Anonymize | N | |
+| Transfer Syntax | Y |  |
+| Charset | N | |
+| Annotation | N | |
+| Rows | N | |
+| Columns | N |  |
+| Region | N |  |
+| Windows Center | N |  |
+| Window Width | N |  |
+| Image Quality | N | |
+| Presentation UID | N | |
+| Presentation Series UID | N | |
+
+
+# Online Version:
+An online version that is hosted in Azure is live at: [https://dicomcloud.azurewebsites.net/](https://dicomcloud.azurewebsites.net/)
+
+The DICOMweb client demo is live at: [http://dicomweb.azurewebsites.net/](http://dicomweb.azurewebsites.net/)
 
 # License
- 
-    Copyright 2016 Zaid AL-Safadi
-
-    Licensed under the Apache License, Version 2.0 (the "License");
+  
+    Copyright 2017 DICOMcloud Contributors
+    
+    Licensed under the Apache License, Version 2.0 (the "License"); 
     you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
+    You may obtain a copy of the License at 
+        
         http://www.apache.org/licenses/LICENSE-2.0
-
+        
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.

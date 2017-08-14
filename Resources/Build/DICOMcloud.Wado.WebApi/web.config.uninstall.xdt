@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+
+   <appSettings>
+      <!--***********TODO: update your storage connection*********-->
+      <!-- <add key="app:PacsStorageConnection" value="UseDevelopmentStorage=true;" />-->
+      <!--<add key="app:PacsStorageConnection" value="C:\DICOMcloud\Storage" />-->
+      <!--************************************************************-->
+
+      <!--***********TODO: update your databbase connection string*********-->
+      <!--<add key="app:PacsDataArchieve" value="TODO: ENTER YOUR SQL DATABASE CONNECTION STRING" />-->
+      <!--***********************************************************-->
+
+      <add key="app:PacsStorageConnection" value="UseDevelopmentStorage=true;" xdt:Transform="Remove" />
+      <add key="app:PacsDataArchieve" value="Server=(local);Database=DICOMcloud;Trusted_Connection=True;" xdt:Transform="Remove" />
+      <add key="app:WadoRsUrl" value="" xdt:Transform="Remove" />
+   
+   </appSettings>
+
+</configuration>

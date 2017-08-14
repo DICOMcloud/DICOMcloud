@@ -284,3 +284,7 @@ ModelManifest.xml
 /DICOMcloud.VC.db
 /DICOMcloud.Wado/Properties/PublishProfiles/dicomcloud - Web Deploy.pubxml
 /Test_Data
+
+# Nuget Build Projects
+!**/[Rr]esources/[Bb]uild/
+/dist/nuget/

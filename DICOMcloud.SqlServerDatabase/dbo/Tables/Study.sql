@@ -1,12 +1,14 @@
 ﻿CREATE TABLE [dbo].[Study] (
     [StudyKey]         BIGINT        IDENTITY (1, 1) NOT NULL,
     [Study_PatientKey] BIGINT        NOT NULL,
-    [StudyInstanceUid] NVARCHAR (64) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    [StudyId]          NVARCHAR (16) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-    [AccessionNumber]  NVARCHAR (16) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-    [StudyDate]        DATETIME      NULL, 
-    [StudyDescription] NVARCHAR(64) NULL
+    [StudyInstanceUid] NVARCHAR (64) NOT NULL,
+    [StudyId]          NVARCHAR (16) NULL,
+    [AccessionNumber]  NVARCHAR (16) NULL,
+    [StudyDate]        DATETIME      NULL,
+    [StudyDescription] NVARCHAR (64) NULL,
+    CONSTRAINT [PK_Study] PRIMARY KEY CLUSTERED ([StudyKey] ASC),
+    CONSTRAINT [FK_Study_ToPatient] FOREIGN KEY ([Study_PatientKey]) REFERENCES [dbo].[Patient] ([PatientKey]) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
 GO
-ALTER TABLE [dbo].[Study]
-    ADD CONSTRAINT [PK_Study] PRIMARY KEY CLUSTERED ([StudyKey] ASC);
