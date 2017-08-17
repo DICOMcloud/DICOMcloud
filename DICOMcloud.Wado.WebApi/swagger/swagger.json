@@ -3,9 +3,9 @@
   "info": {
     "version": "v0.5 (preview)",
     "title": "DICOMcloud",
-    "description": "  **DICOMcloud is an open source DICOMweb server that implements RESTful services in DICOM part 18**\n\nBelow is the API documentation of the DICOM PS3.18 Web Services implemented by the DICOMcloud server.\n\nThe documentation is powered by swagger UI using the OpenAPI specification. The “Try it out!” button won’t work on all APIs (can’t process multipart/related). \n\n**For an example client that uses this server, a live demo is hosted [here](http://dicomweb.azurewebsites.net/) with the source code in [GitHub](https://github.com/Zaid-Safadi/dicom-webJS).**\n\n[**DICOMcloud Source Code on GitHub**](https://github.com/Zaid-Safadi/DICOMcloud) "
+    "description": "  **DICOMcloud is an open source DICOMweb server that implements RESTful services in DICOM part 13**\n\nBelow is the API documentation of the DICOM PS3.18 Web Services implemented by the DICOMcloud server.\n\nThe documentation is powered by swagger UI using the OpenAPI specification. The “Try it out!” button won’t work on all APIs (can’t process multipart/related). \n\n**For an example client that uses this server, a live demo is hosted [here](http://dicomweb.azurewebsites.net/) with the source code in [GitHub](https://github.com/DICOMcloud/dicomweb-JS).**\n\n[**DICOMcloud Source Code on GitHub**](https://github.com/DICOMcloud/DICOMcloud) "
   },
-  "host": "localhost:44301",
+  "host": "http://dicomcloud.azurewebsites.net",
   "schemes": [
     "https"
   ],
