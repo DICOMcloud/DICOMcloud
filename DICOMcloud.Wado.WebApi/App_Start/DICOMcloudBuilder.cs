@@ -114,7 +114,8 @@ namespace DICOMcloud.Wado
 
         protected virtual void RegisterComponents ( )
         {
-            IRetieveUrlProvider urlProvider = new RetieveUrlProvider ( CloudConfigurationManager.GetSetting ( RetieveUrlProvider.config_WadoRs_API_URL) ) ;
+            IRetieveUrlProvider urlProvider = new RetieveUrlProvider ( CloudConfigurationManager.GetSetting ( RetieveUrlProvider.config_WadoRs_API_URL),
+                                                                       CloudConfigurationManager.GetSetting ( RetieveUrlProvider.config_WadoUri_API_URL) ) ;
             
             
             For<DbSchemaProvider> ( ).Use<StorageDbSchemaProvider> ( ) ; //default constructor

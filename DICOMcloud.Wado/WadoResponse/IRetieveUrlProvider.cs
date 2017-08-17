@@ -2,7 +2,7 @@
 {
     public interface IRetieveUrlProvider
     {
-        string BaseUrl { get; set; }
+        string BaseWadoRsUrl { get; set; }
 
         string GetInstanceUrl(ObjectId instance);
         string GetInstanceUrl(string studyInstanceUID, string seriesInstanceUID, string sopInstanceUID);
