@@ -140,7 +140,6 @@
     <None Include="DICOMcloud.Wado.WebApi.nuspec">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="web.config.uninstall.xdt" />
     <Content Include="web.config.install.xdt">
       <SubType>Designer</SubType>
     </Content>

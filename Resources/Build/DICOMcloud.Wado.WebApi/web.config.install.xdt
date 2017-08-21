@@ -14,7 +14,11 @@
 
       <add key="app:PacsStorageConnection" value="UseDevelopmentStorage=true;" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
       <add key="app:PacsDataArchieve" value="Server=(local);Database=DICOMcloud;Trusted_Connection=True;" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)"/>
-      <add key="app:WadoRsUrl" value="" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)"  />
+      <add key="app:WadoRsUrl" value="https://localhost:44301/wadors/" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="app:WadoUriUrl" value="https://localhost:44301/wadouri" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+
+      <add key="app:enableAnonymizer" value="true"xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="app:anonymizerOptions" value="BasicProfile,RetainUIDs,RetainLongFullDates,RetainPatientChars" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
    
    </appSettings>
 
