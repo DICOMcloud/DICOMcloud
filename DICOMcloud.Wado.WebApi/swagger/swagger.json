@@ -766,7 +766,7 @@
         "deprecated": false
       }
     },
-    "/api/WadoUri": {
+    "/WadoUri": {
       "get": {
         "tags": [
           "WadoUri"

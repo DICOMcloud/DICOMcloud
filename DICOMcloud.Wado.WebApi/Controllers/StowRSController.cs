@@ -18,7 +18,6 @@ namespace DICOMcloud.Wado.Controllers
             StorageService = storageService ;
         }
 
-        // POST api/<controller>
         [HttpPost]
         [Route("stowrs/studies/{StudyInstanceUID}")]
         [Route("stowrs")]
