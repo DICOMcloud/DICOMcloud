@@ -13,5 +13,6 @@
     <description>$description$</description>
     <!--<releaseNotes>Summary of changes made in this release of the package.</releaseNotes>-->
     <copyright>$copyright$</copyright>
-    <!--<tags>Tag1 Tag2</tags>-->  </metadata>
+    <tags>DICOM DICOMweb quido-rs wado-uri wado-rs stow-rs azure</tags>  
+  </metadata>
 </package>

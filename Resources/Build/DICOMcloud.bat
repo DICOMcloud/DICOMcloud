@@ -1,6 +1,6 @@
 copy "Default.nuspec" "../../DICOMcloud\DICOMcloud.nuspec"
 copy "Default.nuspec" "../../DICOMcloud.Azure\DICOMcloud.Azure.nuspec"
-copy "Default.nuspec" "../../DICOMcloud.DataAccess.Database\DICOMcloud.nuspec"
+copy "Default.nuspec" "../../DICOMcloud.DataAccess.Database\DICOMcloud.DataAccess.Database.nuspec"
 copy "Default.nuspec" "../../DICOMcloud.Wado\DICOMcloud.Wado.nuspec"
 
 nuget pack ../../DICOMcloud\DICOMcloud.csproj                                          -OutputDirectory ../../dist\NuGet\ -IncludeReferencedProjects
