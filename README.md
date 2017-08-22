@@ -5,6 +5,8 @@ This project is now moved from the original [repository](https://github.com/Zaid
 **The  project is now licensed/owned by the DICOMcloud project Contributors. .**
 ***
 
+[![NuGet Pre Release](https://img.shields.io/nuget/vpre/DICOMcloud.Wado.WebApi.svg)](https://www.nuget.org/packages/DICOMcloud.Wado.WebApi/)
+
 # Overview 
 The DICOMcloud is a standalone DICOMweb server with RESTful implementation of the DICOMweb/WADO services:
 -	WADO-URI
@@ -24,13 +26,12 @@ The implementation is customizable by using [StructureMap](https://github.com/st
 
 The main layers of the DICOMcloud:
 
-1.	**WebAPI RESTFUL service**: The webservice implementation as an ASP.NET WebAPI project “DICOMcloud.Wado.WebAPI” 
-
-2. **DICOMweb Services**: The DICOMweb implementation for processing web requests and returning web responses. Implemented in the “DICOMcloud.Wado” project.
-
-3.	**DICOM Services**: The core DICOM code and business services that process the DICOM datasets, perform query, retrieve and store. With interfaces to classes for storage and data access. This is implemented in the “DICOMcloud” project.
-
-4. **Data Storage and Data Access**: The specific implementation layer that physically save the DICOM dataset media to a file system or Azure Blob and interface with Microsoft/Azure SQL database. This is implemented in the “DICOMcloud”, “DICOMcloud.Azure” and “DICOMcloud.DataAccess.Database” projects.
+| Layer | Description | Project Name | Nuget Link |
+| ------| ----------- | ------------ | -----------|
+| **WebAPI RESTFUL Services** | The webservice implementation as an ASP.NET WebAPI | DICOMcloud.Wado.WebAPI | [![NuGet Pre Release](https://img.shields.io/nuget/vpre/DICOMcloud.Wado.WebApi.svg)](https://www.nuget.org/packages/DICOMcloud.Wado.WebApi/) |
+| **DICOMweb Core Services** | The DICOMweb implementation for processing web requests and returning web responses. | DICOMcloud.Wado | [![NuGet Pre Release](https://img.shields.io/nuget/vpre/DICOMcloud.Wado.svg)](https://www.nuget.org/packages/DICOMcloud.Wado/) |
+| **DICOM Services** | The core DICOM code and business services that process the DICOM datasets, perform query, retrieve and store. With interfaces to classes for storage and data access. | DICOMcloud | [![NuGet Pre Release](https://img.shields.io/nuget/vpre/DICOMcloud.svg)](https://www.nuget.org/packages/DICOMcloud/) |
+| **Data Storage and Data Access** | The specific implementation layer that physically save the DICOM dataset media to a file system or Azure Blob and interface with Microsoft/Azure SQL database. | DICOMcloud <br> DICOMcloud.Azure <br> DICOMcloud.DataAccess.Database | [![NuGet Pre Release](https://img.shields.io/nuget/vpre/DICOMcloud.DataAccess.Database.svg)](https://www.nuget.org/packages/DICOMcloud.DataAccess.Database/) & [![NuGet Pre Release](https://img.shields.io/nuget/vpre/DICOMcloud.Azure.svg)](https://www.nuget.org/packages/DICOMcloud.Azure/) |
 
 ![DICOMcloud Architecture](https://github.com/DICOMcloud/DICOMcloud/blob/master/Resources/Docs/DICOMcloud-Arch..png)
 
