@@ -97,17 +97,17 @@ namespace DICOMcloud.Wado
                 var matchingParams = request.Query.MatchingElements ;
                 var includeParams = request.Query.IncludeElements ;
 
+                foreach ( var returnParam in includeParams )
+                {
+                    InsertDicomElement ( dicomSource,  returnParam, "" );
+                }
+
                 foreach ( var queryParam in  matchingParams )
                 {
                     string paramValue = queryParam.Value;
 
 
                     InsertDicomElement ( dicomSource, queryParam.Key, paramValue);
-                }
-
-                foreach ( var returnParam in includeParams )
-                {
-                    InsertDicomElement ( dicomSource,  returnParam, "" );
                 }
 
                 ICollection<fo.DicomDataset> results = doQuery (QueryService, dicomSource, request) ; //TODO: move configuration params into their own object
