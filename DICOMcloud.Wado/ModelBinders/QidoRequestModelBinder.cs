@@ -1,12 +1,8 @@
 ﻿
-using DICOMcloud.Wado.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
+using DICOMcloud.Wado.Models;
 
 namespace DICOMcloud.Wado
 {
@@ -14,37 +10,25 @@ namespace DICOMcloud.Wado
     {
         public bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
         {
-            try
+            if (bindingContext.ModelType == typeof(IQidoRequestModel))
             {
-                if (bindingContext.ModelType == typeof(IQidoRequestModel))
-                {
-                    IQidoRequestModel result ;
+                IQidoRequestModel result ;
                 
-                    var theValue = bindingContext.ValueProvider.GetValue ( bindingContext.ModelName);
-                    if ( new QidoRequestModelConverter ( ).TryParse ( actionContext.Request, out result) )
-                    { 
-                        bindingContext.Model = result;
+                var theValue = bindingContext.ValueProvider.GetValue ( bindingContext.ModelName);
+
+                if ( new QidoRequestModelConverter ( ).TryParse ( actionContext.Request, out result) )
+                { 
+                    bindingContext.Model = result;
                
-                        return true;
-                    }
-                    else
-                    { 
-                        bindingContext.ModelState.AddModelError( bindingContext.ModelName, Constants.ErrorBindingModel ) ;
-
-                        return false;
-                    }
+                    return true;
                 }
-
-                return false ;
+                else
+                { 
+                    throw new ArgumentException ( Constants.ErrorBindingModel );
+                }
             }
-            catch ( Exception ex )
-            {
-                System.Diagnostics.Trace.TraceError ( ex.ToString ( ) ) ;
 
-                bindingContext.ModelState.AddModelError( bindingContext.ModelName, "Cannot convert request to a QIDO-RS valid request");
-
-                return false;
-            }
+            return false ;
         }
 
         private class Constants

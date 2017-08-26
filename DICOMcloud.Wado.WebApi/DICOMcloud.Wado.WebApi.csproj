@@ -259,6 +259,8 @@
     <Compile Include="Controllers\SwaggerController.cs" />
     <Compile Include="Controllers\WadoUriController.cs" />
     <Compile Include="Controllers\WadoRSController.cs" />
+    <Compile Include="Exceptions\DICOMcloudExceptionHandler.cs" />
+    <Compile Include="Exceptions\DICOMcloudExceptionLogger.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

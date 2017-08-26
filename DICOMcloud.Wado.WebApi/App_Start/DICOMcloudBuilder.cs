@@ -15,6 +15,10 @@ using Microsoft.WindowsAzure.Storage;
 using StructureMap;
 using System;
 using fo = Dicom;
+using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
+using DICOMcloud.Wado.WebApi.Exceptions;
+
 
 namespace DICOMcloud.Wado
 {
@@ -25,16 +29,18 @@ namespace DICOMcloud.Wado
             Build ( ) ;
         }
 
-        private static void ConfigureLogging ( )
+
+        public static void ConfigureLogging (HttpConfiguration config)
         {
             fo.Log.LogManager.SetImplementation ( TraceLogManager.Instance );
+
+            config.Services.Add ( typeof(IExceptionLogger), new DICOMcloudExceptionLogger()) ;
+            config.Services.Replace(typeof(IExceptionHandler), new DICOMcloudExceptionHandler());
         }
 
         protected virtual void Build ( )
         {
             Init ( ) ;
-
-            ConfigureLogging ( ) ;
 
             RegisterEvents ( ) ;
 

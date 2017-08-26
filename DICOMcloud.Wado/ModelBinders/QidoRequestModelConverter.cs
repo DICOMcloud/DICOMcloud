@@ -1,11 +1,7 @@
 ﻿
-using DICOMcloud.Wado.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+using DICOMcloud.Wado.Models;
 
 
 namespace DICOMcloud.Wado
@@ -20,12 +16,12 @@ namespace DICOMcloud.Wado
             QidoRequestModel wadoReq = new QidoRequestModel ( ) ;
             
             wadoReq.Query = new QidoQuery ( ) ;
-
+            
             wadoReq.AcceptHeader        = request.Headers.Accept;
             wadoReq.AcceptCharsetHeader = request.Headers.AcceptCharset;
 
             var query = request.RequestUri.ParseQueryString ( ) ;
-         
+
             foreach ( var key in query )
             {
                 string queryKey = ((string)key).Trim ( ).ToLower ( ) ;
@@ -78,48 +74,42 @@ namespace DICOMcloud.Wado
 
                     default:
                     {
-                        string   matchingQuery       = query[queryKey].Trim ( ) ;
-                        //string[] matchingQueryValues = matchingQuery.Trim ( ).Split ( new char[] {','}, StringSplitOptions.RemoveEmptyEntries ) ;
-                        var      matchingElements    = wadoReq.Query.MatchingElements ;
+                        string matchingQuery       = query[queryKey].Trim ( ) ;
+                        var    matchingElements    = wadoReq.Query.MatchingElements ;
                         
-                        //TODO: what if key exists   
-                        //should return invalid request                      
-                        //foreach ( var matchingParam in matchingQueryValues )
-                        {
-                            matchingElements.Add ( queryKey, matchingQuery) ;
-                        }
+
+                        matchingElements.Add ( queryKey, matchingQuery) ;
                     }
                     break ;
-
                 }
             }
 
             result = wadoReq ;
 
             return true ;
-      }
+        }
 
-      private WadoBurnAnnotation ParseAnnotation ( string annotationString)
-      {
-         WadoBurnAnnotation annotation = WadoBurnAnnotation.None ;
+        private WadoBurnAnnotation ParseAnnotation ( string annotationString)
+        {
+            WadoBurnAnnotation annotation = WadoBurnAnnotation.None ;
 
-         if ( !string.IsNullOrWhiteSpace ( annotationString ) )
-         { 
+            if ( !string.IsNullOrWhiteSpace ( annotationString ) )
+            { 
             string[] parts = annotationString.Trim().Split(new string[]{","}, StringSplitOptions.RemoveEmptyEntries) ;
          
             foreach(string part in parts)
             {
-               WadoBurnAnnotation tempAnn ; 
+                WadoBurnAnnotation tempAnn ; 
                
-               if ( Enum.TryParse<WadoBurnAnnotation>(part.Trim(), true, out tempAnn ) )
-               { 
-                  annotation |= tempAnn ;
-               }
+                if ( Enum.TryParse<WadoBurnAnnotation>(part.Trim(), true, out tempAnn ) )
+                { 
+                    annotation |= tempAnn ;
+                }
             }
-         }
+            }
 
-         return annotation ;
-      }
+            return annotation ;
+        }
 
       private int? GetIntValue ( string stringValue )
       {

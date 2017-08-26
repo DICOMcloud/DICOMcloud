@@ -24,6 +24,8 @@ namespace DICOMcloud.Wado
 
             AddInsights ( ) ;
 
+            GlobalConfiguration.Configure(DICOMcloudBuilder.ConfigureLogging);
+
             GlobalConfiguration.Configuration.UseStructureMap(x =>
             {
                 x.AddRegistry<DICOMcloudBuilder>();

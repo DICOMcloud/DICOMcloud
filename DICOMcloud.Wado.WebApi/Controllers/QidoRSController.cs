@@ -6,7 +6,6 @@ using DICOMcloud.Wado.Models;
 
 namespace DICOMcloud.Wado.Controllers
 {
-    //[Authorize]
     /// <summary>
     /// Query based on ID for DICOM Objects (QIDO) enables you to search for studies, series and instances by patient ID, 
     /// and receive their unique identifiers for further usage (i.e., to retrieve their rendered representations). More detail can be found in PS3.18 6.7.
