@@ -127,6 +127,14 @@
       <Link>Nuget\Content\Controllers\WadoUriController.cs</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Exceptions\DICOMcloudExceptionHandler.cs">
+      <Link>Nuget\Content\Exceptions\DICOMcloudExceptionHandler.cs</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Exceptions\DICOMcloudExceptionLogger.cs">
+      <Link>Nuget\Content\Exceptions\DICOMcloudExceptionLogger.cs</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="..\..\Version\AssemblyInfo.Version.cs">
       <Link>Properties\AssemblyInfo.Version.cs</Link>
       <AutoGen>True</AutoGen>
