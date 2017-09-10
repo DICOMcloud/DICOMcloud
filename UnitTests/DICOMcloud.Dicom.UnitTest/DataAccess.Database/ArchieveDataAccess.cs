@@ -19,6 +19,8 @@ namespace DICOMcloud.DataAccess.Database.UnitTest
         {
             Helper = new DicomHelpers ( ) ;
             DataAccessHelper = new DataAccessHelpers ( ) ;
+
+            DataAccessHelper.EmptyDatabase ( ) ;
         }
 
         [TestMethod]
