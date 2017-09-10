@@ -5,6 +5,7 @@ This project is now moved from the original [repository](https://github.com/Zaid
 **The  project is now licensed/owned by the DICOMcloud project Contributors. .**
 ***
 
+[![Join the chat at https://gitter.im/DICOMcloud/Lobby](https://badges.gitter.im/DICOMcloud/Lobby.svg)](https://gitter.im/DICOMcloud/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![NuGet Pre Release](https://img.shields.io/nuget/vpre/DICOMcloud.Wado.WebApi.svg)](https://www.nuget.org/packages/DICOMcloud.Wado.WebApi/)
 
 # Overview 
