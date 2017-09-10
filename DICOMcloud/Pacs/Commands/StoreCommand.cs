@@ -7,13 +7,25 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using fo = Dicom;
 using DICOMcloud.Messaging;
+using Dicom;
 
 namespace DICOMcloud.Pacs.Commands
 {
     public class StoreCommand : DCloudCommand<StoreCommandData,DCloudCommandResult>, IStoreCommand
     {
+        static StoreCommand ( ) 
+        {
+            RequiredDsElements = new DicomDataset ( ) ;
+
+            RequiredDsElements.Add<object> ( DicomTag.PatientID, null) ;
+            RequiredDsElements.Add<object> ( DicomTag.StudyInstanceUID, null) ;
+            RequiredDsElements.Add<object> ( DicomTag.SeriesInstanceUID, null) ;
+            RequiredDsElements.Add<object> ( DicomTag.Modality, null) ;
+            RequiredDsElements.Add<object> ( DicomTag.SOPClassUID, null) ;
+            RequiredDsElements.Add<object> ( DicomTag.SOPInstanceUID, null) ;
+        }
+
         public StoreCommand ( ) : this ( null, null ) 
         {}
 
@@ -32,7 +44,10 @@ namespace DICOMcloud.Pacs.Commands
         {
 
             //TODO: Check against supported types/association, validation, can store, return appropriate error
-            
+            ValidateDataset ( request.Dataset ) ;
+
+            ValidateDuplicateInstance ( request ) ;
+
             request.Metadata.MediaLocations = SaveDicomMedia ( request.Dataset ) ;
 
             StoreQueryModel ( request ) ;
@@ -42,13 +57,42 @@ namespace DICOMcloud.Pacs.Commands
             return new DCloudCommandResult ( ) ;
         }
 
+        protected virtual void ValidateDuplicateInstance ( StoreCommandData request )
+        {
+            if ( DataAccess.Exists ( DicomObjectIdFactory.Instance.CreateObjectId ( request.Dataset ) ) )
+            {
+                throw new DuplicateInstanceException ( ) ;
+            }
+        }
+
+        public StorageSettings Settings { get; set;  }
+        
+        public IDicomMediaWriterFactory MediaFactory { get; set; }
+
+        public static DicomDataset RequiredDsElements
+        {
+            get ;
+            private set ;
+        }
+
+        protected virtual void ValidateDataset ( DicomDataset dataset )
+        {
+            foreach ( var element in dataset )
+            {
+                if ( !dataset.Contains ( element.Tag ) )
+                {
+                    throw new DICOMcloudException ( "Required element is missing. Element: " + element.Tag.DictionaryEntry.ToString ( ) ) ;
+                }
+            }
+        }
+
         protected virtual DicomMediaLocations[] SaveDicomMedia 
         ( 
-            fo.DicomDataset dicomObject
+            DicomDataset dicomObject
         )
         {
             List<DicomMediaLocations> mediaLocations = new List<DicomMediaLocations> ( ) ;
-            fo.DicomDataset storageDataset = dicomObject.Clone ( fo.DicomTransferSyntax.ExplicitVRLittleEndian ) ;
+            DicomDataset storageDataset = dicomObject.Clone ( DicomTransferSyntax.ExplicitVRLittleEndian ) ;
 
 
             foreach ( var mediaType in Settings.MediaTypes )
@@ -67,7 +111,26 @@ namespace DICOMcloud.Pacs.Commands
             return mediaLocations.ToArray ( ) ;
         }
 
-        private void CreateMedia ( List<DicomMediaLocations> mediaLocations, fo.DicomDataset storageDataset, DicomMediaProperties mediaInfo )
+        protected virtual void StoreQueryModel
+        (
+            StoreCommandData data
+        )
+        {
+            IDicomDataParameterFactory<StoreParameter> condFactory ;
+            IEnumerable<StoreParameter>                conditions ;
+
+            condFactory = new DicomStoreParameterFactory ( ) ;
+            conditions  = condFactory.ProcessDataSet ( data.Dataset ) ;
+
+            DataAccess.StoreInstance ( DicomObjectIdFactory.Instance.CreateObjectId ( data.Dataset ), conditions, data.Metadata ) ;
+        }
+
+        protected virtual void CreateMedia 
+        ( 
+            List<DicomMediaLocations> mediaLocations, 
+            DicomDataset storageDataset, 
+            DicomMediaProperties mediaInfo 
+        )
         {
             DicomMediaLocations mediaLocation;
             IDicomMediaWriter   writer;
@@ -102,23 +165,6 @@ namespace DICOMcloud.Pacs.Commands
             }
         }
 
-        protected virtual void StoreQueryModel
-        (
-            StoreCommandData data
-        )
-        {
-            IDicomDataParameterFactory<StoreParameter> condFactory ;
-            IEnumerable<StoreParameter>                conditions ;
-
-            condFactory = new DicomStoreParameterFactory ( ) ;
-            conditions  = condFactory.ProcessDataSet ( data.Dataset ) ;
-
-            DataAccess.StoreInstance ( new ObjectId ( data.Dataset ), conditions, data.Metadata ) ;
-        }
-        
-
-        public StorageSettings Settings { get; set;  }
-        public IDicomMediaWriterFactory MediaFactory { get; set; }
     }
 
     public class StorageSettings
@@ -127,14 +173,14 @@ namespace DICOMcloud.Pacs.Commands
         {
             MediaTypes = new List<DicomMediaProperties> ( ) ;
         
-            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, fo.DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID ) ) ;
+            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID ) ) ;
             MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Json ) ) ;
-            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.UncompressedData, fo.DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID ) ) ;
+            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.UncompressedData, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID ) ) ;
             MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.xmlDicom ) ) ;
-            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, fo.DicomTransferSyntax.JPEG2000Lossless.UID.UID ) ) ;
-            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, fo.DicomTransferSyntax.JPEG2000Lossy.UID.UID ) ) ;
-            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Jpeg, fo.DicomTransferSyntax.JPEGProcess14SV1.UID.UID ) ) ;
-            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Jpeg, fo.DicomTransferSyntax.JPEGProcess1.UID.UID ) ) ;
+            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossless.UID.UID ) ) ;
+            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossy.UID.UID ) ) ;
+            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Jpeg, DicomTransferSyntax.JPEGProcess14SV1.UID.UID ) ) ;
+            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Jpeg, DicomTransferSyntax.JPEGProcess1.UID.UID ) ) ;
         }
 
         public IList<DicomMediaProperties> MediaTypes ;
