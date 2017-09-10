@@ -57,6 +57,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AssemblyInfo.Version.tt</DependentUpon>
     </Compile>
+    <Compile Include="DICOMcloud\DICOMcloudException.cs" />
+    <Compile Include="DICOMcloud\DicomObjectId\DicomObjectIdFactory.cs" />
+    <Compile Include="DICOMcloud\DuplicateInstanceException.cs" />
     <Compile Include="Extensions\CommonExtensions.cs" />
     <Compile Include="DataAccess\DicomDataParameter\DicomDataParameter.cs" />
     <Compile Include="DataAccess\DicomDataParameter\DicomDataParameterFactory.cs" />
@@ -64,7 +67,6 @@
     <Compile Include="DataAccess\DicomDataParameter\IDicomDataParameterFactory.cs" />
     <Compile Include="DataAccess\DicomDataParameter\PersonNameParts.cs" />
     <Compile Include="DataAccess\IObjectStorageDataAccess.cs" />
-    <Compile Include="DataAccess\IObjectStorageQueryDataAccess.cs" />
     <Compile Include="DataAccess\Matching\Condition.cs" />
     <Compile Include="DataAccess\Matching\ConditionFactory.cs" />
     <Compile Include="DataAccess\Matching\IMatchingCondition.cs" />
@@ -82,6 +84,7 @@
     <Compile Include="DataAccess\ObjectQueryLevel.cs" />
     <Compile Include="DICOMcloud\IDicomConverter.cs" />
     <Compile Include="DICOMcloud\JsonDicomConverter.cs" />
+    <Compile Include="IO\ObservableStorageLocation\LocationDeletedMessage.cs" />
     <Compile Include="Media\DicomMediaId.cs" />
     <Compile Include="Media\DicomMediaProperties.cs" />
     <Compile Include="Media\Factories\DicomMediaIdFactory.cs" />

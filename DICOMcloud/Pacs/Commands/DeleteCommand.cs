@@ -138,7 +138,10 @@ namespace DICOMcloud.Pacs.Commands
                         mediaId = MediaFactory.Create ( locationParts.Parts );
                         location = StorageService.GetLocation ( mediaId );
                         
-                        location.Delete ( );
+                        if ( location.Exists ( ) )
+                        {
+                            location.Delete ( );
+                        }
 
                     }
                 }

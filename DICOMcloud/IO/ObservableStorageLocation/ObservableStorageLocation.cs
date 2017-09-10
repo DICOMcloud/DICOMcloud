@@ -46,7 +46,14 @@ namespace DICOMcloud.IO
 
         public virtual void Delete ( )
         {
-            DoDelete ( ) ;
+            if ( Exists ( ) )
+            {
+                long contentLength = Size ;
+                
+                DoDelete ( ) ;
+                
+                PublisherSubscriberFactory.Instance.Publish ( this, CreateLocationDeletedEventArgs ( contentLength ) ) ;
+            }
         }
 
         public virtual Stream Download ( )
@@ -97,11 +104,25 @@ namespace DICOMcloud.IO
             PublisherSubscriberFactory.Instance.Publish ( this, CreateLocationUploadedEventArgs ( stream ) ) ;
         }
 
+        protected virtual void OnLocationDeletedEventCreated(LocationDeletedMessage args)
+        {}
+
         protected virtual void OnLocationDownloadedEventCreated ( LocationDownloadedMessage args ) 
         {}
 
         protected virtual void OnLocationUploadedEventCreated ( LocationUploadedMessage args ) 
         {}
+
+        protected virtual LocationDeletedMessage CreateLocationDeletedEventArgs ( long contentLength )
+        {
+            var args = new LocationDeletedMessage ( this ) ;
+
+            args.ContentLength = contentLength ;
+
+            OnLocationDeletedEventCreated ( args ) ;
+
+            return args ;        
+        }
 
         protected virtual LocationDownloadedMessage CreateLocationDownloadedEventArgs ( Stream stream )
         {

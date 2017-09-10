@@ -1,6 +1,7 @@
 ﻿using DICOMcloud.IO;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.IO;
+using System.Net;
 
 namespace DICOMcloud.Azure.IO
 {
@@ -57,9 +58,11 @@ namespace DICOMcloud.Azure.IO
 
                     return _size.Value ;
                 }
-
-                //doesn't exist
-                return 0 ;
+                else
+                {
+                    //doesn't exist
+                    return 0 ;
+                }
             }
         }
 
@@ -78,7 +81,18 @@ namespace DICOMcloud.Azure.IO
 
         protected override void DoDelete()
         {
-            Blob.Delete ();
+            try
+            {
+                Blob.Delete ();
+            }
+            catch ( Microsoft.WindowsAzure.Storage.StorageException ex )
+            {
+                //if blob doesn't exist for any reason then it is already deleted.
+                if ( ex.RequestInformation.HttpStatusCode != (int) HttpStatusCode.NotFound )
+                {
+                    throw ;
+                }
+            }
         }
 
         protected override Stream DoDownload()
