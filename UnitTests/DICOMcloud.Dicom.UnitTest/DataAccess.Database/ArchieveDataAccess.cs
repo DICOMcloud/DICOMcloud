@@ -25,12 +25,17 @@ namespace DICOMcloud.DataAccess.Database.UnitTest
         [TestCategory("Data Access Layer")]
         public void DAL_StoreDelete_Simple ( ) 
         {
-            DAL_StoreInstance  ( ) ;
-            DAL_DeleteStudy    ( ) ;
-            DAL_DeleteSeries   ( ) ;
+            DAL_StoreInstance  (   ) ; //we store 2 studies, 3 series and 3 instances
+            ValidateStudyCount ( 2 ) ; 
+            
             DAL_DeleteInstance ( ) ;
+            ValidateStudyCount ( 2 ) ;
 
-            ValidateDatabaseEmpty ( ) ;
+            DAL_DeleteSeries ( ) ;
+            ValidateStudyCount ( 1 ) ;
+            
+            DAL_DeleteStudy ( );
+            ValidateStudyCount ( 0 );
         }
 
         private void DAL_DeleteStudy ( )
@@ -45,7 +50,7 @@ namespace DICOMcloud.DataAccess.Database.UnitTest
         
         private void DAL_DeleteInstance ( )
         {
-            DataAccessHelper.DataAccess.DeleteInstance ( new ObjectId ( ) { StudyInstanceUID = Helper.Study1UID, SeriesInstanceUID = Helper.Series1UID, SOPInstanceUID = Helper.Instance3UID } ) ;    
+            DataAccessHelper.DataAccess.DeleteInstance ( new ObjectId ( ) { StudyInstanceUID = Helper.Study3UID, SeriesInstanceUID = Helper.Series3UID, SOPInstanceUID = Helper.Instance3UID } ) ;    
         }
 
         private void DAL_StoreInstance ( )
@@ -56,9 +61,9 @@ namespace DICOMcloud.DataAccess.Database.UnitTest
             DicomDataset ds3 = Helper.GetDicomDataset(2);
 
 
-            DataAccessHelper.DataAccess.StoreInstance(new ObjectId(ds), factory.ProcessDataSet(ds), null);
-            DataAccessHelper.DataAccess.StoreInstance(new ObjectId(ds2), factory.ProcessDataSet(ds2), null);
-            DataAccessHelper.DataAccess.StoreInstance(new ObjectId(ds3), factory.ProcessDataSet(ds3), null);
+            DataAccessHelper.DataAccess.StoreInstance(DicomObjectIdFactory.Instance.CreateObjectId (ds), factory.ProcessDataSet(ds), null);
+            DataAccessHelper.DataAccess.StoreInstance(DicomObjectIdFactory.Instance.CreateObjectId (ds2), factory.ProcessDataSet(ds2), null);
+            DataAccessHelper.DataAccess.StoreInstance(DicomObjectIdFactory.Instance.CreateObjectId (ds3), factory.ProcessDataSet(ds3), null);
 
             ValidateSopInstanceExists ( ds ) ;
             ValidateSopInstanceExists ( ds2 ) ;
@@ -82,15 +87,14 @@ namespace DICOMcloud.DataAccess.Database.UnitTest
             Assert.AreEqual  ( queryDs.First ( ).Get<string>(DicomTag.SOPInstanceUID), ds.Get<string>(DicomTag.SOPInstanceUID));
         }
 
-        private void ValidateDatabaseEmpty ( ) 
+        private void ValidateStudyCount ( int studies ) 
         {
             IEnumerable<DicomDataset> queryDs = DataAccessHelper.DataAccess.Search ( new List<IMatchingCondition> ( ),
-                                                                                     new QueryOptions ( ), Enum.GetName ( typeof(ObjectQueryLevel),
-                                                                                     ObjectQueryLevel.Instance ) ) ;
+                                                                                     new QueryOptions ( ), 
+                                                                                     Enum.GetName ( typeof(ObjectQueryLevel), ObjectQueryLevel.Study ) ) ;
         
-
             Assert.IsNotNull ( queryDs ) ;
-            Assert.AreEqual ( queryDs.Count ( ), 0 );
+            Assert.AreEqual ( queryDs.Count ( ), studies );
         }
 
         DicomHelpers Helper { get; set; }
