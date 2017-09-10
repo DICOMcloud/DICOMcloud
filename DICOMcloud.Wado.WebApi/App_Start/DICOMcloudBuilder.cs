@@ -138,7 +138,6 @@ namespace DICOMcloud.Wado
             For<IWadoUriService>        ( ).Use<WadoUriService>        ( ) ;
 
             For<IObjectStorageDataAccess> ( ).Use ( @DataAccess ) ;
-            For<IObjectStorageQueryDataAccess> ( ).Use ( @DataAccess ) ;
             
             For<IDicomMediaIdFactory> ( ).Use <DicomMediaIdFactory> ( ) ;
 

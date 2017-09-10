@@ -46,8 +46,8 @@ namespace DICOMcloud.Pacs
         {
             DCloudCommandResult deleteResult  = null ;
             IDeleteCommand     deleteCommand = CommandFactory.CreateDeleteCommand ( ) ;
-            DeleteCommandData  deleteData    = new DeleteCommandData ( ) { Instances = new List<ObjectId> ( ) 
-                                                                                        { new ObjectId ( request ) }, 
+            DeleteCommandData  deleteData    = new DeleteCommandData ( ) { Instances = new List<IObjectId> ( ) 
+                                                                                        { DicomObjectIdFactory.Instance.CreateObjectId ( request ) }, 
                                                                           DeleteLevel = level } ;
 
             return deleteResult = deleteCommand.Execute ( deleteData ) ;

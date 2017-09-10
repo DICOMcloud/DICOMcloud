@@ -86,9 +86,8 @@ namespace DICOMcloud.Wado
             _dataset.AddOrUpdate ( referencedSeq ) ;
             referencedSeq.Items.Add ( item ) ;
             
-            item.AddOrUpdate<string> (fo.DicomTag.RetrieveURI, UrlProvider.GetInstanceUrl ( new ObjectId ( ds ) ) ) ; 
-
-
+            item.AddOrUpdate<string> (fo.DicomTag.RetrieveURI, UrlProvider.GetInstanceUrl ( DicomObjectIdFactory.Instance.CreateObjectId ( ds ) ) ) ; 
+            
             if ( _failureAdded )
             {
                 HttpStatus = HttpStatusCode.Accepted ; 
