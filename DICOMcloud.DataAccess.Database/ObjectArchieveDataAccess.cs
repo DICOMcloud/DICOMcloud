@@ -8,7 +8,7 @@ using fo = Dicom;
 
 namespace DICOMcloud.DataAccess
 {
-    public interface IObjectArchieveDataAccess : IObjectStorageDataAccess, IObjectStorageQueryDataAccess
+    public interface IObjectArchieveDataAccess : IObjectStorageDataAccess
     {}
 
     public abstract class ObjectArchieveDataAccess : IObjectArchieveDataAccess
@@ -117,6 +117,16 @@ namespace DICOMcloud.DataAccess
 
             command.Execute ( ) ;
             return command.Result ; //GetInstanceMetadata ( DataAdapter, command ).FirstOrDefault ( ) ;
+        }
+
+        public virtual bool Exists ( IObjectId instance )
+        {
+            var command = DataAdapter.CreateSelectInstanceKeyCommand ( instance ) ;
+
+
+            command.Execute ( ) ;
+
+            return command.Result > 0 ; 
         }
 
         public virtual bool DeleteStudy ( IStudyId study )

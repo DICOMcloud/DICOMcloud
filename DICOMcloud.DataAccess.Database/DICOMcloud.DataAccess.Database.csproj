@@ -57,6 +57,7 @@
     <Compile Include="DB\Commands\ResultSetQueryCommand.cs" />
     <Compile Include="DB\Commands\ScalarCommand.cs" />
     <Compile Include="DB\Commands\SingleResultQueryCommand.cs" />
+    <Compile Include="DB\SqlConstants.cs" />
     <Compile Include="DB\ObjectArchieveDataAdapter.cs" />
     <Compile Include="DB\Sql\SqlObjectArchieveDataAccess.cs" />
     <Compile Include="DB\Sql\SqlObjectArchieveDataAdapter.cs" />

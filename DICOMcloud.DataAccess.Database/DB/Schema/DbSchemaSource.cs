@@ -77,6 +77,8 @@ namespace DICOMcloud.DataAccess.Database.Schema
                 column.IsDateTime   = GetIsDateTime ( childElement ) ; 
                 column.IsModelKey   = GetIsModelKey ( childElement ) ;
 
+                column.Table.Columns.Add ( column ) ;
+
                 if ( column.IsKey )
                 { 
                     column.Table.KeyColumn = column ;

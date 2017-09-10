@@ -15,6 +15,7 @@ namespace DICOMcloud.DataAccess.Database.Schema
             Name            = name ;
             OrderValue      = order ;
             ModelKeyColumns = new List<ColumnInfo> ( ) ;
+            Columns         = new List<ColumnInfo> ( ) ;
         }
 
         public ushort OrderValue
@@ -69,6 +70,8 @@ namespace DICOMcloud.DataAccess.Database.Schema
         public uint ParentElement { get; set; }
 
         public IList<ColumnInfo> ModelKeyColumns { get; set; }
+        
+        public IList<ColumnInfo> Columns { get; set; }
 
         public override string ToString()
         {

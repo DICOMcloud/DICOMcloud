@@ -20,59 +20,14 @@ namespace DICOMcloud.DataAccess.Database
             
         }
 
-        //static ObjectArchieveQueryBuilder ( )
-        //{
-        //    _cachedJoins = new Dictionary<string, string> ( ) ;
-
-        //    _cachedJoins.Add ( GetJoinKey ( StorageDbSchemaProvider.StudyTableName, StorageDbSchemaProvider.PatientTableName ), 
-        //                                    SqlQueries.Joins.StudyToPatient ) ;
-
-        //    _cachedJoins.Add ( GetJoinKey ( StorageDbSchemaProvider.SeriesTableName, StorageDbSchemaProvider.StudyTableName ), 
-        //                                    SqlQueries.Joins.SeriesToStudy ) ;
-
-        //    _cachedJoins.Add ( GetJoinKey ( StorageDbSchemaProvider.ObjectInstanceTableName, StorageDbSchemaProvider.SeriesTableName ), 
-        //                                    SqlQueries.Joins.ObjectToSeries ) ;
-        //}
-
-        //public virtual string GetQueryText ( string sourceTable )
-        //{
-        //    string selectText = string.Join ( ",", Returns  ) ;
-        //    string joinsText  = string.Join ( " ", Joins.ToString ( ) ) ;
-        //    string whereText  = string.Join ( " AND ", Conditions ) ; 
-
-        //    if ( string.IsNullOrWhiteSpace ( joinsText ))
-        //    {
-        //        joinsText = "" ;
-        //    }
-
-        //    if ( string.IsNullOrWhiteSpace ( whereText))
-        //    {
-        //        whereText = "" ;
-        //    }
-        //    else
-        //    {
-        //        whereText = " AND " + whereText ;
-        //    }
-
-        //    string tableParam = "@someTableParam " ;
-        //    StringBuilder queryBuilder = new StringBuilder ( ) ;
-
-        //    AppendDeclareTableParam ( tableParam, string.Join ( ",", ColumnDefenitions), queryBuilder ) ;
-            
-        //    queryBuilder.AppendLine   ( "INSERT INTO " + tableParam  ) ;
-        //    queryBuilder.AppendFormat ( SqlQueries.Select_Command_Formatted, selectText, sourceTable, joinsText , whereText ) ;
-
-        //    foreach (var tableToColumns in _processedColumns)
-        //    {
-        //        AppendSelectKeyColumnRange(tableToColumns.Key.KeyColumn.Name, tableParam, string.Join(",", tableToColumns.Value), queryBuilder);
-        //    }
-
-        //    return queryBuilder.ToString ( ) ;
-        //}
-
         public virtual string GetQueryText ( string sourceTable )
         {
-            string selectText = (Returns == null || Returns.Count == 0 ) ? "*" : string.Join ( ",", Returns  ) ;
+            if ( (Returns == null || Returns.Count == 0 ) )
+            {
+                throw new InvalidOperationException ( "No columns has been processed." ) ;
+            }
+
+            string selectText = string.Join ( ",", Returns  ) ;
             string joinsText  = string.Join ( " ", Joins.ToString ( ) ) ;
             string whereText  = string.Join ( " AND ", Conditions ) ; 
 
@@ -98,13 +53,6 @@ namespace DICOMcloud.DataAccess.Database
             return queryBuilder.ToString ( ) ;
         }
 
-        public virtual IEnumerable<string> GetQueryResultTables ( ) 
-        {
-            foreach ( var table in _processedColumns )
-            { 
-                yield return table.Key.Name ;
-            }
-        }
 
         public virtual void ProcessColumn
         (   

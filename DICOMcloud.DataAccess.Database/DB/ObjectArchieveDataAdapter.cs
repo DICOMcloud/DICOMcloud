@@ -11,8 +11,10 @@ using fo = Dicom;
 
 namespace DICOMcloud.DataAccess.Database
 {
-    public abstract class ObjectArchieveDataAdapter
+    public abstract partial class ObjectArchieveDataAdapter
     {
+        #region Public
+
         public ObjectArchieveDataAdapter ( DbSchemaProvider schemaProvider )
         {
             SchemaProvider = schemaProvider ;
@@ -35,23 +37,6 @@ namespace DICOMcloud.DataAccess.Database
             return command;
         }
 
-        public virtual IDbCommand CreateSelectCommand 
-        ( 
-            string sourceTable, 
-            IEnumerable<IMatchingCondition> conditions, 
-            IQueryOptions options,
-            out string[] tables 
-        )
-        {
-            var queryBuilder  = BuildQuery    ( conditions, options, sourceTable          ) ;
-            var SelectCommand = CreateCommand ( queryBuilder.GetQueryText ( sourceTable ) ) ;
-
-
-            tables = queryBuilder.GetQueryResultTables ( ).ToArray ( ) ;
-
-            return SelectCommand ;
-        }
-
         public virtual IDataAdapterCommand<IEnumerable<fo.DicomDataset>> CreateSelectCommand 
         ( 
             string sourceTable, 
@@ -72,11 +57,9 @@ namespace DICOMcloud.DataAccess.Database
         {
             TableKey                   studyTable   = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.StudyTableName );
             QueryBuilder queryBuilder = CreateQueryBuilder ( ) ;
-            SingleValueMatching        uidMatching  = new SingleValueMatching ( ) ;
+            
+            ProcessSelectStudy ( study, queryBuilder, studyTable, studyTable ) ;
 
-
-            queryBuilder.ProcessColumn ( studyTable, studyTable.ModelKeyColumns [0], uidMatching, new string[] { study.StudyInstanceUID } );
-                        
             return new SingleResultQueryCommand<long> ( CreateCommand ( queryBuilder.GetQueryText ( studyTable ) ), 
                                                         studyTable.Name,
                                                         studyTable.KeyColumn.Name ) ;
@@ -87,12 +70,11 @@ namespace DICOMcloud.DataAccess.Database
             TableKey                   studyTable   = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.StudyTableName );
             TableKey                   seriesTable  = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.SeriesTableName );
             QueryBuilder queryBuilder = CreateQueryBuilder ( ) ;
-            SingleValueMatching        uidMatching  = new SingleValueMatching ( ) ;
 
 
-            queryBuilder.ProcessColumn ( seriesTable, studyTable.ModelKeyColumns  [0], uidMatching, new string[] { series.StudyInstanceUID } );
-            queryBuilder.ProcessColumn ( seriesTable, seriesTable.ModelKeyColumns [0], uidMatching, new string[] { series.SeriesInstanceUID } );
-            
+            ProcessSelectStudy ( series, queryBuilder, studyTable, seriesTable ) ;
+            ProcessSelectSeries ( series, queryBuilder, seriesTable, seriesTable ) ;
+
             return new SingleResultQueryCommand<long> ( CreateCommand ( queryBuilder.GetQueryText ( seriesTable ) ),
                                                         seriesTable.Name,
                                                         seriesTable.KeyColumn.Name ) ;
@@ -100,17 +82,19 @@ namespace DICOMcloud.DataAccess.Database
 
         public virtual IDataAdapterCommand<long> CreateSelectInstanceKeyCommand ( IObjectId instance ) 
         {
-            QueryBuilder queryBuilder   = CreateQueryBuilder ( ) ;
-            TableKey                   sourceTable    = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.ObjectInstanceTableName ) ;
-            SingleValueMatching        sopUIDMatching = new SingleValueMatching ( ) ;
+            QueryBuilder queryBuilder = CreateQueryBuilder ( ) ;
+            TableKey studyTable       = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.StudyTableName );
+            TableKey seriesTable      = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.SeriesTableName );
+            TableKey instanceTable    = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.ObjectInstanceTableName ) ;
 
+           
+            ProcessSelectObjectInstance ( instance, queryBuilder, instanceTable, instanceTable) ;
+            ProcessSelectSeries         ( instance, queryBuilder, seriesTable, instanceTable ) ;
+            ProcessSelectStudy          ( instance, queryBuilder, studyTable, seriesTable ) ;
 
-            queryBuilder.ProcessColumn ( sourceTable, sourceTable.ModelKeyColumns[0], sopUIDMatching, new string[] { instance.SOPInstanceUID } );
-            
-            
-            return new SingleResultQueryCommand<long> ( CreateCommand ( queryBuilder.GetQueryText ( sourceTable ) ),
-                                                        sourceTable.Name, 
-                                                        sourceTable.KeyColumn.Name ) ;                       
+            return new SingleResultQueryCommand<long> ( CreateCommand ( queryBuilder.GetQueryText ( instanceTable ) ),
+                                                        instanceTable.Name, 
+                                                        instanceTable.KeyColumn.Name ) ;                       
         }
 
         public virtual IDbCommand CreateInsertCommand 
@@ -184,13 +168,10 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
             TableKey                   studyTable     = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.StudyTableName );
             TableKey                   sourceTable    = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.ObjectInstanceTableName );
             QueryBuilder queryBuilder   = CreateQueryBuilder          ( );
-            SingleValueMatching        uidMatching    = new SingleValueMatching     ( ) ;
-            ColumnInfo                 studyColumne   = studyTable.ModelKeyColumns[0] ;
             ColumnInfo                 metaDataColumn = SchemaProvider.GetColumn ( sourceTable.Name,
                                                                                    StorageDbSchemaProvider.MetadataTable.MetadataColumn ) ;
 
-
-            queryBuilder.ProcessColumn ( sourceTable, studyColumne, uidMatching, new string[] { study.StudyInstanceUID } );
+            ProcessSelectStudy ( study, queryBuilder, studyTable, sourceTable ) ;
 
             queryBuilder.ProcessColumn ( sourceTable, metaDataColumn, null, null );
 
@@ -206,12 +187,12 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
             TableKey                   seriesTable  = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.SeriesTableName );
             TableKey                   sourceTable  = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.ObjectInstanceTableName );
             QueryBuilder queryBuilder = CreateQueryBuilder          ( );
-            SingleValueMatching        uidMatching  = new SingleValueMatching     ( ) ;
             ColumnInfo                 metadataColumn = SchemaProvider.GetColumn ( sourceTable.Name,
                                                                                    StorageDbSchemaProvider.MetadataTable.MetadataColumn ) ;
 
-            queryBuilder.ProcessColumn ( sourceTable, seriesTable.ModelKeyColumns[0], uidMatching, new string[] { series.SeriesInstanceUID } );
-            queryBuilder.ProcessColumn ( sourceTable, studyTable.ModelKeyColumns[0],  uidMatching, new string[] { series.StudyInstanceUID  } );
+            ProcessSelectStudy ( series, queryBuilder, studyTable, sourceTable ) ;
+            ProcessSelectSeries ( series, queryBuilder, seriesTable, sourceTable ) ;
+
             queryBuilder.ProcessColumn ( sourceTable, metadataColumn  );
 
             return new ResultSetQueryCommand<InstanceMetadata> ( CreateCommand ( queryBuilder.GetQueryText ( sourceTable ) ),
@@ -226,59 +207,26 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
             TableKey                   seriesTable   = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.SeriesTableName );
             TableKey                   instanceTable = SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.ObjectInstanceTableName );
             QueryBuilder queryBuilder  = CreateQueryBuilder          ( );
-            SingleValueMatching        uidMatching   = new SingleValueMatching     ( ) ;
             ColumnInfo                 metadataColumn = SchemaProvider.GetColumn ( instanceTable.Name,
                                                                                    StorageDbSchemaProvider.MetadataTable.MetadataColumn ) ;
 
-            queryBuilder.ProcessColumn ( instanceTable, seriesTable.ModelKeyColumns[0], uidMatching, new string[] { instance.SeriesInstanceUID } );
-            queryBuilder.ProcessColumn ( instanceTable, studyTable.ModelKeyColumns[0],  uidMatching, new string[] { instance.StudyInstanceUID  } );
-            queryBuilder.ProcessColumn ( instanceTable, instanceTable.ModelKeyColumns[0], uidMatching, new string[] { instance.SOPInstanceUID } );
+            ProcessSelectStudy  ( instance, queryBuilder, studyTable, instanceTable ) ;
+            ProcessSelectSeries ( instance, queryBuilder, seriesTable, instanceTable ) ;
+            ProcessSelectObjectInstance ( instance, queryBuilder, instanceTable, instanceTable) ;
+
             queryBuilder.ProcessColumn ( instanceTable, metadataColumn  );
 
             return new SingleResultQueryCommand<InstanceMetadata> ( CreateCommand ( queryBuilder.GetQueryText ( instanceTable ) ),
                                                                     instanceTable,
                                                                     metadataColumn.ToString ( ),
                                                                     CreateMetadata ) ;
-
-            //IDbCommand command  = CreateCommand ( ) ;
-            //var        sopParam = CreateParameter ( "@" + DB.Schema.StorageDbSchemaProvider.MetadataTable.SopInstanceColumn, instance.SOPInstanceUID ) ;
-            
-             
-            // command.CommandText = string.Format ( "SELECT {0} FROM {1} WHERE {2}=@{2}", 
-            //                                      DB.Schema.StorageDbSchemaProvider.MetadataTable.MetadataColumn,
-            //                                      DB.Schema.StorageDbSchemaProvider.MetadataTable.TableName,
-            //                                      DB.Schema.StorageDbSchemaProvider.MetadataTable.SopInstanceColumn ) ;
-
-            //command.Parameters.Add ( sopParam );
-
-            //SetConnectionIfNull ( command ) ;
-            
-            //return command ;
-        }
-
-        public long ReadStudyKey ( IDataReader reader )
-        {
-            return (long) reader[SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.StudyTableName ).KeyColumn.Name] ;
-        }
-
-        public long ReadSeriesKey ( IDataReader reader )
-        {
-            return (long) reader[SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.SeriesTableName ).KeyColumn.Name] ;
-        }
-
-        public long ReadInstanceKey ( IDataReader reader )
-        {
-            return (long) reader[SchemaProvider.GetTableInfo ( StorageDbSchemaProvider.ObjectInstanceTableName ).KeyColumn.Name] ;
-        }
-
-        public string ReadInstanceMetadata ( IDataReader reader )
-        {
-            return reader[StorageDbSchemaProvider.MetadataTable.MetadataColumn] as string ;
         }
 
         public abstract IDbConnection CreateConnection ( ) ;
-        
+        #endregion
 
+        #region Protected
+        
         protected abstract IDbCommand  CreateCommand ( ) ;
 
         protected abstract IDbDataParameter CreateParameter ( string columnName, object Value ) ;
@@ -299,7 +247,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
                 throw new ArgumentException ( "querylevel not supported" ) ;
             }
 
-            if ( null != conditions )
+            if ( null != conditions && conditions.Count ( ) > 0 )
             {
                 foreach ( var condition in conditions )
                 {
@@ -335,6 +283,13 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
                     }
                 }
             }
+            else
+            {
+                foreach ( var column in SchemaProvider.GetTableInfo( sourceTable ).Columns ) 
+                {
+                    queryBuilder.ProcessColumn ( sourceTable, column ) ;
+                }
+            }
         
             return queryBuilder ;
         }
@@ -350,11 +305,62 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
 
             var stroageBuilder = CreateStorageBuilder ( ) ;
             
-            FillParameters ( conditions, data, insertCommand, stroageBuilder ) ;
+            FillInsertParameters ( conditions, data, insertCommand, stroageBuilder ) ;
             
             insertCommand.CommandText = stroageBuilder.GetInsertText ( ) ;
         }
         
+        protected virtual void ProcessSelectStudy
+        (
+            IStudyId study, 
+            QueryBuilder queryBuilder, 
+            TableKey studyTable,
+            TableKey sourceTable
+        )
+        {
+            SingleValueMatching uidMatching  = new SingleValueMatching ( ) ;
+
+
+            queryBuilder.ProcessColumn ( sourceTable, 
+                                         studyTable.ModelKeyColumns [0], 
+                                         uidMatching, 
+                                         new string[] { study.StudyInstanceUID } );
+        }
+
+        protected virtual void ProcessSelectSeries
+        (
+            ISeriesId series, 
+            QueryBuilder queryBuilder, 
+            TableKey seriesTable,
+            TableKey sourceTable
+        )
+        {
+            SingleValueMatching uidMatching  = new SingleValueMatching ( ) ;
+
+
+            queryBuilder.ProcessColumn ( sourceTable, 
+                                         seriesTable.ModelKeyColumns [0], 
+                                         uidMatching, 
+                                         new string[] { series.SeriesInstanceUID } );
+        }
+
+        protected virtual void ProcessSelectObjectInstance
+        (
+            IObjectId objectInstance, 
+            QueryBuilder queryBuilder, 
+            TableKey objectInstanceTable,
+            TableKey sourceTable
+        )
+        {
+            SingleValueMatching uidMatching  = new SingleValueMatching ( ) ;
+
+
+            queryBuilder.ProcessColumn ( sourceTable, 
+                                         objectInstanceTable.ModelKeyColumns [0], 
+                                         uidMatching, 
+                                         new string[] { objectInstance.SOPInstanceUID } );
+        }
+
         protected virtual void SetConnectionIfNull ( IDbCommand command )
         {
             if (command !=null && command.Connection == null)
@@ -363,7 +369,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
             }
         }
 
-        protected virtual void FillParameters
+        protected virtual void FillInsertParameters
         (
             IEnumerable<IDicomDataParameter> dicomParameters,
             InstanceMetadata data, 
@@ -707,22 +713,14 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
 
             dateString = dateString.Insert ( 4, "-") ;
         }
-
+        #endregion
+        
+        #region Private 
         private static bool IsMinDate(string dateString)
         {
             return ( DateTime.MinValue.ToShortDateString() == 
                      DateTime.ParseExact(dateString, "yyyymmdd", System.Globalization.CultureInfo.InvariantCulture).ToShortDateString());
         }
-        
-        public static class SqlConstants
-        {
-            public static string MinDate = "1753/1/1" ;
-            public static string MaxDate = "9999/12/31" ;
-            public static string MinTime = "00:00:00" ;
-            public static string MaxTime = "23:59:59" ;
-
-            public static string MaxDateTime = "9999/12/31 11:59:59"   ;
-            public static string MinDateTime = "1753/1/1 00:00:00" ;
-        }
+        #endregion
     }
 }
