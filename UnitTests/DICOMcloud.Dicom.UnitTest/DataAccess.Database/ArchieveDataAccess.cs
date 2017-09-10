@@ -84,7 +84,7 @@ namespace DICOMcloud.DataAccess.Database.UnitTest
 
             Assert.IsNotNull ( queryDs);
             Assert.AreEqual  ( queryDs.Count ( ), 1 ) ;
-            Assert.AreEqual  ( queryDs.First ( ).Get<string>(DicomTag.SOPInstanceUID), ds.Get<string>(DicomTag.SOPInstanceUID));
+            Assert.AreEqual  ( ds.Get<string>(DicomTag.SOPInstanceUID), queryDs.First ( ).Get<string>(DicomTag.SOPInstanceUID));
         }
 
         private void ValidateStudyCount ( int studies ) 
@@ -94,7 +94,7 @@ namespace DICOMcloud.DataAccess.Database.UnitTest
                                                                                      Enum.GetName ( typeof(ObjectQueryLevel), ObjectQueryLevel.Study ) ) ;
         
             Assert.IsNotNull ( queryDs ) ;
-            Assert.AreEqual ( queryDs.Count ( ), studies );
+            Assert.AreEqual ( studies, queryDs.Count ( ) );
         }
 
         DicomHelpers Helper { get; set; }
