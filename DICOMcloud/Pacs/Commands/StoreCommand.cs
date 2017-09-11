@@ -61,7 +61,7 @@ namespace DICOMcloud.Pacs.Commands
         {
             if ( DataAccess.Exists ( DicomObjectIdFactory.Instance.CreateObjectId ( request.Dataset ) ) )
             {
-                throw new DuplicateInstanceException ( ) ;
+                throw new DuplicateInstanceException ( request.Dataset ) ;
             }
         }
 

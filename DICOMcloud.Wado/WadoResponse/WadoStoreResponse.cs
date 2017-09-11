@@ -18,8 +18,9 @@ namespace DICOMcloud.Wado
     {
         private fo.DicomDataset _dataset ;
         public IRetieveUrlProvider UrlProvider { get; set; }
-        public string StudyInstanceUID { get; private set; }
-        public HttpStatusCode HttpStatus { get; private set ; }
+        public string StudyInstanceUID         { get; private set; }
+        public HttpStatusCode HttpStatus       { get; private set ; }
+        public string StatusMessage            { get; private set;}
 
         private bool _successAdded = false ;
         private bool _failureAdded = false ;
@@ -36,6 +37,7 @@ namespace DICOMcloud.Wado
             UrlProvider      = urlProvider?? new RetieveUrlProvider ( ) ;
             StudyInstanceUID = studyInstanceUID ;
             HttpStatus       = HttpStatusCode.Unused ;
+            StatusMessage    = "" ;
         }
 
         public fo.DicomDataset GetResponseContent ( )
@@ -48,18 +50,15 @@ namespace DICOMcloud.Wado
         public void AddResult ( DicomDataset ds, Exception ex )
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
-            var failedSeq          = new fo.DicomSequence ( fo.DicomTag.FailedSOPSequence ) ;
-            var item               = new fo.DicomDataset ( ) ;
+            var failedSeq          = new DicomSequence ( fo.DicomTag.FailedSOPSequence ) ;
+            var item               = new DicomDataset ( ) ;
 
 
             referencedInstance.Merge ( item ) ;
 
             _dataset.AddOrUpdate (failedSeq);
-            failedSeq.Items.Add ( item ) ;
-
-            item.AddOrUpdate<UInt16> (fo.DicomTag.FailureReason, 272 ) ; //TODO: for now 272 == "0110 - Processing failure", must map proper result code from org. exception
             
-            item.AddOrUpdate<string> ( fo.DicomTag.RetrieveURI, ex.Message );
+            failedSeq.Items.Add ( item ) ;
             
             if ( _successAdded )
             {
@@ -67,13 +66,13 @@ namespace DICOMcloud.Wado
             }
             else
             {
-                HttpStatus = HttpStatusCode.Conflict ; //should figure out the true reason from a wrapped exception code
+                SetError ( ex, item ) ;
             }
 
             _failureAdded = true ;
-
         }
 
+        
         public void AddResult ( DicomDataset ds )
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
@@ -99,9 +98,7 @@ namespace DICOMcloud.Wado
 
             _successAdded = true ;
         }
-
         
-
         private fo.DicomDataset GetReferencedInstsance ( fo.DicomDataset ds )
         {
             var classUID = ds.Get<fo.DicomElement> ( fo.DicomTag.SOPClassUID, null ) ;
@@ -113,6 +110,27 @@ namespace DICOMcloud.Wado
             dataset.AddOrUpdate ( sopUID ) ;
 
             return dataset ;
+        }
+    
+        private void SetError(Exception ex, DicomDataset responseDS )
+        {
+            if ( ex is DICOMcloudException )
+            {
+                HttpStatus    = HttpStatusCode.Conflict ;
+                StatusMessage = ex.Message ;
+            }
+            else if (ex is KeyNotFoundException)        {HttpStatus = HttpStatusCode.NotFound;}
+            else if (ex is ArgumentException)           {HttpStatus = HttpStatusCode.BadRequest;}
+            else if (ex is InvalidOperationException)   {HttpStatus = HttpStatusCode.BadRequest;}
+            else if (ex is UnauthorizedAccessException) {HttpStatus = HttpStatusCode.Unauthorized;}
+            else
+            {
+                HttpStatus    = HttpStatusCode.InternalServerError ;
+                StatusMessage = "" ;
+            }
+
+            ////0110 - Processing failure
+            responseDS.AddOrUpdate<UInt16> (fo.DicomTag.FailureReason, 272) ; 
         }
     }
 }

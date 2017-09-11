@@ -38,27 +38,16 @@ namespace DICOMcloud.Wado
 
             if (null != getDicomDelegate)
             {
-                var storeResult = await StoreStudy(request, studyInstanceUID, getDicomDelegate);
-                var result      = new HttpResponseMessage(storeResult.HttpStatus);
+                var storeResult = await StoreStudy        ( request, studyInstanceUID, getDicomDelegate ) ;
+                var result      = new HttpResponseMessage ( storeResult.HttpStatus ) ;
 
-
-                //this is not taking the "q" parameter
-                if (new MimeMediaType(MimeMediaTypes.Json).IsIn(request.AcceptHeader))
+                
+                if (!string.IsNullOrWhiteSpace(storeResult.StatusMessage))
                 {
-                    IJsonDicomConverter converter = GetJsonConverter();
-
-                    result.Content = new StringContent(converter.Convert(storeResult.GetResponseContent()),
-                                                          System.Text.Encoding.UTF8,
-                                                          MimeMediaTypes.Json);
+                    result.ReasonPhrase = storeResult.StatusMessage;
                 }
-                else
-                {
-                    IXmlDicomConverter xmlConverter = GetXmlConverter();
 
-                    result.Content = new StringContent(xmlConverter.Convert(storeResult.GetResponseContent()),
-                                                        System.Text.Encoding.UTF8,
-                                                        MimeMediaTypes.xmlDicom);
-                }
+                result.Content = CreateResponseContent (request, storeResult);
 
                 return result;
             }
@@ -70,22 +59,10 @@ namespace DICOMcloud.Wado
 
         public virtual Task<HttpResponseMessage> Delete  ( WebDeleteRequest request )
         {
-            try
-            {
-                _storageService.Delete ( request.Dataset, request.DeleteLevel )  ;
+            _storageService.Delete ( request.Dataset, request.DeleteLevel )  ;
                 
-                return Task.FromResult( new HttpResponseMessage ( HttpStatusCode.OK ) ) ;
-            }
-            catch ( Exception ex )
-            {
-                return Task.FromResult( new HttpResponseMessage ( HttpStatusCode.InternalServerError ) ) ;
-            }
+            return Task.FromResult( new HttpResponseMessage ( HttpStatusCode.OK ) ) ;
         }
-
-        //TODO: uncomment
-        //public virtual async Task<HttpResponseMessage> ProcessRequest ( WebDeleteRequest request )
-        //{
-        //}
 
         protected virtual fo.DicomDataset GetDicom ( Stream dicomStream )
         {
@@ -112,16 +89,24 @@ namespace DICOMcloud.Wado
             return new JsonDicomConverter();
         }
 
-        private async Task<WadoStoreResponse> StoreStudy ( WebStoreRequest request, string studyInstanceUID, GetDicomHandler getDicom )
+        private async Task<WadoStoreResponse> StoreStudy 
+        ( 
+            WebStoreRequest request, 
+            string studyInstanceUID, 
+            GetDicomHandler getDicom 
+        )
         {
-            WadoStoreResponse response = new WadoStoreResponse(studyInstanceUID, _urlProvider);
+            WadoStoreResponse response = new WadoStoreResponse ( studyInstanceUID, _urlProvider );
+
 
             foreach (var mediaContent in request.Contents)
             {
                 Stream dicomStream = await mediaContent.ReadAsStreamAsync();
                 var    dicomDs     = getDicom ( dicomStream ) ; 
 
-                PublisherSubscriberFactory.Instance.Publish ( this, new WebStoreDatasetProcessingMessage ( request, dicomDs ) ) ;
+
+                PublisherSubscriberFactory.Instance.Publish ( this, 
+                                                              new WebStoreDatasetProcessingMessage ( request, dicomDs ) ) ;
                 
                 try
                 {
@@ -130,21 +115,21 @@ namespace DICOMcloud.Wado
                     
                     response.AddResult(dicomDs);
 
-                    PublisherSubscriberFactory.Instance.Publish ( this, new WebStoreDatasetProcessedMessage ( request, dicomDs ) ) ;
+                    PublisherSubscriberFactory.Instance.Publish ( this, 
+                                                                  new WebStoreDatasetProcessedMessage ( request, dicomDs ) ) ;
                 }
                 catch (Exception ex)
                 {
                     response.AddResult(dicomDs, ex);
 
-                    PublisherSubscriberFactory.Instance.Publish ( this, new WebStoreDatasetProcessingFailureMessage ( request, dicomDs, ex ) ) ;
+                    PublisherSubscriberFactory.Instance.Publish ( this, 
+                                                                   new WebStoreDatasetProcessingFailureMessage ( request, dicomDs, ex ) ) ;
                 }
             }
 
             return response;
         }
     
-        private delegate DicomDataset GetDicomHandler ( Stream stream ) ;
-
         private GetDicomHandler CreateDatasetParser(WebStoreRequest request)
         {
             GetDicomHandler getDicomDelegate = null ;
@@ -152,7 +137,6 @@ namespace DICOMcloud.Wado
 
             switch (request.MediaType)
             {
-                //TODO: build the response here, { Successes.Add(objectMetadata), Failures.Add(objectMetadata), Create
                 case MimeMediaTypes.DICOM:
                 {
                     getDicomDelegate = GetDicom;
@@ -161,11 +145,12 @@ namespace DICOMcloud.Wado
 
                 case MimeMediaTypes.xmlDicom:
                 {
-                    GetDicomHandler xmlHandler = new GetDicomHandler(delegate (Stream stream)
+                    getDicomDelegate = new GetDicomHandler(delegate (Stream stream)
                     {
                         StreamReader reader = new StreamReader(stream);
                         string xmlString = reader.ReadToEnd();
 
+                        
                         return GetXmlConverter().Convert(xmlString);
                     });
                 }
@@ -173,12 +158,13 @@ namespace DICOMcloud.Wado
 
                 case MimeMediaTypes.Json:
                 {
-                    GetDicomHandler xmlHandler = new GetDicomHandler(delegate (Stream stream)
+                    getDicomDelegate = new GetDicomHandler(delegate (Stream stream)
                     {
                         StreamReader reader = new StreamReader(stream);
-                        string xmlString = reader.ReadToEnd();
+                        string jsonString = reader.ReadToEnd();
 
-                        return GetJsonConverter().Convert(xmlString);
+
+                        return GetJsonConverter().Convert(jsonString);
                     });
                 }
                 break;
@@ -191,5 +177,35 @@ namespace DICOMcloud.Wado
 
             return getDicomDelegate;
         }        
+
+        private HttpContent CreateResponseContent
+        (
+            WebStoreRequest request, 
+            WadoStoreResponse storeResult
+        )
+        {
+            HttpContent content;
+            //this is not taking the "q" parameter
+            if (new MimeMediaType(MimeMediaTypes.Json).IsIn(request.AcceptHeader))
+            {
+                IJsonDicomConverter converter = GetJsonConverter();
+
+                content = new StringContent(converter.Convert(storeResult.GetResponseContent()),
+                                                      System.Text.Encoding.UTF8,
+                                                      MimeMediaTypes.Json);
+            }
+            else
+            {
+                IXmlDicomConverter xmlConverter = GetXmlConverter();
+
+                content = new StringContent(xmlConverter.Convert(storeResult.GetResponseContent()),
+                                                    System.Text.Encoding.UTF8,
+                                                    MimeMediaTypes.xmlDicom);
+            }
+
+            return content;
+        }
+
+        private delegate DicomDataset GetDicomHandler ( Stream stream ) ;
     }
 }
