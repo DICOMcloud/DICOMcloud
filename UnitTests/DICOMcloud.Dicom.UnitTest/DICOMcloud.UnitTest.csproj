@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DICOMcloud.Dicom.UnitTest</RootNamespace>
     <AssemblyName>DICOMcloud.Dicom.UnitTest</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -18,6 +18,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -79,17 +80,7 @@
       <Name>DICOMcloud</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\..\Resources\Database\DICOMcloud_UnitTest.mdf">
-      <Link>DB\DICOMcloud_UnitTest.mdf</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\Resources\Database\DICOMcloud_UnitTest_log.ldf">
-      <Link>DB\DICOMcloud_UnitTest_log.ldf</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>DICOMcloud_UnitTest.mdf</DependentUpon>
-    </Content>
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
@@ -117,6 +108,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\fo-dicom.Desktop.3.0.2\build\net452\fo-dicom.Desktop.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\fo-dicom.Desktop.3.0.2\build\net452\fo-dicom.Desktop.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(ProjectDir)../../Resources\Database\DICOMcloud.mdf" "$(TargetDir)*.*" /d /y
+xcopy "$(ProjectDir)../../Resources\Database\DICOMcloud.ldf" "$(TargetDir)*.*" /d /y</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
