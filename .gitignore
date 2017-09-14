@@ -288,3 +288,7 @@ ModelManifest.xml
 # Nuget Build Projects
 !**/[Rr]esources/[Bb]uild/
 /dist/nuget/
+/DICOMcloud.DataAccess.Database/DICOMcloud.DataAccess.Database.nuspec
+/DICOMcloud/DICOMcloud.nuspec
+/DICOMcloud.Azure/DICOMcloud.Azure.nuspec
+/DICOMcloud.Wado/DICOMcloud.Wado.nuspec
