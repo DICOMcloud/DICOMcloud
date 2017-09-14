@@ -37,7 +37,7 @@ The main layers of the DICOMcloud:
 ![DICOMcloud Architecture](https://github.com/DICOMcloud/DICOMcloud/blob/master/Resources/Docs/DICOMcloud-Arch..png)
 
 # Platform:
-The code is written in C# .NET Framework 4.5.2 and can be built using Visual Studio 2017 and can run on Windows machine or Azure WebApp.
+The code is written in C# .NET Framework 4.6.2 and can be built using Visual Studio 2017 and can run on Windows machine or Azure WebApp.
 
 The project uses MS SQL Database (Azure SQL Database compatabile) to query the DICOM information and saves the DICOM datasets to either the file system or an Azure Blob Storage.
 
