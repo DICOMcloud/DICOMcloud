@@ -17,7 +17,7 @@
     <ModelCollation>1033,CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <TargetLanguage>CS</TargetLanguage>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SqlServerVerification>False</SqlServerVerification>
@@ -25,6 +25,7 @@
     <TargetDatabaseSet>True</TargetDatabaseSet>
     <DacApplicationName>DICOMcloud_ENT_db</DacApplicationName>
     <DefaultCollation>SQL_Latin1_General_CP1_CI_AS</DefaultCollation>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -62,6 +63,7 @@
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
     <Folder Include="Security\" />
+    <Folder Include="dbo\Scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Patient.sql" />
@@ -69,5 +71,12 @@
     <Build Include="dbo\Tables\Series.sql" />
     <Build Include="dbo\Tables\Study.sql" />
     <Build Include="dbo\Tables\ObjectInstance.sql" />
+    <Build Include="dbo\Tables\DICOMcloudDbVersion.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="DICOMcloud.SqlServerDatabase.refactorlog" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="dbo\Scripts\Script.PostDeployment1.sql" />
   </ItemGroup>
 </Project>

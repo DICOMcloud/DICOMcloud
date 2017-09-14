@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="f8e090c1-f61c-4a35-9388-9bd17ac6d7f8" ChangeDateTime="09/04/2017 02:45:29">
+    <Property Name="ElementName" Value="[dbo].[DICOMcloudDbVersion].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[DICOMcloudDbVersion]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Major" />
+  </Operation>
+</Operations>

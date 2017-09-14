@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[RequestAttributeSequence] (
     [Id]                            INT           IDENTITY (1, 1) NOT NULL,
-    [ScheduledProcedureStepID]      NVARCHAR (16) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    [RequestedProcedureID]          NVARCHAR (16) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    [ScheduledProcedureStepID]      NVARCHAR (16) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+    [RequestedProcedureID]          NVARCHAR (16) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
     [RequestAttributeSeq_SeriesKey] BIGINT        NOT NULL
 );
 GO

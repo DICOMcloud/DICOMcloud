@@ -47,8 +47,8 @@
       <column name="Owner" table="ObjectInstance" defenition="[Owner] NVARCHAR (265) NULL" tag="" />      
     
       <column name="Id" table="RequestAttributeSequence" key="true" defenition="[Id] [int] NOT NULL" tag="" />
-      <column name="ScheduledProcedureStepID" table="RequestAttributeSequence" modelKey="true" defenition="[ScheduledProcedureStepID] [nvarchar](16) NOT NULL" tag="4194313" />
-      <column name="RequestedProcedureID" table="RequestAttributeSequence" modelKey="true" defenition="[RequestedProcedureID] [nvarchar](16) NOT NULL" tag="4198401" />
+      <column name="ScheduledProcedureStepID" table="RequestAttributeSequence" defenition="[ScheduledProcedureStepID] [nvarchar](16) NULL" tag="4194313" />
+      <column name="RequestedProcedureID" table="RequestAttributeSequence" defenition="[RequestedProcedureID] [nvarchar](16) NULL" tag="4198401" />
       <column name="RequestAttributeSeq_SeriesKey" table="RequestAttributeSequence" modelKey="true" foreign="true" defenition="[RequestAttributeSeq_SeriesKey] [bigint] NOT NULL" tag="" />
 
    </columns>
