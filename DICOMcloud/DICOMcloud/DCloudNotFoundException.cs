@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace DICOMcloud
 {
-    public class DCloudException : Exception
+    public class DCloudNotFoundException: DCloudException
     {
         //
         // Summary:
         //     Initializes a new instance of the System.Exception class.
-        public DCloudException()
+        public DCloudNotFoundException()
         : base ( )
         {
         
@@ -25,7 +25,7 @@ namespace DICOMcloud
         // Parameters:
         //   message:
         //     The message that describes the error.
-        public DCloudException(string message)
+        public DCloudNotFoundException(string message)
         : base ( message )
         {}
 
@@ -41,7 +41,7 @@ namespace DICOMcloud
         //   innerException:
         //     The exception that is the cause of the current exception, or a null reference
         //     (Nothing in Visual Basic) if no inner exception is specified.
-        public DCloudException(string message, Exception innerException)
+        public DCloudNotFoundException(string message, Exception innerException)
         : base ( message, innerException )
         {
         

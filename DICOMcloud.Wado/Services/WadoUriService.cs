@@ -31,7 +31,7 @@ namespace DICOMcloud.Wado
             //validation code should go in here
             if (null == request || string.Compare(request.RequestType, "WADO", true ) != 0 )
             {
-                throw new Exception("Request Type must be set to WADO");//TODO
+                throw new DCloudException("Request Type must be set to WADO");
             }
 
             List<MediaTypeHeaderValue> mediaTypeHeader = GetRequestedMimeType ( request );
@@ -70,7 +70,7 @@ namespace DICOMcloud.Wado
 
             if ( mediaTypeHeader.Where ( n=>n.MediaType == MimeMediaTypes.DICOM ).FirstOrDefault ( ) != null )
             {
-                return new HttpResponseMessage ( HttpStatusCode.NotFound ) ;
+                return new HttpResponseMessage ( HttpStatusCode.NotFound ) { Content = new StringContent ( "Image not found" ) } ;
             }
             else
             {

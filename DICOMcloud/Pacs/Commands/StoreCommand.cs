@@ -61,7 +61,7 @@ namespace DICOMcloud.Pacs.Commands
         {
             if ( DataAccess.Exists ( DicomObjectIdFactory.Instance.CreateObjectId ( request.Dataset ) ) )
             {
-                throw new DuplicateInstanceException ( request.Dataset ) ;
+                throw new DCloudDuplicateInstanceException ( request.Dataset ) ;
             }
         }
 
@@ -81,7 +81,7 @@ namespace DICOMcloud.Pacs.Commands
             {
                 if ( !dataset.Contains ( element.Tag ) )
                 {
-                    throw new DICOMcloudException ( "Required element is missing. Element: " + element.Tag.DictionaryEntry.ToString ( ) ) ;
+                    throw new DCloudException ( "Required element is missing. Element: " + element.Tag.DictionaryEntry.ToString ( ) ) ;
                 }
             }
         }

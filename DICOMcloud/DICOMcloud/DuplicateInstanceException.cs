@@ -7,9 +7,9 @@ using Dicom;
 
 namespace DICOMcloud
 {
-    public class DuplicateInstanceException : DICOMcloudException
+    public class DCloudDuplicateInstanceException : DCloudException
     {
-        public DuplicateInstanceException ( DicomDataset ds )
+        public DCloudDuplicateInstanceException ( DicomDataset ds )
         : base  ( "SOP Instance already exists" ) 
         { 
             Dataset = ds ;

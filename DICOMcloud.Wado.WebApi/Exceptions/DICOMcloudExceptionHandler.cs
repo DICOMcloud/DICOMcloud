@@ -8,36 +8,53 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
+using System.Web.Http.Results;
 
 namespace DICOMcloud.Wado.WebApi.Exceptions
 {
     public class DICOMcloudExceptionHandler : ExceptionHandler
     {
+        //implementation of the DefaultExcpetionHandler:
+        //https://aspnetwebstack.codeplex.com/SourceControl/latest#src/System.Web.Http/ExceptionHandling/DefaultExceptionHandler.cs
+        //This implementation is needed becuase:
+        //https://stackoverflow.com/questions/24189315/exceptions-in-asp-net-web-api-custom-exception-handler-never-reach-top-level-whe/24634485#24634485
         public override void Handle(ExceptionHandlerContext context)
         {
-            context.Result = new TextPlainErrorResult 
+            if (context == null)
             {
-                Request = context.Request,
-                Content = "An error has occured." + context.Request.GetCorrelationId ( )  
-            };
-        }
-    
-        private class TextPlainErrorResult : IHttpActionResult
-        {
-            public HttpRequestMessage Request { get; set; }
+                throw new ArgumentNullException("context");
+            }
 
-            public string Content { get; set; }
+            ExceptionContext   exceptionContext = context.ExceptionContext;
+            Exception          exception        = exceptionContext.Exception;
+            HttpRequestMessage request          = exceptionContext.Request;
 
-            public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
+            if (request == null)
             {
-                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+                base.Handle ( context ) ;
+            }
 
+            if (exceptionContext.CatchBlock == ExceptionCatchBlocks.IExceptionFilter)
+            {
+                // The exception filter stage propagates unhandled exceptions by default (when no filter handles the
+                // exception).
+                return;
+            }
 
-                response.Content = new StringContent(Content);
-                response.RequestMessage = Request;
-            
-                return Task.FromResult(response);
+            if ( exception is DCloudException )
+            {
+                context.Result = new ResponseMessageResult ( request.CreateErrorResponse ( HttpStatusCode.BadRequest,
+                                                                                           exception.Message));
+            }
+            else
+            {
+                context.Result = new ResponseMessageResult ( request.CreateErrorResponse (HttpStatusCode.InternalServerError, ""));
             }
         }
+    
+       public override bool ShouldHandle(ExceptionHandlerContext context)
+       {
+            return true ;
+       }
     }
 }

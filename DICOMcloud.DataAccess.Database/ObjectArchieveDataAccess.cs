@@ -186,7 +186,7 @@ namespace DICOMcloud.DataAccess
             }
             else
             {
-                throw new KeyNotFoundException ( "study is not found." ) ;
+                throw new DCloudNotFoundException ( "study is not found." ) ;
             }
         }
 
@@ -201,7 +201,7 @@ namespace DICOMcloud.DataAccess
             }
             else
             {
-                throw new KeyNotFoundException ( "series is not found." ) ;
+                throw new DCloudNotFoundException ( "series is not found." ) ;
             }
         }
 
@@ -216,7 +216,7 @@ namespace DICOMcloud.DataAccess
             }
             else
             {
-                throw new KeyNotFoundException ( "Instance is not found." ) ;
+                throw new DCloudNotFoundException ( "Instance is not found." ) ;
             }
             
         }

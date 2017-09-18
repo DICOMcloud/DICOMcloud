@@ -698,6 +698,11 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
                 dateString = dateString.Replace ( ".", "" ).Replace ( "-", "") ;
             }
             
+            if ( !string.IsNullOrWhiteSpace ( dateString ) && !IsValidDicomDate ( dateString) )
+            {
+                throw new DCloudException ( "Invalid DICOM date format. Format must by yyyymmdd" ) ; 
+            }
+
             if ( string.IsNullOrEmpty ( dateString) || IsMinDate ( dateString ) )
             { 
                 dateString = "" ;
@@ -705,22 +710,35 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
                 return ;
             }
 
-            int length = dateString.Length ;
-
-            if (length != 8) {  throw new ArgumentException ( "Invalid date value") ; }
-            
             dateString = dateString.Insert ( 6, "-") ;
 
             dateString = dateString.Insert ( 4, "-") ;
         }
+
         #endregion
-        
+
         #region Private 
         private static bool IsMinDate(string dateString)
         {
             return ( DateTime.MinValue.ToShortDateString() == 
                      DateTime.ParseExact(dateString, "yyyymmdd", System.Globalization.CultureInfo.InvariantCulture).ToShortDateString());
         }
+
+        private bool IsValidDicomDate(string dateString)
+        {
+            int length = dateString.Length ;
+            DateTime date ;
+            
+            
+            if (length != 8) {  return false ; }
+            
+            return DateTime.TryParseExact( dateString, 
+                                           "yyyymmdd", 
+                                           System.Globalization.CultureInfo.InvariantCulture, 
+                                           System.Globalization.DateTimeStyles.None,
+                                           out date ) ;
+        }
+
         #endregion
     }
 }

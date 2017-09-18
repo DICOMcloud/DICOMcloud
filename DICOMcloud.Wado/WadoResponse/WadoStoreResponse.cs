@@ -114,7 +114,7 @@ namespace DICOMcloud.Wado
     
         private void SetError(Exception ex, DicomDataset responseDS )
         {
-            if ( ex is DICOMcloudException )
+            if ( ex is DCloudException )
             {
                 HttpStatus    = HttpStatusCode.Conflict ;
                 StatusMessage = ex.Message ;
