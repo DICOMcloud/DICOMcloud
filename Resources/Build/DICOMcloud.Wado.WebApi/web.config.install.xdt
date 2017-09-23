@@ -11,9 +11,10 @@
       <!--***********TODO: update your databbase connection string*********-->
       <!--<add key="app:PacsDataArchieve" value="TODO: ENTER YOUR SQL DATABASE CONNECTION STRING" />-->
       <!--***********************************************************-->
+      
+      <add key="app:PacsStorageConnection" value="|DataDirectory|\App_Data\Storage\ds" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="app:PacsDataArchieve" value="Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\DB\DICOMcloud.mdf;Initial Catalog=DICOMcloud;Integrated Security=True" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
 
-      <add key="app:PacsStorageConnection" value="UseDevelopmentStorage=true;" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
-      <add key="app:PacsDataArchieve" value="Server=(local);Database=DICOMcloud;Trusted_Connection=True;" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)"/>
       <add key="app:WadoRsUrl" value="https://localhost:44301/wadors/" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
       <add key="app:WadoUriUrl" value="https://localhost:44301/wadouri" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
 

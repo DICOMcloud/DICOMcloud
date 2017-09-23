@@ -1,7 +1,7 @@
 ﻿Getting started with DICOMcloud.Wado.WebApi
 ---------------------------------
 
-To get started, add a call to DICOMcloudConfig.Configure() and ensure Unity is registered by calling UnityConfig.RegisterComponents() in the Application_Start method of Global.asax.cs and the Web API framework will be configured to use the DICOMcloud web server.
+To get started, add a call to GlobalConfiguration.Configuration.UseStructureMap with the DICOMcloudBuilder registry in the Application_Start method of Global.asax.cs and the Web API framework will be configured to use the DICOMcloud web server.
 
 e.g.
  
@@ -15,8 +15,8 @@ public class WebApiApplication : System.Web.HttpApplication
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            AddInsights ( ) ;
-
+            GlobalConfiguration.Configure(DICOMcloudBuilder.ConfigureLogging);  /*  <----- Add this line to configure DICOMcloud custom logging handling */
+            
             GlobalConfiguration.Configuration.UseStructureMap(x =>              /*  <----- Add this line to configure DICOMcloud */
             {
                 x.AddRegistry<DICOMcloudBuilder>();
