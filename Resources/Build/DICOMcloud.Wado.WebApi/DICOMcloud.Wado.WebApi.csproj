@@ -163,10 +163,10 @@
     <None Include="DICOMcloud.Wado.WebApi.nuspec">
       <SubType>Designer</SubType>
     </None>
-    <None Include="..\..\Database\DICOMcloud.mdf">
+    <Content Include="..\..\Database\DICOMcloud.mdf">
       <Link>Nuget\Content\App_Data\DB\DICOMcloud.mdf</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
     <Content Include="web.config.install.xdt">
       <SubType>Designer</SubType>
     </Content>
