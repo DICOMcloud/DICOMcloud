@@ -79,6 +79,8 @@ namespace DICOMcloud.Wado
                     ohifStudy.PatientName = instance.Get<string>(DicomTag.PatientName, "");
 
                     result.Studies.Add(ohifStudy);
+
+                    studies.Add ( currentStudyUid, ohifStudy) ;
                 }
 
                 if (!series.TryGetValue(currentSeriesUid, out ohifSeries))
