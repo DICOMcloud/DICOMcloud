@@ -46,6 +46,7 @@ namespace DICOMcloud.Wado
             ds.Add(Dicom.DicomTag.StudyInstanceUID, studyInstanceUid);
             ds.Add(DicomTag.SeriesInstanceUID, "");
             ds.Add(DicomTag.PatientID, "");
+            ds.Add(DicomTag.PatientName, "");
             ds.Add(DicomTag.SeriesDescription, "");
             ds.Add(DicomTag.SOPInstanceUID, "");
             
