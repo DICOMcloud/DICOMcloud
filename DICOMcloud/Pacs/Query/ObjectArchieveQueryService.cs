@@ -13,7 +13,7 @@ namespace DICOMcloud.Pacs
         public ObjectArchieveQueryService ( IObjectStorageDataAccess dataAccess ) : base ( dataAccess )
         {}
 
-        public ICollection<fo.DicomDataset> FindStudies 
+        public IEnumerable<fo.DicomDataset> FindStudies 
         ( 
             fo.DicomDataset request, 
             IQueryOptions options
@@ -22,7 +22,7 @@ namespace DICOMcloud.Pacs
             return Find ( request, options, Enum.GetName (typeof(ObjectQueryLevel), ObjectQueryLevel.Study ) ) ;
         }
 
-        public ICollection<fo.DicomDataset> FindObjectInstances
+        public IEnumerable<fo.DicomDataset> FindObjectInstances
         (
             fo.DicomDataset request,
             IQueryOptions options
@@ -31,7 +31,7 @@ namespace DICOMcloud.Pacs
             return Find ( request, options, Enum.GetName (typeof(ObjectQueryLevel), ObjectQueryLevel.Instance ) ) ;
         }
 
-        public ICollection<fo.DicomDataset> FindSeries
+        public IEnumerable<fo.DicomDataset> FindSeries
         (
             fo.DicomDataset request,
             IQueryOptions options
@@ -40,7 +40,7 @@ namespace DICOMcloud.Pacs
             return Find ( request, options, Enum.GetName (typeof(ObjectQueryLevel), ObjectQueryLevel.Series ) ) ;
         }
 
-        protected override ICollection<fo.DicomDataset> DoFind
+        protected override IEnumerable<fo.DicomDataset> DoFind
         (
            fo.DicomDataset request,
            IQueryOptions options,

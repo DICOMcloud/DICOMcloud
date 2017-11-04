@@ -9,7 +9,7 @@ using DICOMcloud.Wado.Models;
 
 namespace DICOMcloud.Wado.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class DelowRSController : ApiController
     {
         public IWebObjectStoreService StorageService { get; set; }

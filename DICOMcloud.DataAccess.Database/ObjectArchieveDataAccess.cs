@@ -11,23 +11,33 @@ namespace DICOMcloud.DataAccess
     public interface IObjectArchieveDataAccess : IObjectStorageDataAccess
     {}
 
-    public abstract class ObjectArchieveDataAccess : IObjectArchieveDataAccess
+    public class ObjectArchieveDataAccess : IObjectArchieveDataAccess
     {
         public string                    ConnectionString { get; set ; }
         public ObjectArchieveDataAdapter DataAdapter      { get; private set; }
         public DbSchemaProvider          SchemaProvider   { get; private set; }
 
-        public ObjectArchieveDataAccess() : this("") { 
-        
-        }
-        public ObjectArchieveDataAccess ( string connectionString )
+        public ObjectArchieveDataAccess
+        ( 
+            IConnectionStringProvider connectionStringProvier, 
+            DbSchemaProvider schemaProvier,
+            ObjectArchieveDataAdapter dataAdapter
+        ) : this ( connectionStringProvier.ConnectionString, schemaProvier, dataAdapter)
+        { }
+
+        public ObjectArchieveDataAccess
+        ( 
+            string connectionString, 
+            DbSchemaProvider schemaProvier,
+            ObjectArchieveDataAdapter dataAdapter
+        )
         { 
             ConnectionString = connectionString ;
-            SchemaProvider   = CreateSchemaProvider ( ) ;
-            DataAdapter      = CreateDataAdapter ( ) ;
+            SchemaProvider   = schemaProvier ;
+            DataAdapter      = dataAdapter ;
         }
 
-        public virtual ICollection<fo.DicomDataset> Search
+        public virtual IEnumerable<fo.DicomDataset> Search
         (
             IEnumerable<IMatchingCondition> conditions, 
             IQueryOptions options,
@@ -161,13 +171,6 @@ namespace DICOMcloud.DataAccess
         )
         {
             return dbAdapter.CreateUpdateMetadataCommand ( objectId, data ).Execute ( ) ;
-        }
-
-        protected abstract ObjectArchieveDataAdapter CreateDataAdapter ( ) ;
-
-        protected virtual DbSchemaProvider CreateSchemaProvider ( ) 
-        {
-            return new DbSchemaProvider ( ) ;
         }
 
         protected virtual IQueryResponseBuilder CreateResponseBuilder(string queryLevel)

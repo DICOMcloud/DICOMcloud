@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Dicom;
+using DICOMcloud.DataAccess;
 using DICOMcloud.Extensions;
 using DICOMcloud.Pacs;
 using DICOMcloud.Wado.Models;
@@ -27,7 +28,7 @@ namespace DICOMcloud.Wado
         public HttpResponseMessage GetStudies ( string studyInstanceUid )
 
         {
-            ICollection<DicomDataset> instances = QueryInstances(studyInstanceUid);
+            IEnumerable<DicomDataset> instances = QueryInstances(studyInstanceUid);
 
             OHIFViewerModel result = GetOHIFModel(instances);
 
@@ -39,7 +40,7 @@ namespace DICOMcloud.Wado
             return response;
         }
 
-        private ICollection<DicomDataset> QueryInstances(string studyInstanceUid)
+        private IEnumerable<DicomDataset> QueryInstances(string studyInstanceUid)
         {
             Dicom.DicomDataset ds = new Dicom.DicomDataset();
 
@@ -50,11 +51,11 @@ namespace DICOMcloud.Wado
             ds.Add(DicomTag.SeriesDescription, "");
             ds.Add(DicomTag.SOPInstanceUID, "");
             
-            return QueryService.FindObjectInstances(ds, null);
+            return QueryService.FindObjectInstances(ds, new QueryOptions ( ) );
             
         }
 
-        private OHIFViewerModel GetOHIFModel(ICollection<DicomDataset> instances)
+        private OHIFViewerModel GetOHIFModel(IEnumerable<DicomDataset> instances)
         {
             Dictionary<string, OHIFStudy>  studies = new Dictionary<string, OHIFStudy>();
             Dictionary<string, OHIFSeries> series = new Dictionary<string, OHIFSeries>();

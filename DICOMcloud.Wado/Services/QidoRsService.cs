@@ -110,7 +110,7 @@ namespace DICOMcloud.Wado
                     InsertDicomElement ( dicomSource, queryParam.Key, paramValue);
                 }
 
-                ICollection<fo.DicomDataset> results = doQuery (QueryService, dicomSource, request) ; //TODO: move configuration params into their own object
+                var results = doQuery (QueryService, dicomSource, request) ; //TODO: move configuration params into their own object
 
                 if ( MultipartResponseHelper.IsMultiPartRequest ( request ) )
                 {
@@ -149,16 +149,19 @@ namespace DICOMcloud.Wado
                     StringBuilder jsonReturn = new StringBuilder ( "[" ) ;
 
                     JsonDicomConverter converter = new JsonDicomConverter ( ) { IncludeEmptyElements = true } ;
+                    int count = 0 ;
+
 
                     foreach ( var response in results )
                     {
-                    
+                        count++ ;
+
                         jsonReturn.AppendLine (converter.Convert ( response )) ;
 
                         jsonReturn.Append(",") ;
                     }
 
-                    if ( results.Count > 0 )
+                    if ( count > 0 )
                     {
                         jsonReturn.Remove ( jsonReturn.Length -1, 1 ) ;
                     }
@@ -233,7 +236,7 @@ namespace DICOMcloud.Wado
             }
         }
     
-        private delegate ICollection<fo.DicomDataset> DoQueryDelegate 
+        private delegate IEnumerable<fo.DicomDataset> DoQueryDelegate 
         ( 
             IObjectArchieveQueryService queryService, 
             fo.DicomDataset dicomRequest, 

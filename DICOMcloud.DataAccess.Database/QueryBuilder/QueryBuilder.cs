@@ -17,10 +17,14 @@ namespace DICOMcloud.DataAccess.Database
             ColumnDefenitions = new List<string>   ( ) ;
             Joins             = new SqlJoinBuilder ( ) ;
             ConditionBuilder  = new DicomConditionBuilder ( ) ;
-            
         }
 
-        public virtual string GetQueryText ( string sourceTable )
+        public virtual string GetQueryText 
+        ( 
+            TableKey sourceTable, 
+            IQueryOptions options = null, 
+            ISortingStrategy sorting = null 
+        )
         {
             if ( (Returns == null || Returns.Count == 0 ) )
             {
@@ -50,6 +54,11 @@ namespace DICOMcloud.DataAccess.Database
             
             queryBuilder.AppendFormat ( SqlQueries.Select_Command_Formatted, selectText, sourceTable, joinsText , whereText ) ;
 
+            if ( null != sorting  && !string.IsNullOrWhiteSpace ( sorting.SortBy ) )
+            {
+                queryBuilder.Append ( " ORDER BY " + sorting.SortBy + " " + (( sorting.Direction == SortingDirection.DESC ) ? "DESC" : "ASC")) ;
+            }
+            
             return queryBuilder.ToString ( ) ;
         }
 

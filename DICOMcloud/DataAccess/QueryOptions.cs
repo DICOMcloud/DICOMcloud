@@ -8,8 +8,6 @@ namespace DICOMcloud.DataAccess
 {
     public interface IQueryOptions
     {
-        //string QueryLevel { get; set; }
-
         int? Limit { get; set; }
 
         int? Offset { get; set; }
@@ -17,8 +15,6 @@ namespace DICOMcloud.DataAccess
 
     public class QueryOptions : IQueryOptions
     {
-        //public string QueryLevel { get; set; }
-
         public int? Limit { get; set; }
 
         public int? Offset { get; set; }

@@ -7,7 +7,7 @@ namespace DICOMcloud.DataAccess
 {
     public interface IObjectStorageDataAccess
     {
-        ICollection<DicomDataset> Search
+        IEnumerable<DicomDataset> Search
         ( 
             IEnumerable<IMatchingCondition> conditions, 
             IQueryOptions options,

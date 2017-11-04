@@ -6,7 +6,7 @@ namespace DICOMcloud.Pacs
 {
     public interface IDicomQueryService
     {
-        ICollection<fo.DicomDataset> Find 
+        IEnumerable<fo.DicomDataset> Find 
         ( 
             fo.DicomDataset request, 
             IQueryOptions options,

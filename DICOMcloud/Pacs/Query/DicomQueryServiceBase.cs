@@ -23,7 +23,7 @@ namespace DICOMcloud.Pacs
             //SchemaProvider  = schemaProvider ;
         }
 
-        public ICollection<fo.DicomDataset> Find 
+        public IEnumerable<fo.DicomDataset> Find 
         ( 
             fo.DicomDataset request, 
             IQueryOptions options,
@@ -34,32 +34,21 @@ namespace DICOMcloud.Pacs
             IEnumerable<IMatchingCondition> conditions = null;
 
 
-            conditions = BuildConditions ( request );
+            conditions = BuildConditions ( request, new ConditionFactory ( ) );
 
             return DoFind ( request, options, queryLevel, conditions );
         }
 
         protected virtual IEnumerable<IMatchingCondition> BuildConditions
         (
-            fo.DicomDataset request
+            fo.DicomDataset request,
+            ConditionFactory condFactory
         )
         {
-            ConditionFactory condFactory = new ConditionFactory ( ) ;
-            IEnumerable<IMatchingCondition> conditions ;
-            
-            condFactory.BeginProcessingElements ( ) ;
-
-            foreach ( var element in request )
-            {
-                condFactory.ProcessElement ( element ) ;
-            }
-
-            conditions = condFactory.EndProcessingElements ( ) ;
-
-            return conditions ;
+            return condFactory.ProcessDataSet ( request ) ;
         }
 
-        protected abstract ICollection<fo.DicomDataset> DoFind
+        protected abstract IEnumerable<fo.DicomDataset> DoFind
         (
             fo.DicomDataset request,
             IQueryOptions options, 

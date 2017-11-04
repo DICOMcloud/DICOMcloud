@@ -19,7 +19,7 @@ namespace DICOMcloud.DataAccess.Database.Schema
         public DbSchemaSource ( )
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = "DICOMcloud.DataAccess.Database.DB.DatabaseSchema.xml";
+            var resourceName = "DICOMcloud.DataAccess.Database.DatabaseSchema.xml";
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
             using (StreamReader reader = new StreamReader(stream))

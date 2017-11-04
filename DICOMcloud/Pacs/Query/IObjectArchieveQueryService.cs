@@ -6,21 +6,21 @@ namespace DICOMcloud.Pacs
 {
     public interface IObjectArchieveQueryService
     {
-        ICollection<fo.DicomDataset> FindStudies 
+        IEnumerable<fo.DicomDataset> FindStudies 
         ( 
             fo.DicomDataset request, 
             IQueryOptions options
 
         ) ;
 
-        ICollection<fo.DicomDataset> FindObjectInstances
+        IEnumerable<fo.DicomDataset> FindObjectInstances
         (
             fo.DicomDataset request,
             IQueryOptions options
 
         ) ;
 
-        ICollection<fo.DicomDataset> FindSeries
+        IEnumerable<fo.DicomDataset> FindSeries
         (
             fo.DicomDataset request,
             IQueryOptions options

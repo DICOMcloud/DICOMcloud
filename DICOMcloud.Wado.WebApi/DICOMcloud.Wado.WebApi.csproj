@@ -246,6 +246,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AssemblyInfo.Version.tt</DependentUpon>
     </Compile>
+    <Compile Include="App_Start\ConnectionStringProvider.cs" />
     <Compile Include="App_Start\DICOMcloudBuilder.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />

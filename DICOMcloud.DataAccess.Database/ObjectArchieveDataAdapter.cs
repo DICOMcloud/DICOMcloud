@@ -8,16 +8,32 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using fo = Dicom;
+using Dicom;
 
 namespace DICOMcloud.DataAccess.Database
 {
-    public abstract partial class ObjectArchieveDataAdapter
+    public partial class ObjectArchieveDataAdapter
     {
         #region Public
 
-        public ObjectArchieveDataAdapter ( DbSchemaProvider schemaProvider )
+        public ObjectArchieveDataAdapter 
+        ( 
+            DbSchemaProvider schemaProvider, 
+            IDatabaseFactory database 
+        ) : this ( schemaProvider, database, new SortingStrategyFactory ( schemaProvider))
         {
-            SchemaProvider = schemaProvider ;
+        }
+
+        public ObjectArchieveDataAdapter 
+        ( 
+            DbSchemaProvider schemaProvider, 
+            IDatabaseFactory database,
+            ISortingStrategyFactory sortingStrategyFactory = null
+        )
+        {
+            SchemaProvider          = schemaProvider ;
+            Database                = database ;
+            SortingStrategyFactory  = sortingStrategyFactory ?? new SortingStrategyFactory ( schemaProvider ) ;
         }
 
         public DbSchemaProvider SchemaProvider
@@ -26,9 +42,17 @@ namespace DICOMcloud.DataAccess.Database
             protected set;
         }
 
+        public IDatabaseFactory Database
+        {
+            get ;
+            protected set ;
+        }
+
+        public ISortingStrategyFactory SortingStrategyFactory { get; protected set; }
+
         public IDbCommand CreateCommand ( string commandText )
         {
-            var command = CreateCommand ( );
+            var command = Database.CreateCommand ( );
 
             SetConnectionIfNull ( command );
 
@@ -39,18 +63,28 @@ namespace DICOMcloud.DataAccess.Database
 
         public virtual IDataAdapterCommand<IEnumerable<fo.DicomDataset>> CreateSelectCommand 
         ( 
-            string sourceTable, 
+            string queryLevel, 
             IEnumerable<IMatchingCondition> conditions, 
             IQueryOptions options,
             IQueryResponseBuilder responseBuilder
         )
         {
-            var queryBuilder  = BuildQuery ( conditions, options, sourceTable ) ;
-            
+            var queryLeveTable = SchemaProvider.GetTableInfo(SchemaProvider.GetQueryTable(queryLevel));
 
-            var selectCommand = new DicomDsQueryCommand ( CreateCommand ( queryBuilder.GetQueryText ( sourceTable ) ), queryBuilder, responseBuilder ) ;
+            if (queryLeveTable == null)
+            {
+                throw new ArgumentException("querylevel not supported");
+            }
 
-            return selectCommand ;
+            var queryBuilder = BuildQuery(conditions, options, queryLeveTable);
+
+            var sorting = SortingStrategyFactory.Create ( ) ;
+
+            sorting.Sort ( options, queryLeveTable ) ;
+
+            var selectCommand = new DicomDsQueryCommand(CreateCommand(queryBuilder.GetQueryText(queryLeveTable, options, sorting)), queryBuilder, responseBuilder);
+
+            return selectCommand;
         }
 
         public virtual IDataAdapterCommand<long> CreateSelectStudyKeyCommand ( IStudyId study )
@@ -103,7 +137,7 @@ namespace DICOMcloud.DataAccess.Database
             InstanceMetadata data = null
         )
         {
-            IDbCommand insertCommand = CreateCommand ( ) ;
+            IDbCommand insertCommand = Database.CreateCommand ( ) ;
 
             BuildInsert ( conditions, data, insertCommand ) ;
 
@@ -133,11 +167,11 @@ namespace DICOMcloud.DataAccess.Database
 
         public IDataAdapterCommand<int> CreateUpdateMetadataCommand ( IObjectId objectId, InstanceMetadata data )
         {
-            IDbCommand insertCommand = CreateCommand ( ) ;
+            IDbCommand insertCommand = Database.CreateCommand ( ) ;
             var instance             = objectId ;
             
 
-            insertCommand = CreateCommand ( ) ;
+            insertCommand = Database.CreateCommand ( ) ;
 
             insertCommand.CommandText = string.Format ( @"
 UPDATE {0} SET {2}=@{2}, {3}=@{3} WHERE {1}=@{1}
@@ -150,9 +184,9 @@ StorageDbSchemaProvider.MetadataTable.SopInstanceColumn,
 StorageDbSchemaProvider.MetadataTable.MetadataColumn,
 StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
 
-             var sopParam   = CreateParameter ( "@" + StorageDbSchemaProvider.MetadataTable.SopInstanceColumn, instance.SOPInstanceUID ) ;
-             var metaParam  = CreateParameter ( "@" + StorageDbSchemaProvider.MetadataTable.MetadataColumn, data.ToJson ( ) ) ;
-             var ownerParam = CreateParameter ( "@" + StorageDbSchemaProvider.MetadataTable.OwnerColumn, data.Owner ) ;
+             var sopParam   = Database.CreateParameter ( "@" + StorageDbSchemaProvider.MetadataTable.SopInstanceColumn, instance.SOPInstanceUID ) ;
+             var metaParam  = Database.CreateParameter ( "@" + StorageDbSchemaProvider.MetadataTable.MetadataColumn, data.ToJson ( ) ) ;
+             var ownerParam = Database.CreateParameter ( "@" + StorageDbSchemaProvider.MetadataTable.OwnerColumn, data.Owner ) ;
             
             insertCommand.Parameters.Add ( sopParam ) ;
             insertCommand.Parameters.Add ( metaParam ) ;
@@ -222,30 +256,19 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
                                                                     CreateMetadata ) ;
         }
 
-        public abstract IDbConnection CreateConnection ( ) ;
         #endregion
 
         #region Protected
         
-        protected abstract IDbCommand  CreateCommand ( ) ;
-
-        protected abstract IDbDataParameter CreateParameter ( string columnName, object Value ) ;
-
         protected virtual QueryBuilder BuildQuery 
         ( 
             IEnumerable<IMatchingCondition> conditions, 
             IQueryOptions options,
-            string queryLevel 
+            TableKey queryLeveTable
         )
         {
             QueryBuilder queryBuilder = CreateQueryBuilder ( ) ;
-            TableKey                   sourceTable  = SchemaProvider.GetTableInfo ( SchemaProvider.GetQueryTable ( queryLevel ) ) ;
 
-
-            if ( sourceTable == null )
-            { 
-                throw new ArgumentException ( "querylevel not supported" ) ;
-            }
 
             if ( null != conditions && conditions.Count ( ) > 0 )
             {
@@ -268,7 +291,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
                             { 
                                 var columnValues = new string [] { stringValues[++index]} ;
                                 
-                                queryBuilder.ProcessColumn ( sourceTable, column, condition, columnValues ) ;
+                                queryBuilder.ProcessColumn ( queryLeveTable, column, condition, columnValues ) ;
                             }
                         }
                     }
@@ -278,16 +301,16 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
 
                         foreach ( var column in SchemaProvider.GetColumnInfo ( condition.KeyTag ) )
                         { 
-                            queryBuilder.ProcessColumn ( sourceTable, column, condition, columnValues ) ;
+                            queryBuilder.ProcessColumn ( queryLeveTable, column, condition, columnValues ) ;
                         }
                     }
                 }
             }
             else
             {
-                foreach ( var column in SchemaProvider.GetTableInfo( sourceTable ).Columns ) 
+                foreach ( var column in SchemaProvider.GetTableInfo( queryLeveTable ).Columns ) 
                 {
-                    queryBuilder.ProcessColumn ( sourceTable, column ) ;
+                    queryBuilder.ProcessColumn ( queryLeveTable, column ) ;
                 }
             }
         
@@ -365,7 +388,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
         {
             if (command !=null && command.Connection == null)
             {
-                command.Connection = CreateConnection ( ) ;
+                command.Connection = Database.CreateConnection ( ) ;
             }
         }
 
@@ -396,7 +419,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
                         { 
                             column.Values = new string [] { stringValues[++index]} ;
                                 
-                            stroageBuilder.ProcessColumn ( column, insertCommad, CreateParameter ) ;
+                            stroageBuilder.ProcessColumn ( column, insertCommad, Database.CreateParameter ) ;
                         }
                     }
                     
@@ -408,7 +431,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
                 { 
                     column.Values = GetValues ( dicomParam ) ;
                         
-                    stroageBuilder.ProcessColumn ( column, insertCommad, CreateParameter ) ;
+                    stroageBuilder.ProcessColumn ( column, insertCommad, Database.CreateParameter ) ;
                 }
             }
         }
