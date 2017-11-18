@@ -125,7 +125,6 @@ namespace DICOMcloud.Wado
             For<ISortingStrategyFactory> ( ).Use <SortingStrategyFactory> ( ) ;
             For<ObjectArchieveDataAdapter> ( ).Use <ObjectArchieveDataAdapter> ( ) ;
             For<IObjectArchieveDataAccess> ( ).Use <ObjectArchieveDataAccess> ( ) ;
-            For<IObjectStorageDataAccess> ( ).Use <ObjectArchieveDataAccess> ( ) ;
 
             IRetieveUrlProvider urlProvider = new RetieveUrlProvider ( CloudConfigurationManager.GetSetting ( RetieveUrlProvider.config_WadoRs_API_URL),
                                                                        CloudConfigurationManager.GetSetting ( RetieveUrlProvider.config_WadoUri_API_URL) ) ;
@@ -158,6 +157,7 @@ namespace DICOMcloud.Wado
 
             if ( System.IO.Path.IsPathRooted ( StorageConection ) )
             {
+                For<IKeyProvider> ( ).Use<HashedFileKeyProvider> ( ) ;
                 For<IMediaStorageService> ( ).Use<FileStorageService> ( ).Ctor<string> ( ).Is (StorageConection) ;
             }
             else

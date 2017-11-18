@@ -9,19 +9,20 @@ namespace DICOMcloud.IO
 {
     public class FileStorageService : MediaStorageService 
     {
-        //public override IStorageLocation GetTempLocation ( ) 
-        //{
-        //    return new LocalStorageLocation ( Path.GetTempFileName () ) ;
-        //}
-
         public FileStorageService ( ) 
+        : this ( ".//" )
         {
-            BaseStorePath = ".//" ;
         }
 
         public FileStorageService ( string storePath ) 
+        : this ( storePath, new FileKeyProvider ( ) )
+        {
+        }
+
+        public FileStorageService ( string storePath, IKeyProvider keyProvider ) 
         {
             BaseStorePath = storePath ;
+            __KeyProvider = keyProvider  ;
         }
 
         protected override IStorageContainer GetContainer ( string containerKey ) 
@@ -36,9 +37,9 @@ namespace DICOMcloud.IO
             return storage ;
         }
 
-        protected override IKeyProvider CreateKeyProvider ( ) 
+        protected override IKeyProvider GetKeyProvider ( ) 
         {
-            return new FileKeyProvider ( ) ;
+            return __KeyProvider ;
         }
 
         protected override IEnumerable<IStorageContainer> GetContainers ( string containerKey ) 
@@ -67,5 +68,7 @@ namespace DICOMcloud.IO
         }
 
         public string BaseStorePath { get; set; }
+
+        private IKeyProvider __KeyProvider { get; set; }
     }
 }

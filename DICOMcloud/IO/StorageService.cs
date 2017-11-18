@@ -94,30 +94,46 @@ namespace DICOMcloud.IO
             }
         }
 
-        protected abstract IKeyProvider                   CreateKeyProvider ( ) ;
-        protected abstract IStorageContainer              GetContainer      ( string containerKey ) ;
+        /// <summary>
+        /// Returns an object of type <see cref="IKeyProvider"/> 
+        /// </summary>
+        /// <returns>
+        /// An <see cref="IKeyProvider"/>
+        /// </returns>
+        protected abstract IKeyProvider GetKeyProvider    ( ) ;
+        
+        /// <summary>
+        /// Returns the <<see cref="IStorageContainer "/> for a container key
+        /// </summary>
+        /// <param name="containerKey">
+        /// The container key to be returned.
+        /// </param>
+        /// <returns>
+        /// An object of type <see cref="IStorageContainer"/>
+        /// </returns>
+        protected abstract IStorageContainer GetContainer      ( string containerKey ) ;
+        
+        /// <summary>
+        /// Returns all instances of <see cref="IStorageContainer"/> for the given <paramref name="containerKey"/>
+        /// </summary>
+        /// <param name="containerKey">
+        /// The container key to be returned
+        /// </param>
+        /// <returns>
+        /// An instance of <see cref="IEnumerable{IStorageContainer}"/>
+        /// </returns>
         protected abstract IEnumerable<IStorageContainer> GetContainers     ( string containerKey ) ;
-        protected abstract bool                           ContainerExists   ( string containerName );        
-        private IKeyProvider GetKeyProvider ( ) 
-        {
-            if ( null != _keyProvider )
-            {
-                return _keyProvider ;
-            }
-
-            lock ( _keyLock )
-            {
-                if (null == _keyProvider )
-                {
-                    _keyProvider = CreateKeyProvider ( ) ;
-                }
-            }
-
-            return _keyProvider ;
-        }
-    
-        private IKeyProvider _keyProvider = null ;
-        private object       _keyLock     = new object ( ) ;
+        
+        /// <summary>
+        /// Determines whether a container exists based on the provided <paramref name="containerName"/>
+        /// </summary>
+        /// <param name="containerName">
+        /// The container key ot be checked.
+        /// </param>
+        /// <returns>
+        /// True if the container exists; Otherwise, false.
+        /// </returns>
+        protected abstract bool ContainerExists   ( string containerName );        
     }
 }
 

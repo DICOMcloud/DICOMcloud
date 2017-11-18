@@ -86,6 +86,7 @@
     <Compile Include="DataAccess\ObjectQueryLevel.cs" />
     <Compile Include="DICOMcloud\IDicomConverter.cs" />
     <Compile Include="DICOMcloud\JsonDicomConverter.cs" />
+    <Compile Include="IO\File\HashedFileKeyProvider.cs" />
     <Compile Include="IO\ObservableStorageLocation\LocationDeletedMessage.cs" />
     <Compile Include="Media\DicomMediaId.cs" />
     <Compile Include="Media\DicomMediaProperties.cs" />
@@ -183,7 +184,6 @@
     <Error Condition="!Exists('..\packages\fo-dicom.Desktop.3.0.2\build\net452\fo-dicom.Desktop.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\fo-dicom.Desktop.3.0.2\build\net452\fo-dicom.Desktop.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>call "$(SolutionDir)Resources\Build\copyAssembly.bat" "$(SolutionDir)" "$(ConfigurationName)" $(TargetPath)</PostBuildEvent>
   </PropertyGroup>
 </Project>
