@@ -124,6 +124,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\App_Start\ConnectionStringProvider.cs">
+      <Link>Nuget\Content\App_Start\ConnectionStringProvider.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\App_Start\DICOMcloudBuilder.cs">
       <Link>Nuget\Content\App_Start\DICOMcloudBuilder.cs</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
