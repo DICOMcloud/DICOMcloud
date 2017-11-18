@@ -8,9 +8,6 @@ using fo = Dicom;
 
 namespace DICOMcloud.DataAccess
 {
-    public interface IObjectArchieveDataAccess : IObjectStorageDataAccess
-    {}
-
     public class ObjectArchieveDataAccess : IObjectArchieveDataAccess
     {
         public string                    ConnectionString { get; set ; }

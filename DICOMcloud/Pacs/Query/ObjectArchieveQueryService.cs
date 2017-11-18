@@ -10,7 +10,7 @@ namespace DICOMcloud.Pacs
 {
     public class ObjectArchieveQueryService : DicomQueryServiceBase, IObjectArchieveQueryService
     {
-        public ObjectArchieveQueryService ( IObjectStorageDataAccess dataAccess ) : base ( dataAccess )
+        public ObjectArchieveQueryService ( IObjectArchieveDataAccess dataAccess ) : base ( dataAccess )
         {}
 
         public IEnumerable<fo.DicomDataset> FindStudies 

@@ -9,7 +9,7 @@ namespace DICOMcloud.Pacs
     //TODO: base class for query services
     public abstract class DicomQueryServiceBase : IDicomQueryService
     {
-        public IObjectStorageDataAccess QueryDataAccess { get; protected set; }
+        public IObjectArchieveDataAccess QueryDataAccess { get; protected set; }
         //public DbSchemaProvider             SchemaProvider  { get; protected set; }
         
         //public DicomQueryServiceBase ( IDicomStorageQueryDataAccess queryDataAccess )
@@ -17,7 +17,7 @@ namespace DICOMcloud.Pacs
         //{
         //}
 
-        public DicomQueryServiceBase ( IObjectStorageDataAccess queryDataAccess/*, DbSchemaProvider schemaProvider*/ )
+        public DicomQueryServiceBase ( IObjectArchieveDataAccess queryDataAccess/*, DbSchemaProvider schemaProvider*/ )
         {
             QueryDataAccess = queryDataAccess ;
             //SchemaProvider  = schemaProvider ;
