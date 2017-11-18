@@ -135,6 +135,9 @@
       <Link>Nuget\Content\Controllers\DelowRSController.cs</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\OHIFViewerController.cs">
+      <Link>Nuget\Content\Controllers\OHIFViewerController.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\Controllers\QidoRSController.cs">
       <Link>Nuget\Content\Controllers\QidoRSController.cs</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
