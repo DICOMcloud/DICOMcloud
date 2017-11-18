@@ -24,7 +24,7 @@ Additionally, the server implements the following RESTful services which are not
 * **DELOW-RS:** Delete DICOM instances/images
 
 * **OHIF-Viewer:** Integration service with the OHIF viewer, return OHIF formatted study information (series and instances)
-[Click here to learn more](/docs/ohif-integration/) about using the DICOMcloud server and the OHIF Viewer. 
+[Click here to learn more](https://dicomcloud.github.io/docs/ohif-integration/) about using the DICOMcloud server and the OHIF Viewer. 
 
 &nbsp;
 
