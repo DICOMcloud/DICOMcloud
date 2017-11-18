@@ -165,8 +165,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>call "$(SolutionDir)Resources\Build\copyAssembly.bat" "$(SolutionDir)" "$(ConfigurationName)" $(TargetPath)</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\fo-dicom.Desktop.3.0.2\build\net452\fo-dicom.Desktop.targets" Condition="Exists('..\packages\fo-dicom.Desktop.3.0.2\build\net452\fo-dicom.Desktop.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
