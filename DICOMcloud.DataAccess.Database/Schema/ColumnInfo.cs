@@ -79,5 +79,10 @@ namespace DICOMcloud.DataAccess.Database.Schema
             get;
             set;
         }
+
+        public static implicit operator string(ColumnInfo column)
+        {
+            return column.Name ;
+        }
     }
 }

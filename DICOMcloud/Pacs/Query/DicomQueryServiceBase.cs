@@ -9,7 +9,7 @@ namespace DICOMcloud.Pacs
     //TODO: base class for query services
     public abstract class DicomQueryServiceBase : IDicomQueryService
     {
-        public IObjectStorageDataAccess QueryDataAccess { get; protected set; }
+        public IObjectArchieveDataAccess QueryDataAccess { get; protected set; }
         //public DbSchemaProvider             SchemaProvider  { get; protected set; }
         
         //public DicomQueryServiceBase ( IDicomStorageQueryDataAccess queryDataAccess )
@@ -17,13 +17,13 @@ namespace DICOMcloud.Pacs
         //{
         //}
 
-        public DicomQueryServiceBase ( IObjectStorageDataAccess queryDataAccess/*, DbSchemaProvider schemaProvider*/ )
+        public DicomQueryServiceBase ( IObjectArchieveDataAccess queryDataAccess/*, DbSchemaProvider schemaProvider*/ )
         {
             QueryDataAccess = queryDataAccess ;
             //SchemaProvider  = schemaProvider ;
         }
 
-        public ICollection<fo.DicomDataset> Find 
+        public IEnumerable<fo.DicomDataset> Find 
         ( 
             fo.DicomDataset request, 
             IQueryOptions options,
@@ -34,32 +34,21 @@ namespace DICOMcloud.Pacs
             IEnumerable<IMatchingCondition> conditions = null;
 
 
-            conditions = BuildConditions ( request );
+            conditions = BuildConditions ( request, new ConditionFactory ( ) );
 
             return DoFind ( request, options, queryLevel, conditions );
         }
 
         protected virtual IEnumerable<IMatchingCondition> BuildConditions
         (
-            fo.DicomDataset request
+            fo.DicomDataset request,
+            ConditionFactory condFactory
         )
         {
-            ConditionFactory condFactory = new ConditionFactory ( ) ;
-            IEnumerable<IMatchingCondition> conditions ;
-            
-            condFactory.BeginProcessingElements ( ) ;
-
-            foreach ( var element in request )
-            {
-                condFactory.ProcessElement ( element ) ;
-            }
-
-            conditions = condFactory.EndProcessingElements ( ) ;
-
-            return conditions ;
+            return condFactory.ProcessDataSet ( request ) ;
         }
 
-        protected abstract ICollection<fo.DicomDataset> DoFind
+        protected abstract IEnumerable<fo.DicomDataset> DoFind
         (
             fo.DicomDataset request,
             IQueryOptions options, 

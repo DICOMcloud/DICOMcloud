@@ -5,9 +5,9 @@ using DICOMcloud.DataAccess.Matching;
 
 namespace DICOMcloud.DataAccess
 {
-    public interface IObjectStorageDataAccess
+    public interface IObjectArchieveDataAccess
     {
-        ICollection<DicomDataset> Search
+        IEnumerable<DicomDataset> Search
         ( 
             IEnumerable<IMatchingCondition> conditions, 
             IQueryOptions options,

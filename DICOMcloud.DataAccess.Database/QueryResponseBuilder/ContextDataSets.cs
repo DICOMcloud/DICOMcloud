@@ -10,8 +10,11 @@ namespace DICOMcloud.DataAccess.Database
 {
     public partial class QueryResponseBuilder
     { 
-        class KeyToDataSetCollection : ConcurrentDictionary<string,fo.DicomDataset>{}
+        class KeyToDataSetCollection : System.Collections.Specialized.OrderedDictionary 
+        {
+        
+        }
 
-        class ResultSetCollection : ConcurrentDictionary<string, KeyToDataSetCollection> { }
+        class ResultSetCollection : Dictionary<string, KeyToDataSetCollection> { }
     }
 }

@@ -88,11 +88,6 @@ namespace DICOMcloud.DataAccess
         { 
             return (ICollection<T>) InternalResult ;
         }
-
-        //public virtual IEnumerable<IDicomDataParameter> End ( ) 
-        //{ 
-        //    return InternalResult.OfType <IDicomDataParameter> ( ) ;
-        //}
     }
 
     public class DicomStoreParameterFactory : DicomDataParameterFactory <StoreParameter>

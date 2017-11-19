@@ -21,26 +21,6 @@ namespace DICOMcloud.Azure.IO
             Init(blobClient);
         }
 
-        //        public IEnumerator<IStorageContainer> GetEnumerator()
-        //        {
-        //            foreach ( var container in __CloudClient.ListContainers() )
-        //            {
-        //                yield return new AzureContainer ( container ) ; 
-        //            }
-        //        }
-
-        //        public override IStorageLocation GetTempLocation ( ) 
-        //        {
-        //            var container = CreateContainer (TempContainerName) ;
-
-        //            return container.GetTempLocation ( ) ;    
-        //        }
-
-        //        public override string GetLogicalSeparator ( ) 
-        //        {
-        //            return "/" ;
-        //        }
-
         protected override IStorageContainer GetContainer(string containerKey)
         {
             containerKey = GetValidContainerKey ( containerKey );
@@ -65,19 +45,12 @@ namespace DICOMcloud.Azure.IO
         private void Init(CloudBlobClient blobClient)
         {
             __CloudClient = blobClient;
+            __KeyProvider = new AzureKeyProvider ( ) ;
         }
 
-        //        IEnumerator IEnumerable.GetEnumerator()
-        //        {
-        //            foreach ( var container in __CloudClient.ListContainers() )
-        //            {
-        //                yield return new AzureContainer ( container ) ; 
-        //            }
-        //        }
-
-        protected override IKeyProvider CreateKeyProvider()
+        protected override IKeyProvider GetKeyProvider()
         {
-            return new AzureKeyProvider ( ) ;
+            return __KeyProvider ;
         }
 
         protected override bool ContainerExists ( string containerKey )
@@ -99,6 +72,7 @@ namespace DICOMcloud.Azure.IO
         }
 
         private CloudBlobClient __CloudClient { get; set; }
+        private IKeyProvider __KeyProvider { get; set; }
 
         private static char[] __Separators = "!@#$%^&*()+=[]{}\\|;':\",.<>/?~`".ToCharArray ( )  ;
     }

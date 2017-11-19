@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace DICOMcloud.IO
 {
+    /// <summary>
+    /// Returns information about the storage files based on a key.
+    /// This class returns the information for a Physical file system (e.g. windows file)
+    /// </summary>
     public class FileKeyProvider : IKeyProvider
     {
         public virtual string GetContainerName ( string key ) 

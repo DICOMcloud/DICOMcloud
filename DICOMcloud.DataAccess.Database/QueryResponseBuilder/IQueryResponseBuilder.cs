@@ -20,6 +20,6 @@ namespace DICOMcloud.DataAccess.Database
     
         bool ResultExists ( string table, object keyValue ) ;
 
-        ICollection<fo.DicomDataset> GetResponse ( ) ;
+        IEnumerable<fo.DicomDataset> GetResponse ( ) ;
     }
 }

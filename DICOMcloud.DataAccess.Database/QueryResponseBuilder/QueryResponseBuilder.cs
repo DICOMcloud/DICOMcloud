@@ -66,7 +66,7 @@ namespace DICOMcloud.DataAccess.Database
 
             if ( ResultSets.TryGetValue ( table, out resultSet ) )
             {
-                return resultSet.ContainsKey ( keyValue.ToString ( ) ) ;
+                return resultSet.Contains ( keyValue.ToString ( ) ) ;
             }
 
             return false ;
@@ -90,7 +90,7 @@ namespace DICOMcloud.DataAccess.Database
                 
                 if ( ResultSets.TryGetValue ( column.Table.Parent, out resultSet ) )
                 {             
-                    fo.DicomDataset foreignDs = resultSet[keyString] ;
+                    fo.DicomDataset foreignDs = (fo.DicomDataset) resultSet[keyString] ;
 
                     if ( QueryLevelTableName == column.Table.Name )
                     { 
@@ -202,14 +202,14 @@ namespace DICOMcloud.DataAccess.Database
             }
         }
         
-        public virtual ICollection<fo.DicomDataset> GetResponse ( )
+        public virtual IEnumerable<fo.DicomDataset> GetResponse ( )
         { 
             if ( !ResultSets.ContainsKey ( QueryLevelTableName) )
             {
-                return new KeyToDataSetCollection ( ).Values ;
+                return new KeyToDataSetCollection ( ).Values.OfType<fo.DicomDataset>() ;
             }
 
-            return ResultSets[QueryLevelTableName].Values ;
+            return ResultSets[QueryLevelTableName].Values.OfType<fo.DicomDataset>() ;
         }
 
         private void UpdateDsPersonName()

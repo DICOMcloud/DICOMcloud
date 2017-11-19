@@ -11,7 +11,7 @@ using fo = Dicom;
 
 namespace DICOMcloud.DataAccess.Database
 {
-    public abstract partial class ObjectArchieveDataAdapter
+    public partial class ObjectArchieveDataAdapter
     {
         public static class SqlConstants
         {

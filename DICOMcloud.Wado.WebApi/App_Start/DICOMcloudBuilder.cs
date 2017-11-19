@@ -4,7 +4,6 @@ using Dicom;
 using DICOMcloud.Azure.IO;
 using DICOMcloud.DataAccess;
 using DICOMcloud.DataAccess.Database.Schema;
-using DICOMcloud.DataAccess.Database.Sql;
 using DICOMcloud.IO;
 using DICOMcloud.Media;
 using DICOMcloud.Messaging;
@@ -18,7 +17,7 @@ using fo = Dicom;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using DICOMcloud.Wado.WebApi.Exceptions;
-
+using DICOMcloud.DataAccess.Database;
 
 namespace DICOMcloud.Wado
 {
@@ -55,9 +54,8 @@ namespace DICOMcloud.Wado
 
         protected virtual void Init ( )
         {
-            ConnectionString = CloudConfigurationManager.GetSetting   ( "app:PacsDataArchieve" ) ;
-            StorageConection = CloudConfigurationManager.GetSetting   ( "app:PacsStorageConnection" ) ;
-            DataAccess       = new SqlObjectArchieveDataAccess ( ConnectionString ) ;
+            ConnectionStringProvider =  new ConnectionStringProvider ( ) ;
+            StorageConection         = CloudConfigurationManager.GetSetting   ( "app:PacsStorageConnection" ) ;
         }
 
         protected virtual void RegisterEvents ( )
@@ -120,12 +118,17 @@ namespace DICOMcloud.Wado
 
         protected virtual void RegisterComponents ( )
         {
+
+            For<IConnectionStringProvider> ( ).Use<ConnectionStringProvider> ( ) ;
+            For<DbSchemaProvider> ( ).Use<StorageDbSchemaProvider> ( ) ; //default constructor
+            For<IDatabaseFactory> ( ).Use<SqlDatabaseFactory> ( ) ;
+            For<ISortingStrategyFactory> ( ).Use <SortingStrategyFactory> ( ) ;
+            For<ObjectArchieveDataAdapter> ( ).Use <ObjectArchieveDataAdapter> ( ) ;
+            For<IObjectArchieveDataAccess> ( ).Use <ObjectArchieveDataAccess> ( ) ;
+
             IRetieveUrlProvider urlProvider = new RetieveUrlProvider ( CloudConfigurationManager.GetSetting ( RetieveUrlProvider.config_WadoRs_API_URL),
                                                                        CloudConfigurationManager.GetSetting ( RetieveUrlProvider.config_WadoUri_API_URL) ) ;
             
-            
-            For<DbSchemaProvider> ( ).Use<StorageDbSchemaProvider> ( ) ; //default constructor
-
             For<IDCloudCommandFactory> ( ).Use<DCloudCommandFactory> ( ) ;
 
             For<IObjectArchieveQueryService> ( ).Use<ObjectArchieveQueryService> ( ) ;
@@ -136,9 +139,8 @@ namespace DICOMcloud.Wado
             For<IWebObjectStoreService> ( ).Use<WebObjectStoreService> ( ) ;
             For<IQidoRsService>         ( ).Use<QidoRsService>         ( ) ;
             For<IWadoUriService>        ( ).Use<WadoUriService>        ( ) ;
+            For<IOhifService>           ( ).Use<OhifService>           ( ) ;
 
-            For<IObjectStorageDataAccess> ( ).Use ( @DataAccess ) ;
-            
             For<IDicomMediaIdFactory> ( ).Use <DicomMediaIdFactory> ( ) ;
 
             For<IRetieveUrlProvider> ( ).Use (urlProvider) ;
@@ -155,6 +157,7 @@ namespace DICOMcloud.Wado
 
             if ( System.IO.Path.IsPathRooted ( StorageConection ) )
             {
+                For<IKeyProvider> ( ).Use<HashedFileKeyProvider> ( ) ;
                 For<IMediaStorageService> ( ).Use<FileStorageService> ( ).Ctor<string> ( ).Is (StorageConection) ;
             }
             else
@@ -195,11 +198,10 @@ namespace DICOMcloud.Wado
             fo.Imaging.Codec.TranscoderManager.LoadCodecs ( path ) ;
         }
 
-        protected string                    ConnectionString { get; set; }
         protected string                    StorageConection { get; set; }
+        protected ConnectionStringProvider  ConnectionStringProvider { get; set; }
         protected CloudStorageAccount       StorageAccount   { get; private set ; }
-        protected IObjectArchieveDataAccess DataAccess       { get; set; }
-
+        
         private static void RemoveAnonymizerTag ( DicomAnonymizer anonymizer, DicomTag tag )
         {
             var parenthesis = new[] { '(', ')' };

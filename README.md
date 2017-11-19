@@ -1,22 +1,47 @@
 
 ***
 # Announcement
-This project is now moved from the original [repository](https://github.com/Zaid-Safadi/DICOMcloud) and is now maintained here in its own GitHub Orgnization. 
-**The  project is now licensed/owned by the DICOMcloud project Contributors. .**
+This project has been movedd from the [repository](https://github.com/Zaid-Safadi/DICOMcloud) and is permenantely maintained here in its own GitHub Orgnization. 
 ***
 
 [![Join the chat at https://gitter.im/DICOMcloud/Lobby](https://badges.gitter.im/DICOMcloud/Lobby.svg)](https://gitter.im/DICOMcloud/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![NuGet Pre Release](https://img.shields.io/nuget/vpre/DICOMcloud.Wado.WebApi.svg)](https://www.nuget.org/packages/DICOMcloud.Wado.WebApi/)
+[![Build status](https://ci.appveyor.com/api/projects/status/4587kyoq6gi94vqo/branch/development?svg=true)](https://ci.appveyor.com/project/Zaid-Safadi/dicomcloud-bfpvk/branch/development)
 
-# Overview 
+
+# Overview
 The DICOMcloud is a standalone DICOMweb server with RESTful implementation of the DICOMweb/WADO services:
--	WADO-URI
--	QIDO-RS
--	WADO-RS
--	STOW-RS
 
-The DICOMcloud is can run as a Web Application in Microsoft IIS or Microsoft Azure WebApp with no infrastructure to setup. It can be configured to use Azure Blob Storage and Azure SQL database for storing and querying DICOM Datasets. 
-For complete features reference, read more **“DICOM Support”** section.
+* **QIDO-RS:** Look up studies, series, images
+
+* **WADO-RS:** Retrieve studies, series, images, frames and metadata
+
+* **STOW-RS:** Store DICOM instances/images
+
+* **WADO-URI:** Web Access to DICOM objects
+
+Additionally, the server implements the following RESTful services which are not part of the DICOM standard:
+
+* **DELOW-RS:** Delete DICOM instances/images
+
+* **OHIF-Viewer:** Integration service with the OHIF viewer, return OHIF formatted study information (series and instances)
+[Click here to learn more](https://dicomcloud.github.io/docs/ohif-integration/) about using the DICOMcloud server and the OHIF Viewer. 
+
+&nbsp;
+
+The DICOMcloud server that can interface with any DICOMweb client over the current implemented features (qido-rs, wado-uri, wado-rs and stow-rs).
+
+### Official documentation andh examples can be found here: 
+https://dicomcloud.github.io/docs/dicomcloud/about/
+
+
+# Online Version:
+
+An online version is hosted in Azure: [https://dicomcloud.azurewebsites.net/](https://dicomcloud.azurewebsites.net/)
+
+A DICOMweb Client demo is hosted live at: [http://dicomweb.azurewebsites.net/](http://dicomweb.azurewebsites.net/)
+
+The Client demo source code is avaialbile here: [https://github.com/DICOMcloud/DICOMweb-js](https://github.com/DICOMcloud/DICOMweb-js)
 
 # Architecture:
 The DICOMcloud is a web server that can interface with any DICOMweb client over the current implemented features (qido-rs, wado-uri, wado-rs and stow-rs).
@@ -50,12 +75,6 @@ You can change these settings from the [web.config](https://github.com/DICOMclou
 
      <add key="app:PacsStorageConnection" value="|DataDirectory|\App_Data\Storage\ds" />
      <add key="app:PacsDataArchieve" value="Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\DB\DICOMcloud.mdf;Initial Catalog=DICOMcloud;Integrated Security=True" />  
-
-# Online Version:
-An online version is hosted in Azure and can be used for testing: [https://dicomcloud.azurewebsites.net/](https://dicomcloud.azurewebsites.net/)
-
-A DICOMweb client demo is live at: [http://dicomweb.azurewebsites.net/](http://dicomweb.azurewebsites.net/)
-The client demo source code is avaialbile here: [https://github.com/DICOMcloud/DICOMweb-js](https://github.com/DICOMcloud/DICOMweb-js)
 
 # Endpoints
 A detailed endpoints URLs with parameters can be viewed here:

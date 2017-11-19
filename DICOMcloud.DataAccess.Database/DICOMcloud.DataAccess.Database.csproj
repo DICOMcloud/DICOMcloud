@@ -52,41 +52,46 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AssemblyInfo.Version.tt</DependentUpon>
     </Compile>
-    <Compile Include="DB\Commands\DicomDsQueryCommand.cs" />
-    <Compile Include="DB\Commands\ExecuteNonQueryCommand.cs" />
-    <Compile Include="DB\Commands\IDataAdapterCommand.cs" />
-    <Compile Include="DB\Commands\ResultSetQueryCommand.cs" />
-    <Compile Include="DB\Commands\ScalarCommand.cs" />
-    <Compile Include="DB\Commands\SingleResultQueryCommand.cs" />
-    <Compile Include="DB\SqlConstants.cs" />
-    <Compile Include="DB\ObjectArchieveDataAdapter.cs" />
-    <Compile Include="DB\Sql\SqlObjectArchieveDataAccess.cs" />
-    <Compile Include="DB\Sql\SqlObjectArchieveDataAdapter.cs" />
-    <Compile Include="DB\QueryResponseBuilder\IQueryResponseBuilder.cs" />
-    <Compile Include="DB\ObjectArchieveStorageBuilder.cs" />
-    <Compile Include="DB\QueryResponseBuilder\QueryResponseBuilder.cs" />
-    <Compile Include="DB\QueryBuilder\JoinInfo.cs" />
-    <Compile Include="DB\QueryBuilder\MatchBuilder.cs" />
-    <Compile Include="DB\QueryResponseBuilder\ContextData.cs" />
-    <Compile Include="DB\QueryResponseBuilder\ContextDataSets.cs" />
-    <Compile Include="DB\QueryBuilder\QueryBuilder.cs" />
-    <Compile Include="DB\QueryBuilder\SqlJoinBuilder.cs" />
-    <Compile Include="DB\QueryBuilder\SqlQueries.cs" />
-    <Compile Include="DB\Schema\ColumnInfo.cs" />
-    <Compile Include="DB\Schema\DBSchemaProvider.cs" />
-    <Compile Include="DB\Schema\DbSchemaSource.cs" />
-    <Compile Include="DB\Schema\StorageDBSchemaProvider.cs" />
-    <Compile Include="DB\Schema\TableKey.cs" />
-    <Compile Include="DB\SqlDeleteStatments.cs" />
-    <Compile Include="DB\SqlDeleteStatments.DeleteInstance.cs" />
-    <Compile Include="DB\SqlDeleteStatments.DeleteSeries.cs" />
-    <Compile Include="DB\SqlDeleteStatments.DeleteStudy.cs" />
-    <Compile Include="DB\SqlInsertStatments.cs" />
+    <Compile Include="Commands\DicomDsQueryCommand.cs" />
+    <Compile Include="Commands\ExecuteNonQueryCommand.cs" />
+    <Compile Include="Commands\IDataAdapterCommand.cs" />
+    <Compile Include="Commands\ResultSetQueryCommand.cs" />
+    <Compile Include="Commands\ScalarCommand.cs" />
+    <Compile Include="Commands\SingleResultQueryCommand.cs" />
+    <Compile Include="IConnectionStringProvider.cs" />
+    <Compile Include="SortingStrategyFactory.cs" />
+    <Compile Include="ISortingStrategyFactory.cs" />
+    <Compile Include="ISortingStrategy.cs" />
+    <Compile Include="SqlDatabaseFactory.cs" />
+    <Compile Include="IDatabaseFactory.cs" />
+    <Compile Include="SqlConstants.cs" />
+    <Compile Include="ObjectArchieveDataAdapter.cs" />
+    <Compile Include="QueryResponseBuilder\IQueryResponseBuilder.cs" />
+    <Compile Include="ObjectArchieveStorageBuilder.cs" />
+    <Compile Include="QueryResponseBuilder\QueryResponseBuilder.cs" />
+    <Compile Include="QueryBuilder\JoinInfo.cs" />
+    <Compile Include="QueryBuilder\MatchBuilder.cs" />
+    <Compile Include="QueryResponseBuilder\ContextData.cs" />
+    <Compile Include="QueryResponseBuilder\ContextDataSets.cs" />
+    <Compile Include="QueryBuilder\QueryBuilder.cs" />
+    <Compile Include="QueryBuilder\SqlJoinBuilder.cs" />
+    <Compile Include="QueryBuilder\SqlQueries.cs" />
+    <Compile Include="Schema\ColumnInfo.cs" />
+    <Compile Include="Schema\DBSchemaProvider.cs" />
+    <Compile Include="Schema\DbSchemaSource.cs" />
+    <Compile Include="Schema\StorageDBSchemaProvider.cs" />
+    <Compile Include="Schema\TableKey.cs" />
+    <Compile Include="SqlDeleteStatments.cs" />
+    <Compile Include="SqlDeleteStatments.DeleteInstance.cs" />
+    <Compile Include="SqlDeleteStatments.DeleteSeries.cs" />
+    <Compile Include="SqlDeleteStatments.DeleteStudy.cs" />
+    <Compile Include="SqlInsertStatments.cs" />
     <Compile Include="ObjectArchieveDataAccess.cs" />
+    <Compile Include="ObjectArchieveSortingStrategy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DB\DatabaseSchema.xml">
+    <EmbeddedResource Include="DatabaseSchema.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -119,7 +124,6 @@
     <Error Condition="!Exists('..\packages\fo-dicom.Desktop.3.0.2\build\net452\fo-dicom.Desktop.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\fo-dicom.Desktop.3.0.2\build\net452\fo-dicom.Desktop.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>call "$(ProjectDir)../Resources\Build\copyAssembly.bat" "$(ProjectDir)../dist" "$(ConfigurationName)" $(TargetPath)</PostBuildEvent>
   </PropertyGroup>
 </Project>

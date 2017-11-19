@@ -4,14 +4,14 @@ namespace DICOMcloud.Pacs.Commands
 {
     public abstract class DCloudCommand<T,R> : IDCloudCommand<T,R>
     {
-        public IObjectStorageDataAccess DataAccess   { get; set; }
+        public IObjectArchieveDataAccess DataAccess   { get; set; }
         
         public DCloudCommand ( ) : this ( null ) 
         {}
 
         public DCloudCommand
         ( 
-            IObjectStorageDataAccess dataStorage
+            IObjectArchieveDataAccess dataStorage
             //, 
 //            IDicomMediaWriterFactory mediaFactory
         )

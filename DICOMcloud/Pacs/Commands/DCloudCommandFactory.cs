@@ -12,7 +12,7 @@ namespace DICOMcloud.Pacs.Commands
     public class DCloudCommandFactory : IDCloudCommandFactory
     {
         public IMediaStorageService            StorageService     { get; set; }
-        public IObjectStorageDataAccess DataAccess         { get; set; }
+        public IObjectArchieveDataAccess DataAccess         { get; set; }
         public IDicomMediaWriterFactory        MediaWriterFactory { get; set; }
         public IDicomMediaIdFactory            MediaIdFactory     { get; set; }
         
@@ -20,7 +20,7 @@ namespace DICOMcloud.Pacs.Commands
         public DCloudCommandFactory 
         ( 
             IMediaStorageService            storageService,
-            IObjectStorageDataAccess dataAccess,
+            IObjectArchieveDataAccess dataAccess,
             IDicomMediaWriterFactory        mediaWriterFactory,
             IDicomMediaIdFactory            mediaIdFactory
         ) 

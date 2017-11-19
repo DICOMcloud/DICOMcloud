@@ -11,13 +11,13 @@ namespace DICOMcloud.Pacs.Commands
     public class DeleteCommand : IDCloudCommand<DeleteCommandData, DCloudCommandResult>, IDeleteCommand
     {
         public IMediaStorageService            StorageService { get; set; }
-        public IObjectStorageDataAccess DataAccess     { get; set; }
+        public IObjectArchieveDataAccess DataAccess     { get; set; }
         public IDicomMediaIdFactory            MediaFactory   { get; set; }
         
         public DeleteCommand
         ( 
             IMediaStorageService storageService,    
-            IObjectStorageDataAccess dataAccess,
+            IObjectArchieveDataAccess dataAccess,
             IDicomMediaIdFactory mediaFactory
         )
         {
