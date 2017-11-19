@@ -126,6 +126,7 @@
   <ItemGroup>
     <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\App_Start\ConnectionStringProvider.cs">
       <Link>Nuget\Content\App_Start\ConnectionStringProvider.cs</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\App_Start\DICOMcloudBuilder.cs">
       <Link>Nuget\Content\App_Start\DICOMcloudBuilder.cs</Link>
@@ -137,6 +138,7 @@
     </Compile>
     <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\OHIFViewerController.cs">
       <Link>Nuget\Content\Controllers\OHIFViewerController.cs</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\Controllers\QidoRSController.cs">
       <Link>Nuget\Content\Controllers\QidoRSController.cs</Link>
