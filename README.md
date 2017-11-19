@@ -6,6 +6,7 @@ This project has been movedd from the [repository](https://github.com/Zaid-Safad
 
 [![Join the chat at https://gitter.im/DICOMcloud/Lobby](https://badges.gitter.im/DICOMcloud/Lobby.svg)](https://gitter.im/DICOMcloud/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![NuGet Pre Release](https://img.shields.io/nuget/vpre/DICOMcloud.Wado.WebApi.svg)](https://www.nuget.org/packages/DICOMcloud.Wado.WebApi/)
+[![Build status](https://ci.appveyor.com/api/projects/status/4587kyoq6gi94vqo/branch/development?svg=true)](https://ci.appveyor.com/project/Zaid-Safadi/dicomcloud-bfpvk/branch/development)
 
 
 # Overview
