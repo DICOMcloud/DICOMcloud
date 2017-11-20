@@ -29,9 +29,9 @@ Additionally, the server implements the following RESTful services which are not
 
 &nbsp;
 
-The DICOMcloud server that can interface with any DICOMweb client over the current implemented features (qido-rs, wado-uri, wado-rs and stow-rs).
+The DICOMcloud server can interface with any DICOMweb client over the current implemented features (qido-rs, wado-uri, wado-rs and stow-rs).
 
-### Official documentation andh examples can be found here: 
+### Official documentation and examples can be found here: 
 https://dicomcloud.github.io/docs/dicomcloud/about/
 
 
