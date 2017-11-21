@@ -50,12 +50,13 @@ namespace DICOMcloud.Wado
         public void AddResult ( DicomDataset ds, Exception ex )
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
-            var failedSeq          = new DicomSequence ( fo.DicomTag.FailedSOPSequence ) ;
+            var failedSeq          = (_dataset.Contains (DicomTag.FailedSOPSequence)) ? _dataset.Get<DicomSequence>(DicomTag.FailedSOPSequence) : new DicomSequence ( DicomTag.FailedSOPSequence ) ;
             var item               = new DicomDataset ( ) ;
 
 
             referencedInstance.Merge ( item ) ;
 
+             
             _dataset.AddOrUpdate (failedSeq);
             
             failedSeq.Items.Add ( item ) ;
@@ -76,7 +77,7 @@ namespace DICOMcloud.Wado
         public void AddResult ( DicomDataset ds )
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
-            var referencedSeq      = new fo.DicomSequence ( fo.DicomTag.ReferencedInstanceSequence ) ;
+            var referencedSeq      = (_dataset.Contains(DicomTag.ReferencedInstanceSequence)) ? _dataset.Get<DicomSequence>(DicomTag.ReferencedInstanceSequence) : new DicomSequence ( DicomTag.ReferencedInstanceSequence ) ;
             var item               = new fo.DicomDataset ( ) ;
 
 
