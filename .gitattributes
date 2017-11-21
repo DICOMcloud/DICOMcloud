@@ -66,5 +66,5 @@
 # Linguist overrides https://github.com/github/linguist/issues/3417#issuecomment-270497439
 #
 ################################################################################
-/DICOMcloud.Wado/Scripts/**/* linguist-vendored
-/DICOMcloud.Wado/swagger/**/* linguist-vendored
+/DICOMcloud.Wado.WebApi/Scripts/**/* linguist-vendored
+/DICOMcloud.Wado.WebApi/swagger/**/* linguist-vendored
