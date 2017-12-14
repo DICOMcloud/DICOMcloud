@@ -83,6 +83,11 @@ namespace DICOMcloud.Pacs.Commands
                 {
                     throw new DCloudException ( "Required element is missing. Element: " + element.Tag.DictionaryEntry.ToString ( ) ) ;
                 }
+
+                if ( dataset.Get<string> (element.Tag, null) == null )
+                {
+                    throw new DCloudException ( "Required element has no value. Element: " + element.Tag.DictionaryEntry.ToString ( ) ) ;
+                }
             }
         }
 
