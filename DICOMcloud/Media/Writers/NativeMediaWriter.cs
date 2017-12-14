@@ -51,7 +51,7 @@ namespace DICOMcloud.Media
             return base.GetMediaDataset ( data, mediaInfo );
         }
 
-        protected override void Upload( fo.DicomDataset dicomDataset, int frame, IStorageLocation location )
+        protected override void Upload( fo.DicomDataset dicomDataset, int frame, IStorageLocation location, DicomMediaProperties mediaProperties )
         {
             fo.DicomFile df = new fo.DicomFile ( dicomDataset ) ;
 

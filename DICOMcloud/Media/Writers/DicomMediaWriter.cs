@@ -42,7 +42,7 @@ namespace DICOMcloud.Media
         }
 
 
-        protected override void Upload ( fo.DicomDataset dicomDataset, int frame, IStorageLocation location )
+        protected override void Upload ( fo.DicomDataset dicomDataset, int frame, IStorageLocation location, DicomMediaProperties mediaProperties )
         {
             location.Upload ( System.Text.Encoding.UTF8.GetBytes (Converter.Convert(dicomDataset)) ) ;
         }
