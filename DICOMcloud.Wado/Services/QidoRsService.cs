@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using fo = Dicom;
+using System;
 
 namespace DICOMcloud.Wado
 {
@@ -196,14 +197,14 @@ namespace DICOMcloud.Wado
 
         private void CreateElement(string tagString, fo.DicomDataset dicomRequest, string value)
         {
-            uint tag = uint.Parse (tagString, System.Globalization.NumberStyles.HexNumber) ;
+            uint tag = GetTagValue (tagString);
 
             dicomRequest.AddOrUpdate(tag, value ) ;
         }
 
         private void CreateSequence(List<string> elements, int currentElementIndex, fo.DicomDataset dicomRequest, string value)
         {
-            uint tag = uint.Parse ( elements[currentElementIndex], System.Globalization.NumberStyles.HexNumber) ;//TODO: need to handle the case of keywords
+            uint tag = GetTagValue ( elements[currentElementIndex] ) ;
             var dicEntry = fo.DicomDictionary.Default[tag] ;
             fo.DicomSequence sequence ;
             fo.DicomDataset  item ;
@@ -219,7 +220,7 @@ namespace DICOMcloud.Wado
             
             for ( int index = (currentElementIndex+1); index < elements.Count; index++  )
             {
-                tag = uint.Parse ( elements[index], System.Globalization.NumberStyles.HexNumber) ;
+                tag = GetTagValue ( elements[index] ) ;
                 
                 dicEntry = fo.DicomDictionary.Default[tag] ;
 
@@ -236,6 +237,30 @@ namespace DICOMcloud.Wado
             }
         }
     
+        private static uint GetTagValue (string tagString)
+        {
+            uint tag ;
+
+
+            if ( !Char.IsDigit (tagString[0]))
+            {
+                var element = Dicom.DicomDictionary.Default.Where ( n=>n.Keyword.ToLower( ) == tagString.ToLower()).FirstOrDefault ( ) ;
+
+                if ( null == element )
+                {
+                    throw new DICOMcloud.DCloudException ( "Invalid matching parameter: " + tagString ) ;
+                }
+
+                tag = (uint) element.Tag.DictionaryEntry.Tag; 
+            }
+            else
+            {
+                tag = uint.Parse (tagString, System.Globalization.NumberStyles.HexNumber) ;
+            }
+
+            return tag;
+        }
+
         private delegate IEnumerable<fo.DicomDataset> DoQueryDelegate 
         ( 
             IObjectArchieveQueryService queryService, 
