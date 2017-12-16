@@ -77,16 +77,16 @@ namespace DICOMcloud.Pacs.Commands
 
         protected virtual void ValidateDataset ( DicomDataset dataset )
         {
-            foreach ( var element in dataset )
+            foreach ( var element in RequiredDsElements )
             {
                 if ( !dataset.Contains ( element.Tag ) )
                 {
-                    throw new DCloudException ( "Required element is missing. Element: " + element.Tag.DictionaryEntry.ToString ( ) ) ;
+                    throw new DCloudException ( "Required element is missing. Element: " + element.Tag.DictionaryEntry.Name.ToString ( ) ) ;
                 }
 
                 if ( dataset.Get<string> (element.Tag, null) == null )
                 {
-                    throw new DCloudException ( "Required element has no value. Element: " + element.Tag.DictionaryEntry.ToString ( ) ) ;
+                    throw new DCloudException ( "Required element has no value. Element: " + element.Tag.DictionaryEntry.Name.ToString ( ) ) ;
                 }
             }
         }
