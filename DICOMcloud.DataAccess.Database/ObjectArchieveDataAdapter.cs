@@ -564,7 +564,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
                 }
             }
         
-            return GetDateTimeQueryValues ( date1String, time1String, dateString, time2String ) ;
+            return GetDateTimeQueryValues ( date1String, time1String, date2String, time2String ) ;
         }
 
         protected virtual IList<string> GetDateTimeQueryValues
