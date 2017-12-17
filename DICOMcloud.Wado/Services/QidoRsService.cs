@@ -16,6 +16,10 @@ namespace DICOMcloud.Wado
 {
     public class QidoRsService : IQidoRsService
     {
+        //TODO: move this to a global config class
+        public const string MaximumResultsLimit_ConfigName = "qido:maximumResultsLimit" ;
+        public const string Instance_Header_Name = "X-Dicom-Instance" ;
+
         public int MaximumResultsLimit { get; set; }
         protected IObjectArchieveQueryService QueryService { get; set; }
         protected IDicomMediaIdFactory MediaIdFactory { get; set; }
@@ -29,10 +33,26 @@ namespace DICOMcloud.Wado
             MediaIdFactory = mediaIdFactory;
             StorageService = storageService ;
 
-            MaximumResultsLimit = 12 ;
-        }
+            var maxResultLimit = System.Configuration.ConfigurationManager.AppSettings[MaximumResultsLimit_ConfigName] ;
 
-        public static string Instance_Header_Name = "X-Dicom-Instance" ;
+            if (!string.IsNullOrWhiteSpace(maxResultLimit))
+            {
+                int maxResultValue ;
+
+                if ( int.TryParse (maxResultLimit, out maxResultValue))
+                {
+                    MaximumResultsLimit = maxResultValue ;
+                }
+                else
+                {
+                    throw new ArgumentException (MaximumResultsLimit_ConfigName + " must be a valid integer");
+                }
+            }
+            else
+            {
+                MaximumResultsLimit = 12 ;            
+            }
+        }
 
         public HttpResponseMessage SearchForStudies
         (
@@ -95,7 +115,7 @@ namespace DICOMcloud.Wado
             
             queryOptions.Limit = Math.Min ( MaximumResultsLimit, qidoRequest.Limit.HasValue ? qidoRequest.Limit.Value : MaximumResultsLimit ) ;
             queryOptions.Offset = Math.Max ( 0, qidoRequest.Offset.HasValue ? qidoRequest.Offset.Value : 0 ) ;
-
+            
             return queryOptions ;
         }
         
@@ -318,8 +338,7 @@ namespace DICOMcloud.Wado
 
             dicomRequest.AddOrUpdate(tag, value);
         }
-
-
+        
         private void CreateSequence(List<string> elements, int currentElementIndex, DicomDataset dicomRequest, string value)
         {
             uint tag = GetTagValue ( elements[currentElementIndex] ) ;
