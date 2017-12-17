@@ -39,6 +39,22 @@ namespace DICOMcloud.Pacs
             return DoFind ( request, options, queryLevel, conditions );
         }
 
+        public PagedResult<fo.DicomDataset> FindPaged
+        ( 
+            fo.DicomDataset request, 
+            IQueryOptions options,
+            string queryLevel
+        ) 
+        {
+
+            IEnumerable<IMatchingCondition> conditions = null;
+
+
+            conditions = BuildConditions ( request, new ConditionFactory ( ) );
+
+            return DoFindPaged ( request, options, queryLevel, conditions );
+        }
+
         protected virtual IEnumerable<IMatchingCondition> BuildConditions
         (
             fo.DicomDataset request,
@@ -49,6 +65,14 @@ namespace DICOMcloud.Pacs
         }
 
         protected abstract IEnumerable<fo.DicomDataset> DoFind
+        (
+            fo.DicomDataset request,
+            IQueryOptions options, 
+            string queryLevel,
+            IEnumerable<IMatchingCondition> conditions
+        ) ;
+
+        protected abstract PagedResult<fo.DicomDataset> DoFindPaged
         (
             fo.DicomDataset request,
             IQueryOptions options, 

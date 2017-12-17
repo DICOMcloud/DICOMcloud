@@ -7,19 +7,32 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using fo = Dicom;
+using DICOMcloud.IO;
+using Dicom;
 using System;
+using System.Web;
 
 namespace DICOMcloud.Wado
 {
     public class QidoRsService : IQidoRsService
     {
+        public int MaximumResultsLimit { get; set; }
         protected IObjectArchieveQueryService QueryService { get; set; }
+        protected IDicomMediaIdFactory MediaIdFactory { get; set; }
+        protected IMediaStorageService StorageService { get; set; }
 
-        public QidoRsService ( IObjectArchieveQueryService queryService )
+        public QidoRsService ( IObjectArchieveQueryService queryService ): this (queryService, null, null ) {}
+
+        public QidoRsService ( IObjectArchieveQueryService queryService, IDicomMediaIdFactory mediaIdFactory, IMediaStorageService storageService )
         {
-            QueryService = queryService ;
+            QueryService   = queryService ;
+            MediaIdFactory = mediaIdFactory;
+            StorageService = storageService ;
+
+            MaximumResultsLimit = 12 ;
         }
+
+        public static string Instance_Header_Name = "X-Dicom-Instance" ;
 
         public HttpResponseMessage SearchForStudies
         (
@@ -28,16 +41,16 @@ namespace DICOMcloud.Wado
         {
             return SearchForDicomEntity ( request, 
             DefaultDicomQueryElements.GetDefaultStudyQuery(),
-            delegate 
+            delegate
             ( 
                 IObjectArchieveQueryService queryService, 
-                fo.DicomDataset dicomRequest, 
+                DicomDataset dicomRequest, 
                 IQidoRequestModel qidoRequest 
             )
             {
                 IQueryOptions queryOptions = GetQueryOptions ( qidoRequest ) ;
 
-                return queryService.FindStudies ( dicomRequest, queryOptions ) ;
+                return queryService.FindStudiesPaged ( dicomRequest, queryOptions ) ;
             }  ) ;
         }
 
@@ -48,11 +61,11 @@ namespace DICOMcloud.Wado
             delegate 
             ( 
                 IObjectArchieveQueryService queryService, 
-                fo.DicomDataset dicomRequest, 
+                DicomDataset dicomRequest, 
                 IQidoRequestModel qidoResult
             )
             {
-                return queryService.FindSeries ( dicomRequest, GetQueryOptions ( qidoResult ) ) ;
+                return queryService.FindSeriesPaged ( dicomRequest, GetQueryOptions ( qidoResult ) ) ;
             }  ) ;
         }
 
@@ -63,11 +76,11 @@ namespace DICOMcloud.Wado
             delegate 
             ( 
                 IObjectArchieveQueryService queryService, 
-                fo.DicomDataset dicomRequest, 
+                DicomDataset dicomRequest, 
                 IQidoRequestModel qidoResult
             )
             {
-                return queryService.FindObjectInstances ( dicomRequest, GetQueryOptions ( qidoResult ) ) ;
+                return queryService.FindObjectInstancesPaged ( dicomRequest, GetQueryOptions ( qidoResult ) ) ;
             }  ) ;
         }
 
@@ -80,8 +93,8 @@ namespace DICOMcloud.Wado
         {
             var queryOptions = CreateNewQueryOptions ( ) ;
             
-            queryOptions.Limit = qidoRequest.Limit ;
-            queryOptions.Offset = qidoRequest.Offset ;
+            queryOptions.Limit = Math.Min ( MaximumResultsLimit, qidoRequest.Limit.HasValue ? qidoRequest.Limit.Value : MaximumResultsLimit ) ;
+            queryOptions.Offset = Math.Max ( 0, qidoRequest.Offset.HasValue ? qidoRequest.Offset.Value : 0 ) ;
 
             return queryOptions ;
         }
@@ -89,97 +102,201 @@ namespace DICOMcloud.Wado
         private HttpResponseMessage SearchForDicomEntity 
         ( 
             IQidoRequestModel request, 
-            fo.DicomDataset dicomSource,
+            DicomDataset dicomSource,
             DoQueryDelegate doQuery 
         )
         {
             if ( null != request.Query )
             {
-                var matchingParams = request.Query.MatchingElements ;
-                var includeParams = request.Query.IncludeElements ;
+                HttpResponseMessage response = null;
+                var matchingParams = request.Query.MatchingElements;
+                var includeParams = request.Query.IncludeElements;
 
-                foreach ( var returnParam in includeParams )
+                foreach (var returnParam in includeParams)
                 {
-                    InsertDicomElement ( dicomSource,  returnParam, "" );
+                    InsertDicomElement(dicomSource, returnParam, "");
                 }
 
-                foreach ( var queryParam in  matchingParams )
+                foreach (var queryParam in matchingParams)
                 {
                     string paramValue = queryParam.Value;
 
 
-                    InsertDicomElement ( dicomSource, queryParam.Key, paramValue);
+                    InsertDicomElement(dicomSource, queryParam.Key, paramValue);
                 }
 
-                var results = doQuery (QueryService, dicomSource, request) ; //TODO: move configuration params into their own object
+                var results = doQuery(QueryService, dicomSource, request); //TODO: move configuration params into their own object
 
-                if ( MultipartResponseHelper.IsMultiPartRequest ( request ) )
+                if (MultipartResponseHelper.IsMultiPartRequest(request))
                 {
-                    if ( MultipartResponseHelper.GetSubMediaType ( request.AcceptHeader.FirstOrDefault ( ) ) == MimeMediaTypes.xmlDicom )
-                    {
-                        HttpResponseMessage response ;
-                        MultipartContent multiContent ;
-                        
-
-                        response        = new HttpResponseMessage ( ) ;
-                        multiContent    = new MultipartContent ( "related", MultipartResponseHelper.DicomDataBoundary ) ;           
-                        
-                        response.Content = multiContent ;
-
-                        foreach ( var result in results)
-                        {
-                            XmlDicomConverter converter = new XmlDicomConverter ( ) ;
-
-                            MultipartResponseHelper.AddMultipartContent ( multiContent, 
-                                                                          new WadoResponse ( new MemoryStream ( Encoding.ASCII.GetBytes ( converter.Convert (result) )), 
-                                                                                             MimeMediaTypes.xmlDicom ) ) ;
-                        }
-
-                        multiContent.Headers.ContentType.Parameters.Add ( new System.Net.Http.Headers.NameValueHeaderValue ( "type", 
-                                                                                                    "\"" + MimeMediaTypes.xmlDicom + "\"" ) ) ;
-                    
-                        return response ;                                                                                
-                    }
-                    else
-                    {
-                        return new HttpResponseMessage ( System.Net.HttpStatusCode.BadRequest ) ;
-                    }
+                    response = CreateMultipartResponse(request, results.Result);
                 }
                 else
                 {
-                    StringBuilder jsonReturn = new StringBuilder ( "[" ) ;
-
-                    JsonDicomConverter converter = new JsonDicomConverter ( ) { IncludeEmptyElements = true } ;
-                    int count = 0 ;
-
-
-                    foreach ( var response in results )
-                    {
-                        count++ ;
-
-                        jsonReturn.AppendLine (converter.Convert ( response )) ;
-
-                        jsonReturn.Append(",") ;
-                    }
-
-                    if ( count > 0 )
-                    {
-                        jsonReturn.Remove ( jsonReturn.Length -1, 1 ) ;
-                    }
-
-                    jsonReturn.Append("]") ;
-                
-                    return new HttpResponseMessage (System.Net.HttpStatusCode.OK )  { 
-                                                    Content = new StringContent ( jsonReturn.ToString ( ), 
-                                                    Encoding.UTF8, 
-                                                    MimeMediaTypes.Json) } ;    
+                    response = CreateJsonResponse(results.Result);
                 }
+
+                AddResponseHeaders(request, dicomSource, response, results);
+
+                return response;
             }
 
             return null;
         }
 
-        private void InsertDicomElement(fo.DicomDataset dicomRequest, string paramKey, string paramValue)
+        private void AddResponseHeaders
+        (            
+            IQidoRequestModel request, 
+            DicomDataset dicomSource,
+            HttpResponseMessage response, 
+            PagedResult<DicomDataset> results
+        )
+        {
+            //special parameters, if included, a representative instance UID (first) will be returned in header for each DS result
+            if (response.IsSuccessStatusCode && request.Query.CustomParameters.ContainsKey("_instance-header"))
+            {
+                AddPreviewInstanceHeader(results.Result, response);
+            }
+
+            AddPaginationHeders(request, response, results);
+
+        }
+
+        private static void AddPaginationHeders(IQidoRequestModel request, HttpResponseMessage response, PagedResult<DicomDataset> results)
+        {
+            LinkHeaderBuilder headerBuilder = new LinkHeaderBuilder ( ) ;
+
+            response.Headers.Add ( "link", 
+                                    headerBuilder.GetLinkHeader ( results, HttpContext.Current.Request.Url.AbsoluteUri ) ) ;
+            
+            response.Headers.Add ( "X-Total-Count", results.TotalCount.ToString() ) ;
+
+            response.Headers.Add ("Access-Control-Expose-Headers", "link" ) ;
+            response.Headers.Add ("Access-Control-Allow-Headers", "link" ) ;
+            response.Headers.Add ("Access-Control-Expose-Headers", "X-Total-Count" ) ;
+            response.Headers.Add ("Access-Control-Allow-Headers", "X-Total-Count" ) ;
+
+            if ( results.TotalCount > results.Result.Count() )
+            {
+                if ( !request.Limit.HasValue || 
+                     (request.Limit.HasValue && request.Limit.Value > results.PageSize ) )
+                {
+                    response.Headers.Add ("Warning", "299 " + "DICOMcloud" + 
+                    "  \"The number of results exceeded the maximum supported by the server. Additional results can be requested.\"" ) ;
+                    
+                    //DICOM: http://dicom.nema.org/dicom/2013/output/chtml/part18/sect_6.7.html
+                    //Warning: 299 {SERVICE}: "The number of results exceeded the maximum supported by the server. Additional results can be requested.
+                }
+            }
+        }
+
+        private static HttpResponseMessage CreateJsonResponse(IEnumerable<DicomDataset> results)
+        {
+            HttpResponseMessage response;
+            StringBuilder jsonReturn = new StringBuilder ( "[" ) ;
+
+            JsonDicomConverter converter = new JsonDicomConverter ( ) { IncludeEmptyElements = true } ;
+            int count = 0 ;
+
+
+            foreach ( var dsResponse in results )
+            {
+                count++ ;
+
+                jsonReturn.AppendLine (converter.Convert ( dsResponse )) ;
+
+                jsonReturn.Append(",") ;
+            }
+
+            if ( count > 0 )
+            {
+                jsonReturn.Remove ( jsonReturn.Length -1, 1 ) ;
+            }
+
+            jsonReturn.Append("]") ;
+                
+            response = new HttpResponseMessage (System.Net.HttpStatusCode.OK )  { 
+                                                Content = new StringContent ( jsonReturn.ToString ( ), 
+                                                Encoding.UTF8, 
+                                                MimeMediaTypes.Json) } ;    
+            return response;
+        }
+
+        private static HttpResponseMessage CreateMultipartResponse(IQidoRequestModel request, IEnumerable<DicomDataset> results)
+        {
+            HttpResponseMessage response;
+            
+            
+            if ( MultipartResponseHelper.GetSubMediaType ( request.AcceptHeader.FirstOrDefault ( ) ) == MimeMediaTypes.xmlDicom )
+            {
+                MultipartContent multiContent ;
+                        
+
+                response        = new HttpResponseMessage ( ) ;
+                multiContent    = new MultipartContent ( "related", MultipartResponseHelper.DicomDataBoundary ) ;           
+                        
+                response.Content = multiContent ;
+
+                foreach ( var result in results)
+                {
+                    XmlDicomConverter converter = new XmlDicomConverter ( ) ;
+
+                    MultipartResponseHelper.AddMultipartContent ( multiContent, 
+                                                                    new WadoResponse ( new MemoryStream ( Encoding.ASCII.GetBytes ( converter.Convert (result) )), 
+                                                                                        MimeMediaTypes.xmlDicom ) ) ;
+                }
+
+                multiContent.Headers.ContentType.Parameters.Add ( new System.Net.Http.Headers.NameValueHeaderValue ( "type", 
+                                                                                            "\"" + MimeMediaTypes.xmlDicom + "\"" ) ) ;
+            }
+            else
+            {
+                response = new HttpResponseMessage ( System.Net.HttpStatusCode.BadRequest ) ;
+            }
+
+            return response;
+        }
+
+        private void AddPreviewInstanceHeader ( IEnumerable<DicomDataset> results, HttpResponseMessage response ) 
+        {
+            response.Headers.Add ("Access-Control-Expose-Headers", Instance_Header_Name ) ;
+            
+            foreach ( var result in results ) 
+            {
+                var queryDs = DefaultDicomQueryElements.GetDefaultInstanceQuery();
+                string studyUid  = result.Get<string> ( DicomTag.StudyInstanceUID, "" ) ;
+                string seriesUid = result.Get<string> ( DicomTag.SeriesInstanceUID, "" ) ;
+                var queryOptions = CreateNewQueryOptions ( ) ;
+            
+                queryDs.AddOrUpdate ( DicomTag.StudyInstanceUID, studyUid );
+                queryDs.AddOrUpdate ( DicomTag.SeriesInstanceUID, seriesUid );
+                queryOptions.Limit  = 1 ;
+                queryOptions.Offset = 0 ;
+            
+                var instances = QueryService.FindObjectInstances (queryDs, queryOptions) ;
+                string queryStudyUid = null, querySeriesUid = null, queryInstanceUid = null ;
+
+                foreach  ( var instance in instances )
+                {
+                    queryStudyUid = instance.Get<string> ( DicomTag.StudyInstanceUID, "" ) ;
+                    querySeriesUid = instance.Get<string> ( DicomTag.SeriesInstanceUID, "" ) ;
+                    queryInstanceUid = instance.Get<string> ( DicomTag.SOPInstanceUID, "" ) ;
+
+                    break ;
+                }
+
+                if ( string.IsNullOrWhiteSpace (queryStudyUid) || string.IsNullOrWhiteSpace ( querySeriesUid) || string.IsNullOrWhiteSpace(queryInstanceUid))
+                {
+                    response.Headers.Add (Instance_Header_Name, "" ) ;
+                }
+                else
+                {
+                    response.Headers.Add (Instance_Header_Name, string.Format ( "{0}:{1}:{2}", queryStudyUid, querySeriesUid, queryInstanceUid) ) ;
+                }
+            }
+        }
+
+        private void InsertDicomElement(DicomDataset dicomRequest, string paramKey, string paramValue)
         {
             List<string> elements = new List<string>();
 
@@ -195,25 +312,26 @@ namespace DICOMcloud.Wado
             }
         }
 
-        private void CreateElement(string tagString, fo.DicomDataset dicomRequest, string value)
+        private void CreateElement(string tagString, DicomDataset dicomRequest, string value)
         {
             uint tag = GetTagValue (tagString);
 
-            dicomRequest.AddOrUpdate(tag, value ) ;
+            dicomRequest.AddOrUpdate(tag, value);
         }
 
-        private void CreateSequence(List<string> elements, int currentElementIndex, fo.DicomDataset dicomRequest, string value)
+
+        private void CreateSequence(List<string> elements, int currentElementIndex, DicomDataset dicomRequest, string value)
         {
             uint tag = GetTagValue ( elements[currentElementIndex] ) ;
-            var dicEntry = fo.DicomDictionary.Default[tag] ;
-            fo.DicomSequence sequence ;
-            fo.DicomDataset  item ;
+            var dicEntry = DicomDictionary.Default[tag] ;
+            DicomSequence sequence ;
+            DicomDataset  item ;
             
-            dicomRequest.AddOrUpdate ( new fo.DicomSequence ( dicEntry.Tag ) ) ;
-            sequence = dicomRequest.Get<fo.DicomSequence>(dicEntry.Tag);
+            dicomRequest.AddOrUpdate ( new DicomSequence ( dicEntry.Tag ) ) ;
+            sequence = dicomRequest.Get<DicomSequence>(dicEntry.Tag);
 
 
-            item = new fo.DicomDataset ( ) ;
+            item = new DicomDataset ( ) ;
 
             sequence.Items.Add ( item ) ;
             
@@ -222,9 +340,9 @@ namespace DICOMcloud.Wado
             {
                 tag = GetTagValue ( elements[index] ) ;
                 
-                dicEntry = fo.DicomDictionary.Default[tag] ;
+                dicEntry = DicomDictionary.Default[tag] ;
 
-                if (  dicEntry.ValueRepresentations.Contains (fo.DicomVR.SQ) )
+                if (  dicEntry.ValueRepresentations.Contains (DicomVR.SQ) )
                 {
                     CreateSequence ( elements, index, item, value) ;
 
@@ -236,7 +354,7 @@ namespace DICOMcloud.Wado
                 }
             }
         }
-    
+
         private static uint GetTagValue (string tagString)
         {
             uint tag ;
@@ -260,11 +378,11 @@ namespace DICOMcloud.Wado
 
             return tag;
         }
-
-        private delegate IEnumerable<fo.DicomDataset> DoQueryDelegate 
+    
+        private delegate PagedResult<DicomDataset> DoQueryDelegate 
         ( 
             IObjectArchieveQueryService queryService, 
-            fo.DicomDataset dicomRequest, 
+            DicomDataset dicomRequest, 
             IQidoRequestModel request
         ) ;
     }

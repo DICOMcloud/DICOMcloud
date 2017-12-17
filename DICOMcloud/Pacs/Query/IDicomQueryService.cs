@@ -12,5 +12,12 @@ namespace DICOMcloud.Pacs
             IQueryOptions options,
             string queryLevel
         ) ;
+
+        PagedResult<fo.DicomDataset> FindPaged
+        ( 
+            fo.DicomDataset request, 
+            IQueryOptions options,
+            string queryLevel
+        ) ;
     }
 }

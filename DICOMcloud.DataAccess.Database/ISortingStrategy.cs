@@ -4,11 +4,14 @@ namespace DICOMcloud.DataAccess.Database
 {
     public interface ISortingStrategy
     {
-        void Sort (IQueryOptions options, TableKey queryLevel) ;
+        string Sort (QueryBuilder queryText, IQueryOptions options, TableKey queryLevel) ;
 
         string SortBy { get; }
+        string CountColumn { get; }
 
         SortingDirection Direction { get; }
+
+
     }
 
     public enum SortingDirection

@@ -50,5 +50,44 @@ namespace DICOMcloud.Pacs
         {
             return QueryDataAccess.Search ( conditions, options, queryLevel ) ;
         }
+
+
+        public PagedResult<fo.DicomDataset> FindStudiesPaged
+        ( 
+            fo.DicomDataset request, 
+            IQueryOptions options
+        )
+        {
+            return FindPaged ( request, options, Enum.GetName (typeof(ObjectQueryLevel), ObjectQueryLevel.Study ) ) ;
+        }
+
+        public PagedResult<fo.DicomDataset> FindObjectInstancesPaged
+        (
+            fo.DicomDataset request,
+            IQueryOptions options
+        )
+        {
+            return FindPaged ( request, options, Enum.GetName (typeof(ObjectQueryLevel), ObjectQueryLevel.Instance ) ) ;
+        }
+
+        public PagedResult<fo.DicomDataset> FindSeriesPaged
+        (
+            fo.DicomDataset request,
+            IQueryOptions options
+        )
+        {
+            return FindPaged ( request, options, Enum.GetName (typeof(ObjectQueryLevel), ObjectQueryLevel.Series ) ) ;
+        }
+
+        protected override PagedResult<fo.DicomDataset> DoFindPaged
+        (
+           fo.DicomDataset request,
+           IQueryOptions options,
+           string queryLevel,
+           IEnumerable<IMatchingCondition> conditions
+        )
+        {
+            return QueryDataAccess.SearchPaged ( conditions, options, queryLevel ) ;
+        }
     }
 }

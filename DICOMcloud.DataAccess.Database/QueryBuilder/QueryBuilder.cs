@@ -22,8 +22,7 @@ namespace DICOMcloud.DataAccess.Database
         public virtual string GetQueryText 
         ( 
             TableKey sourceTable, 
-            IQueryOptions options = null, 
-            ISortingStrategy sorting = null 
+            IQueryOptions options = null
         )
         {
             if ( (Returns == null || Returns.Count == 0 ) )
@@ -54,10 +53,7 @@ namespace DICOMcloud.DataAccess.Database
             
             queryBuilder.AppendFormat ( SqlQueries.Select_Command_Formatted, selectText, sourceTable, joinsText , whereText ) ;
 
-            if ( null != sorting  && !string.IsNullOrWhiteSpace ( sorting.SortBy ) )
-            {
-                queryBuilder.Append ( " ORDER BY " + sorting.SortBy + " " + (( sorting.Direction == SortingDirection.DESC ) ? "DESC" : "ASC")) ;
-            }
+
             
             return queryBuilder.ToString ( ) ;
         }
@@ -83,8 +79,6 @@ namespace DICOMcloud.DataAccess.Database
             { 
                 Conditions.Add ( whereCondition ) ;
             }
-
-            //_processedColumns.Add ( column ) ;
         }
 
         protected virtual void FillReturns(ColumnInfo column )

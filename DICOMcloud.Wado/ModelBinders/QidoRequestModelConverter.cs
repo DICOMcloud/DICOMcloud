@@ -74,11 +74,17 @@ namespace DICOMcloud.Wado
 
                     default:
                     {
-                        string matchingQuery       = query[queryKey].Trim ( ) ;
-                        var    matchingElements    = wadoReq.Query.MatchingElements ;
+                        string queryValue = query[queryKey].Trim ( ) ;
                         
 
-                        matchingElements.Add ( queryKey, matchingQuery) ;
+                        if ( queryKey.StartsWith ( "_"))
+                        {
+                            wadoReq.Query.CustomParameters.Add ( queryKey, queryValue) ;
+                        }
+                        else
+                        {
+                            wadoReq.Query.MatchingElements.Add ( queryKey, queryValue) ;
+                        }
                     }
                     break ;
                 }

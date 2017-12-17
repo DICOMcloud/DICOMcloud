@@ -59,6 +59,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AssemblyInfo.Version.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataAccess\PagedResult.cs" />
     <Compile Include="DICOMcloud\DCloudNotFoundException.cs" />
     <Compile Include="DICOMcloud\DICOMcloudException.cs" />
     <Compile Include="DICOMcloud\DicomObjectId\DicomObjectIdFactory.cs" />

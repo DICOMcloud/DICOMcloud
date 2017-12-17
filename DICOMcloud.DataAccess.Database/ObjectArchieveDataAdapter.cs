@@ -61,7 +61,7 @@ namespace DICOMcloud.DataAccess.Database
             return command;
         }
 
-        public virtual IDataAdapterCommand<IEnumerable<fo.DicomDataset>> CreateSelectCommand 
+        public virtual IPagedDataAdapterCommand<DicomDataset> CreateSelectCommand 
         ( 
             string queryLevel, 
             IEnumerable<IMatchingCondition> conditions, 
@@ -80,9 +80,16 @@ namespace DICOMcloud.DataAccess.Database
 
             var sorting = SortingStrategyFactory.Create ( ) ;
 
-            sorting.Sort ( options, queryLeveTable ) ;
+            var sortedQuery = sorting.Sort ( queryBuilder, 
+                                             options, 
+                                             queryLeveTable ) ;
 
-            var selectCommand = new DicomDsQueryCommand(CreateCommand(queryBuilder.GetQueryText(queryLeveTable, options, sorting)), queryBuilder, responseBuilder);
+            var selectCommand = new DicomDsQueryCommand(CreateCommand(sortedQuery), queryBuilder, responseBuilder);
+
+            if (!string.IsNullOrEmpty (sorting.CountColumn))
+            {
+                selectCommand.SetCountColumn ( queryLeveTable, sorting.CountColumn);
+            }
 
             return selectCommand;
         }

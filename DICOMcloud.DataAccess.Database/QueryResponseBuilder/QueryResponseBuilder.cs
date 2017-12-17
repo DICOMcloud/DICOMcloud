@@ -52,10 +52,13 @@ namespace DICOMcloud.DataAccess.Database
 
         public virtual void EndRead ( )
         {
-            UpdateDsPersonName ( ) ;
+            if ( !string.IsNullOrEmpty (CurrentData.KeyValue))
+            {
+                UpdateDsPersonName ( ) ;
         
-            CurrentResultSet[CurrentData.KeyValue] = CurrentData.CurrentDs ;
-
+                CurrentResultSet[CurrentData.KeyValue] = CurrentData.CurrentDs ;
+            }
+            
             CurrentData = null ;
         }
 
@@ -76,6 +79,12 @@ namespace DICOMcloud.DataAccess.Database
         { 
             var column = SchemaProvider.GetColumn( tableName, columnName ) ;
             var dicomTags = column.Tags ;
+
+            
+            if ( IsDBNullValue ( value ))
+            {
+                return ;
+            }
 
             if ( column.IsKey )
             { 
@@ -135,69 +144,64 @@ namespace DICOMcloud.DataAccess.Database
             foreach ( var dicomTag in dicomTags )
             {
                 fo.DicomDictionaryEntry dicEntry = fo.DicomDictionary.Default[dicomTag];
+                var vr = dicEntry.ValueRepresentations.First() ;
+                Type valueType = value.GetType ( ) ;
 
-
-                if ( DBNull.Value != value && value != null )
+                if ( vr == fo.DicomVR.PN )
                 {
-                    var vr = dicEntry.ValueRepresentations.First() ;
-                    Type valueType = value.GetType ( ) ;
+                    PersonNameParts currentPart = SchemaProvider.GetPNColumnPart ( columnName ) ;
 
-                    if ( vr == fo.DicomVR.PN )
-                    {
-                        PersonNameParts currentPart = SchemaProvider.GetPNColumnPart ( columnName ) ;
-
-                        if ( CurrentData.CurrentPersonNameData == null )
-                        { 
-                            CurrentData.CurrentPersonNameData = new PersonNameData ( ) ;
-                            CurrentData.CurrentPersonNameTagValue  = (uint) dicEntry.Tag ;
-                            CurrentData.CurrentPersonNames.Add ( CurrentData.CurrentPersonNameTagValue , CurrentData.CurrentPersonNameData ) ;
-                        }
-                        else
-                        { 
-                            if ( dicEntry.Tag != CurrentData.CurrentPersonNameTagValue )
-                            { 
-                                if ( CurrentData.CurrentPersonNames.TryGetValue ( (uint)dicEntry.Tag, out CurrentData.CurrentPersonNameData ) )
-                                {
-                                    CurrentData.CurrentPersonNameTagValue = (uint) dicEntry.Tag ;
-                                }
-                                else
-                                { 
-                                    CurrentData.CurrentPersonNameData = new PersonNameData ( ) ;
-                                    CurrentData.CurrentPersonNameTagValue  = (uint) dicEntry.Tag ;
-                                    CurrentData.CurrentPersonNames.Add ( CurrentData.CurrentPersonNameTagValue , CurrentData.CurrentPersonNameData ) ;
-                                }
-                            }
-                        }
-
-                        CurrentData.CurrentPersonNameData.SetPart ( currentPart, (string) value ) ;
-                    }
-                    
-                    if (valueType == typeof(String)) //shortcut
-                    {
-                        CurrentData.CurrentDs.AddOrUpdate<string>(dicomTag, (string) value);
-                    }
-                    else if (valueType == typeof(DateTime))
-                    {
-                        CurrentData.CurrentDs.AddOrUpdate<DateTime>(dicomTag, (DateTime) value);
-                    }
-
-                   else if (valueType == typeof(Int32))
-                    {
-                        CurrentData.CurrentDs.AddOrUpdate<Int32>(dicomTag, (Int32)value);
-                        //dicomElement.SetInt32((int)dicomElement.Count, (Int32)value);
-                    }
-                    else if (valueType == typeof(Int64))
-                    {
-                        CurrentData.CurrentDs.AddOrUpdate<Int64>(dicomTag, (Int64)value);
-                        //dicomElement.SetInt64((int)dicomElement.Count, (Int64)value);
+                    if ( CurrentData.CurrentPersonNameData == null )
+                    { 
+                        CurrentData.CurrentPersonNameData = new PersonNameData ( ) ;
+                        CurrentData.CurrentPersonNameTagValue  = (uint) dicEntry.Tag ;
+                        CurrentData.CurrentPersonNames.Add ( CurrentData.CurrentPersonNameTagValue , CurrentData.CurrentPersonNameData ) ;
                     }
                     else
-                    {
-                        CurrentData.CurrentDs.AddOrUpdate<string>(dicomTag, value as string);
-                        //dicomElement.SetStringValue((string)value);
-
-                        System.Diagnostics.Debug.Assert(false, "Unknown element db value");
+                    { 
+                        if ( dicEntry.Tag != CurrentData.CurrentPersonNameTagValue )
+                        { 
+                            if ( CurrentData.CurrentPersonNames.TryGetValue ( (uint)dicEntry.Tag, out CurrentData.CurrentPersonNameData ) )
+                            {
+                                CurrentData.CurrentPersonNameTagValue = (uint) dicEntry.Tag ;
+                            }
+                            else
+                            { 
+                                CurrentData.CurrentPersonNameData = new PersonNameData ( ) ;
+                                CurrentData.CurrentPersonNameTagValue  = (uint) dicEntry.Tag ;
+                                CurrentData.CurrentPersonNames.Add ( CurrentData.CurrentPersonNameTagValue , CurrentData.CurrentPersonNameData ) ;
+                            }
+                        }
                     }
+
+                    CurrentData.CurrentPersonNameData.SetPart ( currentPart, (string) value ) ;
+                }
+                    
+                if (valueType == typeof(String)) //shortcut
+                {
+                    CurrentData.CurrentDs.AddOrUpdate<string>(dicomTag, (string) value);
+                }
+                else if (valueType == typeof(DateTime))
+                {
+                    CurrentData.CurrentDs.AddOrUpdate<DateTime>(dicomTag, (DateTime) value);
+                }
+
+                else if (valueType == typeof(Int32))
+                {
+                    CurrentData.CurrentDs.AddOrUpdate<Int32>(dicomTag, (Int32)value);
+                    //dicomElement.SetInt32((int)dicomElement.Count, (Int32)value);
+                }
+                else if (valueType == typeof(Int64))
+                {
+                    CurrentData.CurrentDs.AddOrUpdate<Int64>(dicomTag, (Int64)value);
+                    //dicomElement.SetInt64((int)dicomElement.Count, (Int64)value);
+                }
+                else
+                {
+                    CurrentData.CurrentDs.AddOrUpdate<string>(dicomTag, value as string);
+                    //dicomElement.SetStringValue((string)value);
+
+                    System.Diagnostics.Debug.Assert(false, "Unknown element db value");
                 }
             }
         }
@@ -227,6 +231,11 @@ namespace DICOMcloud.DataAccess.Database
             CurrentData.CurrentPersonNames = new Dictionary<uint, PersonNameData>();
         
             CurrentData.CurrentPersonNameData = null ;
+        }
+
+        private bool IsDBNullValue ( object value )
+        {
+            return DBNull.Value == value || value == null ;
         }
     }
 }

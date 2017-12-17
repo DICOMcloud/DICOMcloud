@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Data;
-using fo = Dicom;
+using DICOMcloud.DataAccess.Database.Schema;
+using Dicom;
 
 namespace DICOMcloud.DataAccess.Database.Commands
 {
-    public class DicomDsQueryCommand : IDataAdapterCommand<IEnumerable<fo.DicomDataset>>
+    public class DicomDsQueryCommand : IPagedDataAdapterCommand<DicomDataset>
     {
         public IDbCommand Command { get; set; }
         public QueryBuilder QueryBuilder { get; set; }
@@ -22,7 +23,7 @@ namespace DICOMcloud.DataAccess.Database.Commands
             ResponseBuilder = responseBuilder ;
         }
 
-        public IEnumerable<fo.DicomDataset> Result => ResponseBuilder.GetResponse ( ) ;
+        public IEnumerable<DicomDataset> Result => ResponseBuilder.GetResponse ( ) ;
 
         public bool Execute()
         {
@@ -54,7 +55,13 @@ namespace DICOMcloud.DataAccess.Database.Commands
 
                                 ResponseBuilder.ReadData(table.Key.Name, column, value);
                             }
-                                
+                             
+                            if ( null != CountColumnName && null != CountColumnTable && 
+                                 string.Compare (CountColumnTable, table.Key.Name, true) == 0 )
+                            {
+                                TotalCount = reader.GetInt32 (reader.GetOrdinal (CountColumnName)) ;
+                            }
+
                             ResponseBuilder.EndRead ( ) ;
                             ResponseBuilder.EndResultSet ( ) ;
                         }
@@ -71,5 +78,18 @@ namespace DICOMcloud.DataAccess.Database.Commands
                 }
             }
         }
+        
+        public string CountColumnTable { get; set ; }
+        public string CountColumnName { get; set ; }
+
+        public int? TotalCount { get; private set ; }
+
+        public void SetCountColumn ( string tableName, string columnName )
+        {
+            CountColumnTable = tableName ;
+            CountColumnName  = columnName ;
+        }
     }
 }
+
+

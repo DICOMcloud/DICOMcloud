@@ -14,6 +14,13 @@ namespace DICOMcloud.DataAccess
             string queryLevel
         ) ;
 
+        PagedResult<DicomDataset> SearchPaged
+        ( 
+            IEnumerable<IMatchingCondition> conditions, 
+            IQueryOptions options,
+            string queryLevel
+        ) ;
+
         void StoreInstance        ( IObjectId objectId, IEnumerable<IDicomDataParameter> parameters, InstanceMetadata data ) ;
         void StoreInstanceMetadata( IObjectId objectId, InstanceMetadata data ) ;
         
