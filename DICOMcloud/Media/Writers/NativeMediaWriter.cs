@@ -43,12 +43,19 @@ namespace DICOMcloud.Media
                                                       MediaType, mediaInfo.MediaType ) ) ;
             }
 
-            if ( !string.IsNullOrWhiteSpace ( mediaInfo.TransferSyntax ) )
+            if ( !string.IsNullOrWhiteSpace ( mediaInfo.TransferSyntax ) && mediaInfo.TransferSyntax != "*" )
             {
-                return data.Clone ( fo.DicomTransferSyntax.Parse ( mediaInfo.TransferSyntax ) ) ;
-            }
+                var transfer = fo.DicomTransferSyntax.Parse(mediaInfo.TransferSyntax) ;
+                var ds = data.Clone (transfer) ;
 
-            return base.GetMediaDataset ( data, mediaInfo );
+                ds.AddOrUpdate ( fo.DicomTag.TransferSyntaxUID, transfer.UID.UID ) ;
+
+                return ds ;
+            }
+            else
+            { 
+                return base.GetMediaDataset ( data, mediaInfo );
+            }
         }
 
         protected override void Upload( fo.DicomDataset dicomDataset, int frame, IStorageLocation location, DicomMediaProperties mediaProperties )
