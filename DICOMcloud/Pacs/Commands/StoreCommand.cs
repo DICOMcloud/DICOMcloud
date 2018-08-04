@@ -46,11 +46,18 @@ namespace DICOMcloud.Pacs.Commands
             //TODO: Check against supported types/association, validation, can store, return appropriate error
             ValidateDataset ( request.Dataset ) ;
 
-            ValidateDuplicateInstance ( request ) ;
+            if (Settings.ValidateDuplicateInstance)
+            { 
+                ValidateDuplicateInstance ( request ) ;
+            }
 
             request.Metadata.MediaLocations = SaveDicomMedia ( request.Dataset ) ;
 
-            StoreQueryModel ( request ) ;
+
+            if (Settings.StoreQueryModel)
+            { 
+                StoreQueryModel ( request ) ;
+            }
             
             PublisherSubscriberFactory.Instance.Publish ( this, new DicomStoreSuccessMessage ( request.Metadata ) ) ;            
             
@@ -98,19 +105,23 @@ namespace DICOMcloud.Pacs.Commands
         {
             List<DicomMediaLocations> mediaLocations = new List<DicomMediaLocations> ( ) ;
             DicomDataset storageDataset = dicomObject.Clone ( DicomTransferSyntax.ExplicitVRLittleEndian ) ;
+            
+            var savedMedia = Settings.MediaTypes.Where(n => n.MediaType == MimeMediaTypes.DICOM &&
+                                                       n.TransferSyntax == dicomObject.InternalTransferSyntax.UID.UID).FirstOrDefault();
 
+            if (Settings.StoreOriginal)
+            {
+               CreateMedia(mediaLocations, dicomObject, new DicomMediaProperties(MimeMediaTypes.DICOM, dicomObject.InternalTransferSyntax.UID.UID));
+            }
 
             foreach ( var mediaType in Settings.MediaTypes )
             {
-                CreateMedia ( mediaLocations, storageDataset, mediaType ) ;
-            }
-
-            var mediaInfo = Settings.MediaTypes.Where ( n=>n.MediaType == MimeMediaTypes.DICOM && 
-                                                        n.TransferSyntax == dicomObject.InternalTransferSyntax.UID.UID ).FirstOrDefault ( ) ;
-
-            if ( mediaInfo == null )
-            {
-                CreateMedia ( mediaLocations, dicomObject, new DicomMediaProperties ( MimeMediaTypes.DICOM, dicomObject.InternalTransferSyntax.UID.UID ) ) ;
+               if ( Settings.StoreOriginal && mediaType == savedMedia)
+               {
+                  continue;
+               }
+               
+               CreateMedia ( mediaLocations, storageDataset, mediaType ) ;
             }
 
             return mediaLocations.ToArray ( ) ;
@@ -176,18 +187,26 @@ namespace DICOMcloud.Pacs.Commands
     {
         public StorageSettings ( ) 
         {
+            StoreOriginal             = true ;
+            ValidateDuplicateInstance = true;
+            StoreQueryModel           = true ;
+
             MediaTypes = new List<DicomMediaProperties> ( ) ;
         
             MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID ) ) ;
             MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Json ) ) ;
             MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.UncompressedData, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID ) ) ;
             MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.xmlDicom ) ) ;
-            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossless.UID.UID ) ) ;
-            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossy.UID.UID ) ) ;
+            MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossless.UID.UID));
+            MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossy.UID.UID));
             //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Jpeg, DicomTransferSyntax.JPEGProcess14SV1.UID.UID ) ) ;
             //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Jpeg, DicomTransferSyntax.JPEGProcess1.UID.UID ) ) ;
         }
 
-        public IList<DicomMediaProperties> MediaTypes ;
+        public IList<DicomMediaProperties> MediaTypes { get; private set ;}
+   
+        public bool StoreOriginal { get; set; }
+        public bool ValidateDuplicateInstance { get; set; }
+        public bool StoreQueryModel { get; set; }
     }
 }
