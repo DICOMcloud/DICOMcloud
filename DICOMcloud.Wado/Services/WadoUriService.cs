@@ -88,10 +88,13 @@ namespace DICOMcloud.Wado
 
         private static string GetRequestedMediaTransferSyntax ( IWadoUriRequest request, MediaTypeHeaderValue mediaType )
         {
+            string anyTransfer = "*" ;
             string currentTransfer ;
 
 
-            if ( null != request.ImageRequestInfo && !string.IsNullOrWhiteSpace ( request.ImageRequestInfo.TransferSyntax ) )
+            if ( null != request.ImageRequestInfo && 
+                 !string.IsNullOrWhiteSpace ( request.ImageRequestInfo.TransferSyntax ) &&
+                 anyTransfer != request.ImageRequestInfo.TransferSyntax)
             {
                 currentTransfer = request.ImageRequestInfo.TransferSyntax;
             }
