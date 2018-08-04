@@ -15,12 +15,31 @@ namespace DICOMcloud.IO
     {
         public virtual string GetContainerName ( string key ) 
         {
-            return key.Substring ( 0, key.LastIndexOf ( GetLogicalSeparator ( )  ) ) ;
+            int index = key.LastIndexOf ( GetLogicalSeparator ( )  );
+            
+            if ( index == -1 )
+            { 
+               return key;
+            }
+            else
+            { 
+               return key.Substring ( 0,  index ) ;
+            }
         }
 
         public virtual string GetLocationName ( string key ) 
         {
-            return key.Substring ( key.LastIndexOf ( GetLogicalSeparator ( )  ) + 1 ) ;
+            int index = key.LastIndexOf(GetLogicalSeparator());
+
+
+            if (index == -1)
+            { 
+               return string.Empty;
+            }
+            else
+            {
+               return key.Substring(key.LastIndexOf(GetLogicalSeparator()) + 1);
+            }
         }
 
         public virtual string GetLogicalSeparator ( ) 

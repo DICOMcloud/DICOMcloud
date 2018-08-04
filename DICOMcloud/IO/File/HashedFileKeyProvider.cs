@@ -17,7 +17,6 @@ namespace DICOMcloud.IO
     {
         public override string GetStorageKey(IMediaId id)
         {
-            
             return Path.Combine ( id.GetIdParts( ).Select ( GetPartKey ).ToArray ( ) ) ;
         }
 
