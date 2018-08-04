@@ -118,7 +118,7 @@ namespace DICOMcloud.Wado
             if ( ex is DCloudException )
             {
                 HttpStatus    = HttpStatusCode.Conflict ;
-                StatusMessage = ex.Message ;
+                StatusMessage = (string.IsNullOrEmpty (StatusMessage)) ? ex.Message : StatusMessage + ";" + ex.Message ;
             }
             else if (ex is KeyNotFoundException)        {HttpStatus = HttpStatusCode.NotFound;}
             else if (ex is ArgumentException)           {HttpStatus = HttpStatusCode.BadRequest;}
