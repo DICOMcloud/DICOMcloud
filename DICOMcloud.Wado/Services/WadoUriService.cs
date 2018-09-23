@@ -36,7 +36,7 @@ namespace DICOMcloud.Wado
 
             List<MediaTypeHeaderValue> mediaTypeHeader = GetRequestedMimeType ( request );
             string  currentTransfer = null ;
-
+            
 
             foreach (MediaTypeHeaderValue mediaType in mediaTypeHeader)
             {
@@ -50,13 +50,26 @@ namespace DICOMcloud.Wado
 
                 if ( null != dcmLocation && dcmLocation.Exists ( ) )
                 {
-                    StreamContent sc = new StreamContent ( dcmLocation.GetReadStream ( ) );
-                    sc.Headers.ContentType = new MediaTypeHeaderValue ( mediaType.MediaType );
-                    HttpResponseMessage msg = new HttpResponseMessage ( HttpStatusCode.OK );
+                    if (dcmLocation is ISelfSignedUrlStorageLocation)
+                    {
+                        var expiry = DateTime.Now.AddHours(DicomWebServerSettings.Instance.SelfSignedUrlReadExpiryTimeInHours);
+                        Uri locationUrl = ((ISelfSignedUrlStorageLocation)dcmLocation).GetReadUrl (null, expiry);
+                        HttpResponseMessage msg = new HttpResponseMessage(HttpStatusCode.Redirect);
 
-                    msg.Content = sc;
+                        msg.Headers.Location = locationUrl;
 
-                    return msg;
+                        return msg;
+                    }
+                    else
+                    {
+                        StreamContent sc = new StreamContent ( dcmLocation.GetReadStream ( ) );
+                        sc.Headers.ContentType = new MediaTypeHeaderValue ( mediaType.MediaType );
+                        HttpResponseMessage msg = new HttpResponseMessage ( HttpStatusCode.OK );
+
+                        msg.Content = sc;
+
+                        return msg;
+                    }
                 }
             }
 

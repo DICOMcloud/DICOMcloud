@@ -6,7 +6,7 @@ using System.Net;
 
 namespace DICOMcloud.Azure.IO
 {
-    public class AzureLocation : ObservableStorageLocation
+    public class AzureLocation : ObservableStorageLocation, ISelfSignedUrlStorageLocation
     {
         private long? _size ;
         private IMediaId _mediaId;
@@ -62,6 +62,34 @@ namespace DICOMcloud.Azure.IO
                 //doesn't exist
                 return 0 ;
             }
+        }
+
+        public virtual Uri GetReadUrl(DateTimeOffset? startTime, DateTimeOffset? expiryTime)
+        {
+            var sasToken = Blob.GetSharedAccessSignature(new SharedAccessBlobPolicy()
+                {
+                    Permissions = SharedAccessBlobPermissions.Read,
+                    SharedAccessStartTime = startTime,
+                    SharedAccessExpiryTime = expiryTime
+                });
+            
+            var blobUrl = string.Format("{0}{1}", Blob.Uri.AbsoluteUri, sasToken);
+
+            return new Uri(blobUrl);
+        }
+
+        public virtual Uri GetWriteUrl(DateTimeOffset? startTime, DateTimeOffset? expiryTime)
+        {
+            var sasToken = Blob.GetSharedAccessSignature(new SharedAccessBlobPolicy()
+            {
+                Permissions = SharedAccessBlobPermissions.Write,
+                SharedAccessStartTime = startTime,
+                SharedAccessExpiryTime = expiryTime
+            });
+
+            var blobUrl = string.Format("{0}{1}", Blob.Uri.AbsoluteUri, sasToken);
+
+            return new Uri(blobUrl);
         }
 
         public override string Metadata
