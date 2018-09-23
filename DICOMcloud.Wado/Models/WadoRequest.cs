@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
@@ -20,13 +21,11 @@ namespace DICOMcloud.Wado.Models
         public string SeriesInstanceUID  { get; set; }
         public string SOPInstanceUID     { get; set; }
         public int?   Frame              { get; set; }
+        public bool   Anonymize          { get; set; }
         
-        public bool Anonymize { get; set; }
-
-        public IWadoUriImageRequestParams ImageRequestInfo { get; set ;}
-
-
-
+        public NameValueCollection        Query            { get; set; }
+        public IWadoUriImageRequestParams ImageRequestInfo { get; set; }
+        public HttpRequestHeaders         Headers          { get; set; }
 
         public override string ToString()
         {

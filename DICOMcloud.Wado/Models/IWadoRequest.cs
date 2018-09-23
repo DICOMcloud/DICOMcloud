@@ -1,19 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net.Http.Headers;
-using DICOMcloud;
+using System.Collections.Specialized;
 
 namespace DICOMcloud.Wado.Models
 {
-   public interface IWadoUriRequest : IWadoRequestHeader, IObjectId
+    public interface IWadoUriRequest : IWadoRequestHeader, IObjectId
    {
-      string RequestType {  get; set; }
-      string ContentType   {  get; set; }
-      string Charset {  get ; set; }
+      string RequestType   { get; set; }
+      string ContentType   { get; set; }
+      string Charset       { get; set; }
+      bool   Anonymize     { get; set; }
 
-      bool Anonymize { get; set; }
+      NameValueCollection Query { get; set; }
 
       IWadoUriImageRequestParams ImageRequestInfo { get; set ;}
    }

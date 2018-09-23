@@ -67,6 +67,7 @@ namespace DICOMcloud.Wado
             { 
                 WadoRsRequestBase reqBase = result as WadoRsRequestBase ;
 
+               reqBase.Headers              = request.Headers;
                 reqBase.AcceptHeader        = request.Headers.Accept;
                 reqBase.AcceptCharsetHeader = request.Headers.AcceptCharset;
                 reqBase.QueryLevel          = ObjectQueryLevel.Instance ;

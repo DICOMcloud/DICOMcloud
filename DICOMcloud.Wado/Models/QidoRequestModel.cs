@@ -20,6 +20,8 @@ namespace DICOMcloud.Wado.Models
             get ;
             set ;
         }
+        
+        public HttpRequestHeaders Headers { get; set; }
 
         public bool? FuzzyMatching
         {
@@ -35,7 +37,6 @@ namespace DICOMcloud.Wado.Models
         {
             get; set;
         }
-
 
         public QidoQuery Query
         {

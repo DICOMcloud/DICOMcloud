@@ -24,7 +24,9 @@ namespace DICOMcloud.Wado.Models
           set ;
        }
 
-       public ObjectQueryLevel QueryLevel { get; set; } 
+        public HttpRequestHeaders Headers { get; set; }
+
+        public ObjectQueryLevel QueryLevel { get; set; } 
     }
 
     public class WadoRSStudiesRequest : WadoRsRequestBase, IWadoRsStudiesRequest
