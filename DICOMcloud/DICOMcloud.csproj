@@ -89,6 +89,7 @@
     <Compile Include="DICOMcloud\IDicomConverter.cs" />
     <Compile Include="DICOMcloud\JsonDicomConverter.cs" />
     <Compile Include="IO\File\HashedFileKeyProvider.cs" />
+    <Compile Include="IO\ISelfSignedStorageLocation.cs" />
     <Compile Include="IO\ObservableStorageLocation\LocationDeletedMessage.cs" />
     <Compile Include="Media\DicomMediaId.cs" />
     <Compile Include="Media\DicomMediaProperties.cs" />

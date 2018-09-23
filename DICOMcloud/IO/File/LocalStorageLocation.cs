@@ -26,22 +26,19 @@ namespace DICOMcloud.IO
 
         public IMediaId MediaId { get; }
 
-        public long Size
+        public long GetSize ( )
         {
-            get
+            if ( null != _size )
             {
-                if ( null != _size )
-                {
-                    return _size.Value ;
-                }
-                else
-                {
-                    var fileInfo = new FileInfo ( ID ) ;
+                return _size.Value ;
+            }
+            else
+            {
+                var fileInfo = new FileInfo ( ID ) ;
 
-                    _size = fileInfo.Length ;
+                _size = fileInfo.Length ;
 
-                    return _size.Value ;
-                }
+                return _size.Value ;
             }
         }
 
@@ -71,7 +68,7 @@ namespace DICOMcloud.IO
             Refresh ( ) ;
         }
 
-        public virtual void Upload ( Stream data )
+        public virtual void Upload (Stream data, string contentType = null)
         {
             using (FileStream fs = File.Create (ID) )
             {
@@ -81,13 +78,13 @@ namespace DICOMcloud.IO
             WriteMetadata ( ) ;
         }
         
-        public virtual void Upload ( byte[] buffer )
+        public virtual void Upload (byte[] buffer, string contentType = null)
         {
             File.WriteAllBytes ( ID, buffer ) ;
             WriteMetadata ( ) ;
         }
         
-        public virtual void Upload(string fileName)
+        public virtual void Upload (string fileName, string contentType = null)
         {
             File.Copy ( fileName, ID, true) ;
             WriteMetadata ( ) ;

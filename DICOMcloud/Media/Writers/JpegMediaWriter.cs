@@ -39,7 +39,13 @@ namespace DICOMcloud.Media
             return base.GetMediaDataset ( data, mediaInfo ) ;
         }
 
-        protected override void Upload ( fo.DicomDataset dicomObject, int frame, IStorageLocation storeLocation, DicomMediaProperties mediaProperties )
+        protected override void Upload 
+        ( 
+            fo.DicomDataset dicomObject, 
+            int frame, 
+            IStorageLocation storeLocation, 
+            DicomMediaProperties mediaProperties 
+        )
         {
             var frameIndex = frame - 1 ;
             var dicomImage = new DicomImage (dicomObject, frameIndex);
@@ -50,7 +56,7 @@ namespace DICOMcloud.Media
             
             stream.Position = 0 ;
 
-            storeLocation.Upload ( stream ) ;
+            storeLocation.Upload ( stream, MediaType ) ;
         }
     }
 }

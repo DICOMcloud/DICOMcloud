@@ -48,7 +48,7 @@ namespace DICOMcloud.Media
             }
             catch {}
 
-            storeLocation.Upload ( data ) ;
+            storeLocation.Upload ( data, MediaType ) ;
         }
     }
 }

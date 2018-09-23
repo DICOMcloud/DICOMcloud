@@ -15,7 +15,11 @@ namespace DICOMcloud.Media
     {
         public NativeMediaWriter ( ) : base ( ) {}
          
-        public NativeMediaWriter ( IMediaStorageService mediaStorage, IDicomMediaIdFactory mediaFactory ) : base ( mediaStorage, mediaFactory ) 
+        public NativeMediaWriter 
+        ( 
+            IMediaStorageService mediaStorage, 
+            IDicomMediaIdFactory mediaFactory 
+        ) : base ( mediaStorage, mediaFactory ) 
         {
         }
 
@@ -46,6 +50,12 @@ namespace DICOMcloud.Media
             if ( !string.IsNullOrWhiteSpace ( mediaInfo.TransferSyntax ) && mediaInfo.TransferSyntax != "*" )
             {
                 var transfer = fo.DicomTransferSyntax.Parse(mediaInfo.TransferSyntax) ;
+                
+                if (transfer == data.InternalTransferSyntax)
+                {
+                    return data;
+                }
+
                 var ds = data.Clone (transfer) ;
 
                 ds.AddOrUpdate ( fo.DicomTag.TransferSyntaxUID, transfer.UID.UID ) ;
@@ -58,7 +68,13 @@ namespace DICOMcloud.Media
             }
         }
 
-        protected override void Upload( fo.DicomDataset dicomDataset, int frame, IStorageLocation location, DicomMediaProperties mediaProperties )
+        protected override void Upload
+        ( 
+            fo.DicomDataset dicomDataset, 
+            int frame, 
+            IStorageLocation location, 
+            DicomMediaProperties mediaProperties 
+        )
         {
             fo.DicomFile df = new fo.DicomFile ( dicomDataset ) ;
 
@@ -68,7 +84,7 @@ namespace DICOMcloud.Media
                 df.Save(stream);
                 stream.Position = 0;
 
-                location.Upload(stream);
+                location.Upload(stream, MediaType);
             }
         }
     }

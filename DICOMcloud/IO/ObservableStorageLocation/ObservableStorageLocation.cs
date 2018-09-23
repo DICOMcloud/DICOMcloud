@@ -39,16 +39,13 @@ namespace DICOMcloud.IO
             get ;
         }
 
-        public abstract long Size
-        {
-            get ;
-        }
+        public abstract long GetSize ( ) ;
 
         public virtual void Delete ( )
         {
             if ( Exists ( ) )
             {
-                long contentLength = Size ;
+                long contentLength = GetSize ( ) ;
                 
                 DoDelete ( ) ;
                 
@@ -83,23 +80,23 @@ namespace DICOMcloud.IO
             return stream ;
         }
 
-        public virtual void Upload ( string fileName )
+        public virtual void Upload ( string fileName, string contentType = null)
         {
-            DoUpload ( fileName ) ; 
+            DoUpload ( fileName, contentType); 
 
             PublisherSubscriberFactory.Instance.Publish ( this, CreateLocationUploadedEventArgs ( fileName ) ) ;
         }
         
-        public virtual void Upload ( byte[] buffer )
+        public virtual void Upload ( byte[] buffer, string contentType = null)
         {
-            DoUpload ( buffer ) ;
+            DoUpload ( buffer, contentType) ;
 
             PublisherSubscriberFactory.Instance.Publish ( this, CreateLocationUploadedEventArgs ( buffer ) ) ;
         }
         
-        public virtual void Upload ( Stream stream )
+        public virtual void Upload ( Stream stream, string contentType = null)
         {
-            DoUpload ( stream ) ;
+            DoUpload ( stream, contentType ) ;
 
             PublisherSubscriberFactory.Instance.Publish ( this, CreateLocationUploadedEventArgs ( stream ) ) ;
         }
@@ -172,8 +169,8 @@ namespace DICOMcloud.IO
         protected abstract Stream DoDownload ( );
         protected abstract void DoDownload ( Stream stream );
         protected abstract Stream DoGetReadStream ( );
-        protected abstract void DoUpload ( string fileName );
-        protected abstract void DoUpload ( byte[] buffer );
-        protected abstract void DoUpload ( Stream stream );
+        protected abstract void DoUpload ( string fileName, string contentType );
+        protected abstract void DoUpload ( byte[] buffer, string contentType );
+        protected abstract void DoUpload ( Stream stream, string contentType );
     }
 }

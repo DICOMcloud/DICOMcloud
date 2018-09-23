@@ -16,11 +16,11 @@ namespace DICOMcloud.IO
             return location.Download ( ) ;    
         }
         
-        public virtual void Write ( Stream stream, IMediaId id )
+        public virtual void Write ( Stream stream, IMediaId id, string contentType )
         {
             var location = GetLocation ( id ) ;
         
-            location.Upload ( stream ) ;
+            location.Upload ( stream, contentType ) ;
         }
 
         public virtual IStorageLocation GetLocation ( IMediaId id )

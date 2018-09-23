@@ -49,17 +49,14 @@ namespace DICOMcloud.IO
             private set ;
         }
 
-        public long Size
+        public long GetSize ( )
         {
-            get
+            if ( Exists ( ) )
             {
-                if ( Exists ( ) )
-                {
-                    return _location.Length ;
-                }
-
-                return 0 ;
+                return _location.Length ;
             }
+
+            return 0 ;
         }
 
         public string Metadata
@@ -109,18 +106,22 @@ namespace DICOMcloud.IO
             return _location ;
         }
 
-        public void Upload ( string filename )
+        public void Upload ( string filename, string contentType = null)
         {
+            ContentType = contentType;
             _location = new MemoryStream ( File.ReadAllBytes ( filename ) ) ;
         }
 
-        public void Upload ( byte[] buffer )
+        public void Upload ( byte[] buffer, string contentType = null)
         {
+            ContentType = contentType;
             _location = new MemoryStream ( buffer ) ;
         }
 
-        public void Upload ( Stream stream )
+        public void Upload ( Stream stream, string contentType = null)
         {
+            ContentType = contentType;
+
             if ( !EnableUploadHardCopy && stream is MemoryStream )
             {
                 _location = (MemoryStream) stream ;
