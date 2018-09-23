@@ -26,6 +26,8 @@ namespace DICOMcloud.Wado
             {
                 string queryKey = ((string)key).Trim ( ).ToLower ( ) ;
 
+                if ( queryKey == "" ) {  continue; }
+
                 switch ( queryKey )
                 {
                     case QidoRequestKeys.FuzzyMatching:
