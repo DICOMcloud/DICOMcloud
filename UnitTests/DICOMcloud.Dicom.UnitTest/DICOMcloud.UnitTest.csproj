@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DICOMcloud.Dicom.UnitTest</RootNamespace>
     <AssemblyName>DICOMcloud.Dicom.UnitTest</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -59,11 +59,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="DataAccess.Database\ArchieveDataAccess.cs" />
-    <Compile Include="DataAccessHelpers.cs" />
-    <Compile Include="DicomDatasetConverters.cs" />
-    <Compile Include="DicomHelpers.cs" />
-    <Compile Include="ObjectStoreServiceTest.cs" />
+    <Compile Include="ArchieveDataAccessTests.cs" />
+    <Compile Include="PaginationSearchTest.cs" />
+    <Compile Include="Helpers\DataAccessHelpers.cs" />
+    <Compile Include="DicomDatasetConvertersTests.cs" />
+    <Compile Include="Helpers\DicomHelpers.cs" />
+    <Compile Include="ObjectStoreServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

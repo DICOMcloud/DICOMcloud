@@ -8,18 +8,23 @@ using DICOMcloud.DataAccess.UnitTest;
 using Dicom;
 using System.Collections.Generic;
 using DICOMcloud.DataAccess.Matching;
+using DICOMcloud.DataAccess;
 
-namespace DICOMcloud.DataAccess.Database.UnitTest
+namespace DICOMcloud.UnitTest
 {
     [TestClass]
-    public class ArchieveDataAccess
+    public class ArchieveDataAccessTests
     {
         [TestInitialize]
         public void Initialize ( ) 
         {
             Helper = new DicomHelpers ( ) ;
             DataAccessHelper = new DataAccessHelpers ( ) ;
+        }
 
+        [TestCleanup]
+        public void Cleanup ( )
+        {
             DataAccessHelper.EmptyDatabase ( ) ;
         }
 
@@ -74,7 +79,7 @@ namespace DICOMcloud.DataAccess.Database.UnitTest
 
         private void ValidateSopInstanceExists ( DicomDataset ds )
         {
-            var queryFactory = new Matching.ConditionFactory();
+            var queryFactory = new DataAccess.Matching.ConditionFactory();
 
             queryFactory.BeginProcessingElements();
 

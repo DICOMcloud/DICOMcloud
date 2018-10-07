@@ -8,11 +8,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DICOMcloud.Pacs.Commands;
 using DICOMcloud.IO;
 using DICOMcloud.Media;
+using DICOMcloud.Pacs;
 
-namespace DICOMcloud.Pacs.UnitTest
+namespace DICOMcloud.UnitTest
 {
     [TestClass]
-    public class ObjectStoreServiceTest
+    public class ObjectStoreServiceTests
     {
         [TestInitialize]
         public void Initialize ( ) 
@@ -25,7 +26,7 @@ namespace DICOMcloud.Pacs.UnitTest
 
             MediaStorageService storageService = new FileStorageService ( storagePath ) ;
             
-            var factory = new Commands.DCloudCommandFactory( storageService,
+            var factory = new Pacs.Commands.DCloudCommandFactory( storageService,
                                                              DataAccessHelper.DataAccess,
                                                              new DicomMediaWriterFactory ( storageService, 
                                                                                            mediaIdFactory  ),
@@ -34,12 +35,20 @@ namespace DICOMcloud.Pacs.UnitTest
             StoreService = new ObjectStoreService ( factory ) ;
         }
 
+        [TestCleanup]
+        public void Cleanup ( )
+        {
+            DataAccessHelper.EmptyDatabase ( ) ;
+        }
+
         [TestMethod]
         public void Pacs_Storage_Simple ( )
         {
             StoreService.StoreDicom ( DicomHelper.GetDicomDataset (0), new DataAccess.InstanceMetadata ( ) ) ;
             StoreService.StoreDicom ( DicomHelper.GetDicomDataset (1), new DataAccess.InstanceMetadata ( ) ) ;
             StoreService.StoreDicom ( DicomHelper.GetDicomDataset (2), new DataAccess.InstanceMetadata ( ) ) ;
+
+            // TODO: do a query and compare fields values.
 
             Pacs_Delete_Simple ( ) ;
         }

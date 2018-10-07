@@ -148,6 +148,7 @@ namespace DICOMcloud.UnitTest
             ds.Add ( fo.DicomTag.StudyInstanceUID, Study1UID );
             ds.Add ( fo.DicomTag.StudyID, "test-studyid" );
             ds.Add ( fo.DicomTag.AccessionNumber, "test-accession" );
+            ds.Add (fo.DicomTag.StudyDescription, "test-description");
             ds.Add ( fo.DicomTag.SeriesInstanceUID, Series1UID );
             ds.Add ( fo.DicomTag.SeriesNumber, 1 );
             ds.Add ( fo.DicomTag.Modality, "XA" );

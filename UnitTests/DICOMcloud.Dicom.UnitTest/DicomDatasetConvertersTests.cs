@@ -7,7 +7,7 @@ using System.IO;
 namespace DICOMcloud.UnitTest
 {
     [TestClass]
-    public class DicomDatasetConverters
+    public class DicomDatasetConvertersTests
     {
         private DicomHelpers Helper { get; set; } 
 
@@ -38,8 +38,6 @@ namespace DICOMcloud.UnitTest
                 }
             }
         }
-
-
 
         /// <summary>
         /// Method will:
