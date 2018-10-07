@@ -14,17 +14,18 @@ namespace DICOMcloud.DataAccess.Database
 
         public ObjectArchieveSortingStrategy ( DbSchemaProvider schemaProvider )
         {
-            SchemaProvider = schemaProvider ;
+            SchemaProvider  = schemaProvider ;
+            ApplyPagination = true;
         }
 
-        public virtual string Sort (QueryBuilder queryBuilder, IQueryOptions options, TableKey queryLeveTable )
+        public virtual string Sort (QueryBuilder queryBuilder, IQueryOptions options, TableKey queryLevelTable )
         {
             IEnumerable<ColumnInfo> orderByColumns = null;
             
 
             Direction = SortingDirection.ASC;
 
-            if (queryLeveTable == StorageDbSchemaProvider.StudyTableName)
+            if (queryLevelTable == StorageDbSchemaProvider.StudyTableName)
             {
                 var studyTable = SchemaProvider.GetTableInfo (StorageDbSchemaProvider.StudyTableName) ;
 
@@ -32,12 +33,12 @@ namespace DICOMcloud.DataAccess.Database
 
                 Direction = SortingDirection.DESC ;
             }
-            else if (queryLeveTable == StorageDbSchemaProvider.SeriesTableName)
+            else if (queryLevelTable == StorageDbSchemaProvider.SeriesTableName)
             {
                 orderByColumns = SchemaProvider.GetColumnInfo((uint)DicomTag.SeriesNumber);
             }
 
-            if (queryLeveTable == StorageDbSchemaProvider.ObjectInstanceTableName)
+            if (queryLevelTable == StorageDbSchemaProvider.ObjectInstanceTableName)
             {
                 orderByColumns = SchemaProvider.GetColumnInfo((uint)DicomTag.InstanceNumber);
             }
@@ -50,42 +51,74 @@ namespace DICOMcloud.DataAccess.Database
             
                 foreach ( var column in orderByColumns )
                 {
-                    if ( !queryBuilder.ProcessedColumns.ContainsKey ( queryLeveTable ) ||
-                         ( queryBuilder.ProcessedColumns.ContainsKey ( queryLeveTable ) &&
-                         !queryBuilder.ProcessedColumns[queryLeveTable].Contains ( column )) )
+                    if ( !queryBuilder.ProcessedColumns.ContainsKey ( queryLevelTable ) ||
+                         ( queryBuilder.ProcessedColumns.ContainsKey ( queryLevelTable ) &&
+                         !queryBuilder.ProcessedColumns[queryLevelTable].Contains ( column )) )
                     {
-                        queryBuilder.ProcessColumn ( queryLeveTable, column ) ;
+                        queryBuilder.ProcessColumn ( queryLevelTable, column ) ;
                     }
                 }
 
-                string queryText = queryBuilder.GetQueryText(queryLeveTable, options ) ;
+                string queryText = queryBuilder.GetQueryText(queryLevelTable, options ) ;
 
 
-                if ( null != options && options.Limit > 0 )
+                if ( ApplyPagination && CanPaginate (queryBuilder, options, queryLevelTable) )
                 {
                     CountColumn = "TotalRows" ;
+
                     return string.Format ( Sorting_Template, 
                                            queryText,
                                            CountColumn,
-                                           string.Format ( OrderBy_Template,  SortBy, (( Direction == SortingDirection.DESC ) ? "DESC" : "ASC" )),
-                                           options.Offset,
-                                           options.Limit ) ;
+                                           string.Format ( OrderBy_Template,  SortBy, GetDirection()),
+                                           string.Format(Pagination_Template, options.Offset, options.Limit)) ;
                 }
                 else
                 {
-                    return queryText + string.Format ( OrderBy_Template,  SortBy, (( Direction == SortingDirection.DESC ) ? "DESC" : "ASC" ) );
+                    return queryText + string.Format ( OrderBy_Template,  
+                                                       SortBy, 
+                                                       GetDirection ( ));
                 }
             }
             else
             {
-                return queryBuilder.GetQueryText(queryLeveTable, options ) ;
+                return queryBuilder.GetQueryText(queryLevelTable, options ) ;
             }
         }
 
-        public string SortBy { get; protected set; }
+        public virtual bool CanPaginate
+        (
+            QueryBuilder queryBuilder,
+            IQueryOptions options,
+            TableKey queryLeveTable
+        )
+        {
+            if (null == options || !options.Limit.HasValue || options.Limit <= 0) return false;
 
-        public SortingDirection Direction { get; protected set ;}
-        public string CountColumn { get; private set; }
+            foreach ( var tableColumns in queryBuilder.ProcessedColumns )
+            { 
+                // If a child table/columns are returned in the query then the sorting strategy will fail
+                // Github: Issue #25
+                if (tableColumns.Key.Parent == queryLeveTable)
+                { 
+                    return false ;
+                }
+            }
+
+            return true;
+        }
+
+        public virtual string SortBy { get; protected set; }
+
+        public virtual SortingDirection Direction { get; protected set ;}
+
+        public virtual string CountColumn { get; private set; }
+
+        public virtual bool ApplyPagination { get; set; }
+
+        private string GetDirection ( )
+        {
+            return ((Direction == SortingDirection.DESC) ? "DESC" : "ASC");
+        }
 
         private static string OrderBy_Template = " ORDER BY {0} {1}" ;
 //http://andreyzavadskiy.com/2016/12/03/pagination-and-total-number-of-rows-from-one-select/
@@ -105,8 +138,12 @@ SELECT *
 FROM Data_CTE
 CROSS JOIN Count_CTE
 {2}
-OFFSET {3} ROWS
-FETCH NEXT {4} ROWS ONLY;
+{3}
 ";
+
+        private static string Pagination_Template = 
+@"
+OFFSET {0} ROWS
+FETCH NEXT {1} ROWS ONLY;";
     }
 }

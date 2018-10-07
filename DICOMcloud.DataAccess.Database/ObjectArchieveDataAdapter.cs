@@ -20,7 +20,7 @@ namespace DICOMcloud.DataAccess.Database
         ( 
             DbSchemaProvider schemaProvider, 
             IDatabaseFactory database 
-        ) : this ( schemaProvider, database, new SortingStrategyFactory ( schemaProvider))
+        ) : this ( schemaProvider, database, null)
         {
         }
 
@@ -48,7 +48,7 @@ namespace DICOMcloud.DataAccess.Database
             protected set ;
         }
 
-        public ISortingStrategyFactory SortingStrategyFactory { get; protected set; }
+        public ISortingStrategyFactory SortingStrategyFactory { get; set; }
 
         public IDbCommand CreateCommand ( string commandText )
         {
@@ -69,26 +69,31 @@ namespace DICOMcloud.DataAccess.Database
             IQueryResponseBuilder responseBuilder
         )
         {
-            var queryLeveTable = SchemaProvider.GetTableInfo(SchemaProvider.GetQueryTable(queryLevel));
+            var queryLevelTable = SchemaProvider.GetTableInfo(SchemaProvider.GetQueryTable(queryLevel));
 
-            if (queryLeveTable == null)
+            if (queryLevelTable == null)
             {
                 throw new ArgumentException("querylevel not supported");
             }
-
-            var queryBuilder = BuildQuery(conditions, options, queryLeveTable);
+            
+            var queryBuilder = BuildQuery(conditions, options, queryLevelTable);
 
             var sorting = SortingStrategyFactory.Create ( ) ;
 
+            sorting.ApplyPagination = sorting.CanPaginate (queryBuilder, options, queryLevelTable);
+
             var sortedQuery = sorting.Sort ( queryBuilder, 
                                              options, 
-                                             queryLeveTable ) ;
+                                             queryLevelTable ) ;
 
-            var selectCommand = new DicomDsQueryCommand(CreateCommand(sortedQuery), queryBuilder, responseBuilder);
+            var selectCommand = new DicomDsQueryCommand(CreateCommand(sortedQuery), queryBuilder, responseBuilder, options);
+
+            // if the database strategy can't paginate then we'll do pagination in code.
+            selectCommand.ApplyPagination = !sorting.ApplyPagination;
 
             if (!string.IsNullOrEmpty (sorting.CountColumn))
             {
-                selectCommand.SetCountColumn ( queryLeveTable, sorting.CountColumn);
+                selectCommand.SetCountColumn ( queryLevelTable, sorting.CountColumn);
             }
 
             return selectCommand;

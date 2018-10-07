@@ -189,17 +189,14 @@ namespace DICOMcloud.DataAccess.Database
                 else if (valueType == typeof(Int32))
                 {
                     CurrentData.CurrentDs.AddOrUpdate<Int32>(dicomTag, (Int32)value);
-                    //dicomElement.SetInt32((int)dicomElement.Count, (Int32)value);
                 }
                 else if (valueType == typeof(Int64))
                 {
                     CurrentData.CurrentDs.AddOrUpdate<Int64>(dicomTag, (Int64)value);
-                    //dicomElement.SetInt64((int)dicomElement.Count, (Int64)value);
                 }
                 else
                 {
                     CurrentData.CurrentDs.AddOrUpdate<string>(dicomTag, value as string);
-                    //dicomElement.SetStringValue((string)value);
 
                     System.Diagnostics.Debug.Assert(false, "Unknown element db value");
                 }

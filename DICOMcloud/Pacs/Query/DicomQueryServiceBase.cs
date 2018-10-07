@@ -6,21 +6,14 @@ using fo = Dicom;
 namespace DICOMcloud.Pacs
 {
 
-    //TODO: base class for query services
+    // base class for query services
     public abstract class DicomQueryServiceBase : IDicomQueryService
     {
         public IObjectArchieveDataAccess QueryDataAccess { get; protected set; }
-        //public DbSchemaProvider             SchemaProvider  { get; protected set; }
-        
-        //public DicomQueryServiceBase ( IDicomStorageQueryDataAccess queryDataAccess )
-        //: this ( queryDataAccess, new StorageDbSchemaProvider ( )*/ )
-        //{
-        //}
 
-        public DicomQueryServiceBase ( IObjectArchieveDataAccess queryDataAccess/*, DbSchemaProvider schemaProvider*/ )
+        public DicomQueryServiceBase ( IObjectArchieveDataAccess queryDataAccess )
         {
             QueryDataAccess = queryDataAccess ;
-            //SchemaProvider  = schemaProvider ;
         }
 
         public IEnumerable<fo.DicomDataset> Find 
