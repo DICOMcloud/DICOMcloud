@@ -61,7 +61,7 @@ namespace DICOMcloud.Media
                     var storeLocation = sotrageProvider.GetLocation ( MediaFactory.Create ( mediaParameters.Dataset, frame, MediaType, transferSyntax ));
                     
                     
-                    Upload ( dataset, frame, storeLocation ) ;
+                    Upload ( dataset, frame, storeLocation, mediaParameters.MediaInfo ) ;
                 
                     locations.Add ( storeLocation ) ;
                 }
@@ -97,7 +97,7 @@ namespace DICOMcloud.Media
                 var storeLocation = storageProvider.GetLocation ( MediaFactory.Create ( mediaParameters.Dataset, frame, MediaType, transferSyntax ));
                     
                     
-                Upload ( mediaParameters.Dataset, frame, storeLocation ) ;
+                Upload ( mediaParameters.Dataset, frame, storeLocation, mediaParameters.MediaInfo ) ;
                 
                 locations.Add ( storeLocation ) ;
             }
@@ -113,6 +113,6 @@ namespace DICOMcloud.Media
 
         protected abstract bool StoreMultiFrames { get; }
 
-        protected abstract void Upload(fo.DicomDataset dataset, int frame, IStorageLocation storeLocation);
+        protected abstract void Upload(fo.DicomDataset dataset, int frame, IStorageLocation storeLocation, DicomMediaProperties mediaProperties );
     }
 }

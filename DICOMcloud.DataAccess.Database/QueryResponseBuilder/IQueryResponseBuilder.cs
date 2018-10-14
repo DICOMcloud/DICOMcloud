@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using fo = Dicom;
+using Dicom;
 
 namespace DICOMcloud.DataAccess.Database
 {
@@ -20,6 +20,6 @@ namespace DICOMcloud.DataAccess.Database
     
         bool ResultExists ( string table, object keyValue ) ;
 
-        IEnumerable<fo.DicomDataset> GetResponse ( ) ;
+        IEnumerable<DicomDataset> GetResponse ( ) ;
     }
 }

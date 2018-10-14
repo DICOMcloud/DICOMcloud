@@ -11,6 +11,11 @@ namespace DICOMcloud.Pacs.Commands
 {
     public class StoreCommandData
     {
+        public StoreCommandData ( ) 
+        { 
+            Metadata = new InstanceMetadata ( );
+        }
+
         public fo.DicomDataset Dataset { get; set; }
         public InstanceMetadata Metadata { get ; set; }
     }

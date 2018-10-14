@@ -15,7 +15,11 @@ namespace DICOMcloud.Media
     {
         public NativeMediaWriter ( ) : base ( ) {}
          
-        public NativeMediaWriter ( IMediaStorageService mediaStorage, IDicomMediaIdFactory mediaFactory ) : base ( mediaStorage, mediaFactory ) 
+        public NativeMediaWriter 
+        ( 
+            IMediaStorageService mediaStorage, 
+            IDicomMediaIdFactory mediaFactory 
+        ) : base ( mediaStorage, mediaFactory ) 
         {
         }
 
@@ -43,15 +47,34 @@ namespace DICOMcloud.Media
                                                       MediaType, mediaInfo.MediaType ) ) ;
             }
 
-            if ( !string.IsNullOrWhiteSpace ( mediaInfo.TransferSyntax ) )
+            if ( !string.IsNullOrWhiteSpace ( mediaInfo.TransferSyntax ) && mediaInfo.TransferSyntax != "*" )
             {
-                return data.Clone ( fo.DicomTransferSyntax.Parse ( mediaInfo.TransferSyntax ) ) ;
-            }
+                var transfer = fo.DicomTransferSyntax.Parse(mediaInfo.TransferSyntax) ;
+                
+                if (transfer == data.InternalTransferSyntax)
+                {
+                    return data;
+                }
 
-            return base.GetMediaDataset ( data, mediaInfo );
+                var ds = data.Clone (transfer) ;
+
+                ds.AddOrUpdate ( fo.DicomTag.TransferSyntaxUID, transfer.UID.UID ) ;
+
+                return ds ;
+            }
+            else
+            { 
+                return base.GetMediaDataset ( data, mediaInfo );
+            }
         }
 
-        protected override void Upload( fo.DicomDataset dicomDataset, int frame, IStorageLocation location )
+        protected override void Upload
+        ( 
+            fo.DicomDataset dicomDataset, 
+            int frame, 
+            IStorageLocation location, 
+            DicomMediaProperties mediaProperties 
+        )
         {
             fo.DicomFile df = new fo.DicomFile ( dicomDataset ) ;
 
@@ -61,7 +84,7 @@ namespace DICOMcloud.Media
                 df.Save(stream);
                 stream.Position = 0;
 
-                location.Upload(stream);
+                location.Upload(stream, MediaType);
             }
         }
     }

@@ -1,11 +1,12 @@
 ﻿using DICOMcloud.IO;
 using Microsoft.WindowsAzure.Storage.Blob;
+using System;
 using System.IO;
 using System.Net;
 
 namespace DICOMcloud.Azure.IO
 {
-    public class AzureLocation : ObservableStorageLocation
+    public class AzureLocation : ObservableStorageLocation, ISelfSignedUrlStorageLocation
     {
         private long? _size ;
         private IMediaId _mediaId;
@@ -41,29 +42,54 @@ namespace DICOMcloud.Azure.IO
 
         public override IMediaId MediaId { get { return _mediaId ; } }
 
-        public override long Size
+        public override long GetSize ( )
         {
-            get
+            if ( null != _size )
             {
-                if ( null != _size )
-                {
-                    return _size.Value ;
-                }
-                else if ( Blob.Exists ( ) )
-                {
-
-                    Blob.FetchAttributes ( ) ;
-
-                    _size = Blob.Properties.Length ;
-
-                    return _size.Value ;
-                }
-                else
-                {
-                    //doesn't exist
-                    return 0 ;
-                }
+                return _size.Value ;
             }
+            else if ( Blob.Exists ( ) )
+            {
+
+                Blob.FetchAttributes ( ) ;
+
+                _size = Blob.Properties.Length ;
+
+                return _size.Value ;
+            }
+            else
+            {
+                //doesn't exist
+                return 0 ;
+            }
+        }
+
+        public virtual Uri GetReadUrl(DateTimeOffset? startTime, DateTimeOffset? expiryTime)
+        {
+            var sasToken = Blob.GetSharedAccessSignature(new SharedAccessBlobPolicy()
+                {
+                    Permissions = SharedAccessBlobPermissions.Read,
+                    SharedAccessStartTime = startTime,
+                    SharedAccessExpiryTime = expiryTime
+                });
+            
+            var blobUrl = string.Format("{0}{1}", Blob.Uri.AbsoluteUri, sasToken);
+
+            return new Uri(blobUrl);
+        }
+
+        public virtual Uri GetWriteUrl(DateTimeOffset? startTime, DateTimeOffset? expiryTime)
+        {
+            var sasToken = Blob.GetSharedAccessSignature(new SharedAccessBlobPolicy()
+            {
+                Permissions = SharedAccessBlobPermissions.Write,
+                SharedAccessStartTime = startTime,
+                SharedAccessExpiryTime = expiryTime
+            });
+
+            var blobUrl = string.Format("{0}{1}", Blob.Uri.AbsoluteUri, sasToken);
+
+            return new Uri(blobUrl);
         }
 
         public override string Metadata
@@ -105,22 +131,24 @@ namespace DICOMcloud.Azure.IO
             Blob.DownloadToStream ( stream ) ;
         }
 
-        protected override void DoUpload(Stream stream)
+        protected override void DoUpload(Stream stream, string contentType)
         {
-            Blob.Properties.ContentType = ContentType ;
+            Blob.Properties.ContentType = contentType;
             Blob.UploadFromStream (stream);
             
             WriteMetadata ( ) ;
         }
 
-        protected override void DoUpload ( byte[] buffer )
+        protected override void DoUpload ( byte[] buffer, string contentType)
         {
+            Blob.Properties.ContentType = contentType;
             Blob.UploadFromByteArray ( buffer, 0, buffer.Length ) ;
             WriteMetadata ( ) ;
         }
 
-        protected override void DoUpload(string filename)
+        protected override void DoUpload(string filename, string contentType)
         {
+            Blob.Properties.ContentType = contentType;
             Blob.UploadFromFile (filename ) ;
             WriteMetadata( ) ;
          }

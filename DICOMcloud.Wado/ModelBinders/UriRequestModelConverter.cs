@@ -19,12 +19,13 @@ namespace DICOMcloud.Wado
       {
          WadoUriRequest wadoReq = new WadoUriRequest ( ) ;
          
-
+         wadoReq.Headers             = request.Headers;
          wadoReq.AcceptHeader        = request.Headers.Accept;
          wadoReq.AcceptCharsetHeader = request.Headers.AcceptCharset;
 
          var query = request.RequestUri.ParseQueryString ( ) ;
          
+         wadoReq.Query = query;
          wadoReq.RequestType = query[WadoRequestKeys.RequestType] ;
          wadoReq.StudyInstanceUID = query[WadoRequestKeys.StudyUID] ;
          wadoReq.SeriesInstanceUID = query[WadoRequestKeys.SeriesUID] ;
@@ -47,8 +48,7 @@ namespace DICOMcloud.Wado
          wadoReq.ImageRequestInfo.presentationSeriesUID = query[WadoRequestKeys.PresentationSeriesUID] ;
          wadoReq.ImageRequestInfo.TransferSyntax = query[WadoRequestKeys.TransferSyntax] ;
 
-
-         result = wadoReq ;
+         result = wadoReq;
 
          return true ;
       }

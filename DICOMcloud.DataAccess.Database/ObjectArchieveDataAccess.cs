@@ -4,7 +4,8 @@ using DICOMcloud.DataAccess.Database.Schema;
 using DICOMcloud.DataAccess.Matching;
 using System;
 using System.Collections.Generic;
-using fo = Dicom;
+using Dicom;
+using System.Linq;
 
 namespace DICOMcloud.DataAccess
 {
@@ -34,7 +35,7 @@ namespace DICOMcloud.DataAccess
             DataAdapter      = dataAdapter ;
         }
 
-        public virtual IEnumerable<fo.DicomDataset> Search
+        public virtual IEnumerable<DicomDataset> Search
         (
             IEnumerable<IMatchingCondition> conditions, 
             IQueryOptions options,
@@ -53,7 +54,63 @@ namespace DICOMcloud.DataAccess
 
             cmd.Execute();
 
-            return responseBuilder.GetResponse();
+            return cmd.Result;
+        }
+
+        public virtual PagedResult<DicomDataset> SearchPaged
+        ( 
+            IEnumerable<IMatchingCondition> conditions, 
+            IQueryOptions options,
+            string queryLevel
+        )
+        {
+            IQueryResponseBuilder responseBuilder;
+            PagedResult<DicomDataset> result ;
+
+
+            if ( null == options || !options.Limit.HasValue || !options.Offset.HasValue )
+            {
+                throw new ArgumentNullException ("options", "Query options must have a value for paged result") ;
+            }
+
+            if ( options.Limit == 0 )
+            {
+                throw new IndexOutOfRangeException ( "Invalid query limit for paged result") ;
+            }
+
+            responseBuilder = CreateResponseBuilder ( queryLevel ) ;
+
+            var cmd = DataAdapter.CreateSelectCommand ( SchemaProvider.GetQueryTable ( queryLevel ), 
+                                                        conditions, 
+                                                        options, 
+                                                        responseBuilder);
+
+            cmd.Execute();
+
+            result = new PagedResult<DicomDataset> ( cmd.Result, 
+                                                     options.Offset.Value,  
+                                                     options.Limit.Value,
+                                                     cmd.TotalCount.HasValue ? cmd.TotalCount.Value : cmd.Result.Count()) ;
+
+            return result ;
+            
+            /**********TODO: How to add support to ModalitiesInStudy, SeriesCountInStudies, SopInstanceCountInStudy/Series
+            if conditions.contains (ModalitiesInStudies)
+            {
+                condition.add (series.Modality);
+                condition.add (series.SeriesInstanceUID); //to get series count
+                condition.add (sopInstances.SopInsanceUID); //to get instances count
+
+                Search
+                series = ResponseBuilder.ResultSets[Series]
+
+                //Same logic for SeriesCountInStudies and InstanceCountInStudies/Series
+                foreach ( study in studies )
+                {
+                    var modalitiesInStudy = series.Where ( n=>n.StudyInstanceUID = study.StudyInstanceUID).Select (s=>s.Modality);
+                }
+            }
+            **********/
         }
 
         public virtual void StoreInstance 

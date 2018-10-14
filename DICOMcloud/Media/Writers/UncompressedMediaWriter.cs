@@ -32,7 +32,7 @@ namespace DICOMcloud.Media
             }
         }
 
-        protected override void Upload ( fo.DicomDataset dicomDataset, int frame, IStorageLocation storeLocation)
+        protected override void Upload ( fo.DicomDataset dicomDataset, int frame, IStorageLocation storeLocation, DicomMediaProperties mediaProperties)
         {
             var uncompressedData = new UncompressedPixelDataWrapper ( dicomDataset ) ;
             var buffer           = uncompressedData.PixelData.GetFrame ( frame - 1 ) ;
@@ -48,7 +48,7 @@ namespace DICOMcloud.Media
             }
             catch {}
 
-            storeLocation.Upload ( data ) ;
+            storeLocation.Upload ( data, MediaType ) ;
         }
     }
 }

@@ -7,5 +7,7 @@ namespace DICOMcloud.Wado.Models
    {
       HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue> AcceptHeader        { get; set; }
       HttpHeaderValueCollection<StringWithQualityHeaderValue>    AcceptCharsetHeader { get; set; }
-   }
+      HttpRequestHeaders Headers { get; set; }
+
+    }
 }

@@ -44,6 +44,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -58,6 +59,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>AssemblyInfo.Version.tt</DependentUpon>
     </Compile>
+    <Compile Include="DataAccess\PagedResult.cs" />
     <Compile Include="DICOMcloud\DCloudNotFoundException.cs" />
     <Compile Include="DICOMcloud\DICOMcloudException.cs" />
     <Compile Include="DICOMcloud\DicomObjectId\DicomObjectIdFactory.cs" />
@@ -87,6 +89,7 @@
     <Compile Include="DICOMcloud\IDicomConverter.cs" />
     <Compile Include="DICOMcloud\JsonDicomConverter.cs" />
     <Compile Include="IO\File\HashedFileKeyProvider.cs" />
+    <Compile Include="IO\ISelfSignedStorageLocation.cs" />
     <Compile Include="IO\ObservableStorageLocation\LocationDeletedMessage.cs" />
     <Compile Include="Media\DicomMediaId.cs" />
     <Compile Include="Media\DicomMediaProperties.cs" />

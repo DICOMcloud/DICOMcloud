@@ -25,5 +25,26 @@ namespace DICOMcloud.Pacs
             fo.DicomDataset request,
             IQueryOptions options
         ) ;
+
+
+        PagedResult<fo.DicomDataset> FindStudiesPaged
+        ( 
+            fo.DicomDataset request, 
+            IQueryOptions options
+
+        ) ;
+
+        PagedResult<fo.DicomDataset> FindObjectInstancesPaged
+        (
+            fo.DicomDataset request,
+            IQueryOptions options
+
+        ) ;
+
+        PagedResult<fo.DicomDataset> FindSeriesPaged
+        (
+            fo.DicomDataset request,
+            IQueryOptions options
+        ) ;
     }
 }

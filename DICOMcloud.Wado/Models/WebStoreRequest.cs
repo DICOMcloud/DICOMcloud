@@ -21,11 +21,14 @@ namespace DICOMcloud.Wado.Models
         {
             Request = request ;
 
+            Headers             = request.Headers;
             AcceptCharsetHeader = Request.Headers.AcceptCharset ;
             AcceptHeader        = Request.Headers.Accept ;
         }
 
         public HttpRequestMessage Request { get; private set; }
+
+        public HttpRequestHeaders Headers { get; set; }
 
         public HttpHeaderValueCollection<StringWithQualityHeaderValue> AcceptCharsetHeader
         {

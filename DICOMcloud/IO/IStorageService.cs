@@ -25,10 +25,13 @@ namespace DICOMcloud.IO
         /// <param name="stream">
         /// The <see cref="Stream"/> to be written
         /// </param>
+        /// <param name="contentType">
+        /// The content type/subtype of the stored data (e.g. image/jpeg)
+        /// </param>
         /// <param name="key">
         /// The <see cref="IMediaId"/> where the <paramref name="stream"/> will be written.
         /// </param>
-        void   Write  ( Stream stream, IMediaId key ) ;
+        void Write  ( Stream stream, IMediaId key, string contentType ) ;
 
         /// <summary>
         /// Reads the data of the provided media key

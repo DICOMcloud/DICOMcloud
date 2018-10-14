@@ -12,4 +12,9 @@ namespace DICOMcloud.DataAccess.Database.Commands
 
         T Result { get; }
     }
+
+    public interface IPagedDataAdapterCommand<T> : IDataAdapterCommand<IEnumerable<T>>
+    {
+        int? TotalCount { get; }
+    }
 }

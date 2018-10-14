@@ -12,5 +12,7 @@ namespace DICOMcloud.Wado.Models
         {
             get;
         }
+
+        Dictionary<string,string> CustomParameters { get; }
     }
 }

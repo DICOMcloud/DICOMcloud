@@ -6,21 +6,14 @@ using fo = Dicom;
 namespace DICOMcloud.Pacs
 {
 
-    //TODO: base class for query services
+    // base class for query services
     public abstract class DicomQueryServiceBase : IDicomQueryService
     {
         public IObjectArchieveDataAccess QueryDataAccess { get; protected set; }
-        //public DbSchemaProvider             SchemaProvider  { get; protected set; }
-        
-        //public DicomQueryServiceBase ( IDicomStorageQueryDataAccess queryDataAccess )
-        //: this ( queryDataAccess, new StorageDbSchemaProvider ( )*/ )
-        //{
-        //}
 
-        public DicomQueryServiceBase ( IObjectArchieveDataAccess queryDataAccess/*, DbSchemaProvider schemaProvider*/ )
+        public DicomQueryServiceBase ( IObjectArchieveDataAccess queryDataAccess )
         {
             QueryDataAccess = queryDataAccess ;
-            //SchemaProvider  = schemaProvider ;
         }
 
         public IEnumerable<fo.DicomDataset> Find 
@@ -39,6 +32,22 @@ namespace DICOMcloud.Pacs
             return DoFind ( request, options, queryLevel, conditions );
         }
 
+        public PagedResult<fo.DicomDataset> FindPaged
+        ( 
+            fo.DicomDataset request, 
+            IQueryOptions options,
+            string queryLevel
+        ) 
+        {
+
+            IEnumerable<IMatchingCondition> conditions = null;
+
+
+            conditions = BuildConditions ( request, new ConditionFactory ( ) );
+
+            return DoFindPaged ( request, options, queryLevel, conditions );
+        }
+
         protected virtual IEnumerable<IMatchingCondition> BuildConditions
         (
             fo.DicomDataset request,
@@ -49,6 +58,14 @@ namespace DICOMcloud.Pacs
         }
 
         protected abstract IEnumerable<fo.DicomDataset> DoFind
+        (
+            fo.DicomDataset request,
+            IQueryOptions options, 
+            string queryLevel,
+            IEnumerable<IMatchingCondition> conditions
+        ) ;
+
+        protected abstract PagedResult<fo.DicomDataset> DoFindPaged
         (
             fo.DicomDataset request,
             IQueryOptions options, 

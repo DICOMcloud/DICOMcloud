@@ -14,20 +14,17 @@ namespace DICOMcloud.IO
         string   ID          { get; }
         IMediaId MediaId     { get; }
         string   Metadata    { get; set ; }
-        long     Size        {get; }
-        //IStorageContainer StorageContainer { get;  }
 
+        bool   Exists   ( );
+        long   GetSize  ( );
+        void   Delete   ( );
+        Stream Download ( );  
+        void   Download ( Stream stream  );
+        void   Upload   ( Stream stream, string ContentType = null);
+        void   Upload   ( byte[] buffer, string ContentType = null);
+        void   Upload   ( string filename, string ContentType = null);
 
-        void   Delete         ( ) ;
-        //Stream GetWriteStream ( ) ;
-        Stream Download       ( ) ;  
-        void   Download       ( Stream stream  ) ;  
-        void   Upload         ( Stream stream  ) ;
-        void   Upload         ( byte[] buffer ) ;
-        void   Upload         ( string filename ) ;
-        Stream GetReadStream  ( ) ;
-
-        bool Exists ( ) ;    
+        Stream GetReadStream  ( );
     }
 
 

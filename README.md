@@ -12,7 +12,8 @@ This project has been movedd from the [repository](https://github.com/Zaid-Safad
 # Overview
 The DICOMcloud is a standalone DICOMweb server with RESTful implementation of the DICOMweb/WADO services:
 
-* **QIDO-RS:** Look up studies, series, images
+* **QIDO-RS:** Look up studies, series, images. 
+Results will be limited to a maximum results. [more info](https://dicomcloud.github.io/docs/dicomcloud/pagination/)
 
 * **WADO-RS:** Retrieve studies, series, images, frames and metadata
 
@@ -29,9 +30,9 @@ Additionally, the server implements the following RESTful services which are not
 
 &nbsp;
 
-The DICOMcloud server that can interface with any DICOMweb client over the current implemented features (qido-rs, wado-uri, wado-rs and stow-rs).
+The DICOMcloud server can interface with any DICOMweb client over the current implemented features (qido-rs, wado-uri, wado-rs and stow-rs).
 
-### Official documentation andh examples can be found here: 
+### Official documentation and examples can be found here: 
 https://dicomcloud.github.io/docs/dicomcloud/about/
 
 
@@ -97,10 +98,10 @@ The tables below describes the DICOMweb featrues currently implemented in the DI
 | ranges | Y | |  |
 | includefield | Y | |
 | sequences | Y | |
-| limit | N | |
-| offset | N | |
+| limit | Y | |
+| offset | Y | |
 | dicomKeyword group element | N | |
-| dicomKeyword name | N | |
+| dicomKeyword name | Y | |
 | TimezoneOffsetFromUTC | N | |
 
 ### WADO-RS

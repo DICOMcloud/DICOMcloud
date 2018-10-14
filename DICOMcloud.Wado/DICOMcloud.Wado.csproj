@@ -99,6 +99,7 @@
     <Compile Include="MimeHandler\OtherObjectsHandler.cs" />
     <Compile Include="ModelBinders\UriRequestModelBinder.cs" />
     <Compile Include="ModelBinders\QidoRequestModelConverter.cs" />
+    <Compile Include="Models\DicomWebServerSettings.cs" />
     <Compile Include="Models\IQidoQuery.cs" />
     <Compile Include="Models\IQidoRequestModel.cs" />
     <Compile Include="Models\IWadoRequest.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="Services\IQidoRsService.cs" />
     <Compile Include="Services\IWadoRsSerivce.cs" />
     <Compile Include="Services\IWebObjectStoreService.cs" />
+    <Compile Include="Services\LinkHeaderBuilder.cs" />
     <Compile Include="Services\MultipartResponseHelper.cs" />
     <Compile Include="Services\OhifService.cs" />
     <Compile Include="Services\QidoRsService.cs" />
@@ -128,7 +130,6 @@
     <Compile Include="Services\WebObjectStoreService.cs" />
     <Compile Include="Types\DefaultDicomQueryElements.cs" />
     <Compile Include="Types\DefaultMediaTransferSyntax.cs" />
-    <Compile Include="Types\WadoRequestHeader.cs" />
     <Compile Include="Services\IWadoUriService.cs" />
     <Compile Include="Types\WebStoreDatasetProcessingFailureMessage.cs" />
     <Compile Include="Types\WebStoreDatasetProcessedMessage.cs" />
