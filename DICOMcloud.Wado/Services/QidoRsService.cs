@@ -54,7 +54,7 @@ namespace DICOMcloud.Wado
             }
         }
 
-        public HttpResponseMessage SearchForStudies
+        public virtual HttpResponseMessage SearchForStudies
         (
             IQidoRequestModel request
         )
@@ -74,7 +74,7 @@ namespace DICOMcloud.Wado
             }  ) ;
         }
 
-        public HttpResponseMessage SearchForSeries(IQidoRequestModel request)
+        public virtual HttpResponseMessage SearchForSeries(IQidoRequestModel request)
         {
             return SearchForDicomEntity ( request, 
             DefaultDicomQueryElements.GetDefaultSeriesQuery ( ),
@@ -89,7 +89,7 @@ namespace DICOMcloud.Wado
             }  ) ;
         }
 
-        public HttpResponseMessage SearchForInstances(IQidoRequestModel request)
+        public virtual HttpResponseMessage SearchForInstances(IQidoRequestModel request)
         {
             return SearchForDicomEntity ( request,
             DefaultDicomQueryElements.GetDefaultInstanceQuery ( ),
