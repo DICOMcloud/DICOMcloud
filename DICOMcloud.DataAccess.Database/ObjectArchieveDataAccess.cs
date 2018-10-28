@@ -11,26 +11,15 @@ namespace DICOMcloud.DataAccess
 {
     public class ObjectArchieveDataAccess : IObjectArchieveDataAccess
     {
-        public string                    ConnectionString { get; set ; }
         public ObjectArchieveDataAdapter DataAdapter      { get; private set; }
         public DbSchemaProvider          SchemaProvider   { get; private set; }
 
         public ObjectArchieveDataAccess
         ( 
-            IConnectionStringProvider connectionStringProvier, 
-            DbSchemaProvider schemaProvier,
-            ObjectArchieveDataAdapter dataAdapter
-        ) : this ( connectionStringProvier.ConnectionString, schemaProvier, dataAdapter)
-        { }
-
-        public ObjectArchieveDataAccess
-        ( 
-            string connectionString, 
             DbSchemaProvider schemaProvier,
             ObjectArchieveDataAdapter dataAdapter
         )
         { 
-            ConnectionString = connectionString ;
             SchemaProvider   = schemaProvier ;
             DataAdapter      = dataAdapter ;
         }
@@ -123,7 +112,7 @@ namespace DICOMcloud.DataAccess
             //TODO: use transation
             //dbAdapter.CreateTransation ( ) 
 
-            var cmd = DataAdapter.CreateInsertCommand ( parameters, data );
+            var cmd = DataAdapter.CreateInsertCommand (objectId, parameters, data );
 
             cmd.Connection.Open ( );
 
