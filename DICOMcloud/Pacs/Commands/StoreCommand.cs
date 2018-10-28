@@ -199,8 +199,9 @@ namespace DICOMcloud.Pacs.Commands
             MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.xmlDicom ) ) ;
             MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossless.UID.UID));
             MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossy.UID.UID));
-            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Jpeg, DicomTransferSyntax.JPEGProcess14SV1.UID.UID ) ) ;
-            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Jpeg, DicomTransferSyntax.JPEGProcess1.UID.UID ) ) ;
+            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.JPEGProcess14SV1.UID.UID ) ) ;
+            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.JPEGProcess1.UID.UID ) ) ;
+            MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.Jpeg));
         }
 
         public IList<DicomMediaProperties> MediaTypes { get; private set ;}
