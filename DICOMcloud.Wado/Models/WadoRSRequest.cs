@@ -9,7 +9,7 @@ using DICOMcloud.Pacs;
 
 namespace DICOMcloud.Wado.Models
 {
-    public abstract class WadoRsRequestBase : IWadoRequestHeader
+    public abstract class WadoRsRequestBase : IWadoRsRequestBase
     {
 
        public HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue> AcceptHeader
@@ -29,33 +29,33 @@ namespace DICOMcloud.Wado.Models
         public ObjectQueryLevel QueryLevel { get; set; } 
     }
 
-    public class WadoRSStudiesRequest : WadoRsRequestBase, IWadoRsStudiesRequest
+    public class WadoRsStudiesRequest : WadoRsRequestBase, IWadoRsStudiesRequest
     {
         public string StudyInstanceUID{get; set;}
     }
 
-    public class  WadoRSSeriesRequest : WadoRSStudiesRequest, IWadoRsSeriesRequest
+    public class  WadoRsSeriesRequest : WadoRsStudiesRequest, IWadoRsSeriesRequest
     {
         public string SeriesInstanceUID{get; set;}
     }
 
-    public class WadoRSInstanceRequest : WadoRSSeriesRequest, IWadoRSInstanceRequest
+    public class WadoRsInstanceRequest : WadoRsSeriesRequest, IWadoRsInstanceRequest
     {
-        public WadoRSInstanceRequest() { }
-        public WadoRSInstanceRequest(IWadoRsStudiesRequest request)
+        public WadoRsInstanceRequest() { }
+        public WadoRsInstanceRequest(IWadoRsStudiesRequest request)
         {
             AcceptCharsetHeader = request.AcceptCharsetHeader ;
             AcceptHeader = request.AcceptHeader ;
             StudyInstanceUID = request.StudyInstanceUID ;
         }
 
-        public WadoRSInstanceRequest(IWadoRsSeriesRequest request)
+        public WadoRsInstanceRequest(IWadoRsSeriesRequest request)
         : this ( (IWadoRsStudiesRequest)request)
         {
             SeriesInstanceUID = request.SeriesInstanceUID ;
         }
 
-        public WadoRSInstanceRequest(WadoRSInstanceRequest request)
+        public WadoRsInstanceRequest(WadoRsInstanceRequest request)
         : this ( (IWadoRsSeriesRequest)request)
         {
             SOPInstanceUID = request.SOPInstanceUID;
@@ -65,7 +65,7 @@ namespace DICOMcloud.Wado.Models
         public int? Frame { get; set; }
     }
 
-    public class WadoRSFramesRequest : WadoRSInstanceRequest, IWadoRSFramesRequest
+    public class WadoRsFramesRequest : WadoRsInstanceRequest, IWadoRsFramesRequest
     {
         public int[] Frames{get; set;}
     }
