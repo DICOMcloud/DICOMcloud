@@ -17,32 +17,39 @@ namespace DICOMcloud.Wado
     public class WadoStoreResponse
     {
         private fo.DicomDataset _dataset ;
-        public IRetieveUrlProvider UrlProvider { get; set; }
-        public string StudyInstanceUID         { get; private set; }
-        public HttpStatusCode HttpStatus       { get; private set ; }
-        public string StatusMessage            { get; private set;}
+        public IRetrieveUrlProvider UrlProvider { get; set; }
+        public IStudyId StudyId                 { get; private set; }
+        public HttpStatusCode HttpStatus        { get; private set ; }
+        public string StatusMessage             { get; private set;}
 
         private bool _successAdded = false ;
         private bool _failureAdded = false ;
 
         public WadoStoreResponse ( )
-        : this ( "", null )
+        : this ( null, null )
         {
 
         }
 
-        public WadoStoreResponse ( string studyInstanceUID, IRetieveUrlProvider urlProvider )
+        public WadoStoreResponse ( IStudyId studyId, IRetrieveUrlProvider urlProvider = null)
         {
             _dataset         = new fo.DicomDataset ( ) ;
-            UrlProvider      = urlProvider?? new RetieveUrlProvider ( ) ;
-            StudyInstanceUID = studyInstanceUID ;
+            UrlProvider      = urlProvider?? new RetrieveUrlProvider( ) ;
+            StudyId          = studyId;
             HttpStatus       = HttpStatusCode.Unused ;
             StatusMessage    = "" ;
         }
 
         public fo.DicomDataset GetResponseContent ( )
-        {
-            _dataset.AddOrUpdate<string>(fo.DicomTag.RetrieveURI, UrlProvider.GetStudyUrl ( StudyInstanceUID ?? "" ) ) ;
+        {   
+            string studyUrl =  "";
+
+            if (null != StudyId)
+            {
+                studyUrl = UrlProvider.GetStudyUrl(StudyId);
+            }
+
+            _dataset.AddOrUpdate<string>(fo.DicomTag.RetrieveURI, studyUrl ) ;
         
             return _dataset ;
         }
