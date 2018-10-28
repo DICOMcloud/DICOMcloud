@@ -18,6 +18,7 @@ using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using DICOMcloud.Wado.WebApi.Exceptions;
 using DICOMcloud.DataAccess.Database;
+using DICOMcloud.Wado.Models;
 
 namespace DICOMcloud.Wado
 {
@@ -56,6 +57,13 @@ namespace DICOMcloud.Wado
         {
             ConnectionStringProvider =  new ConnectionStringProvider ( ) ;
             StorageConection         = CloudConfigurationManager.GetSetting   ( "app:PacsStorageConnection" ) ;
+
+            var supportSSUrl = CloudConfigurationManager.GetSetting("app:supportSelfSignedUrls");
+
+            if (!string.IsNullOrWhiteSpace(supportSSUrl))
+            { 
+                DicomWebServerSettings.Instance.SupportSelfSignedUrls =  bool.Parse (supportSSUrl.Trim());
+            }
         }
 
         protected virtual void RegisterEvents ( )
@@ -126,8 +134,8 @@ namespace DICOMcloud.Wado
             For<ObjectArchieveDataAdapter> ( ).Use <ObjectArchieveDataAdapter> ( ) ;
             For<IObjectArchieveDataAccess> ( ).Use <ObjectArchieveDataAccess> ( ) ;
 
-            IRetieveUrlProvider urlProvider = new RetieveUrlProvider ( CloudConfigurationManager.GetSetting ( RetieveUrlProvider.config_WadoRs_API_URL),
-                                                                       CloudConfigurationManager.GetSetting ( RetieveUrlProvider.config_WadoUri_API_URL) ) ;
+            IRetrieveUrlProvider urlProvider = new RetrieveUrlProvider ( CloudConfigurationManager.GetSetting ( RetrieveUrlProvider.config_WadoRs_API_URL),
+                                                                         CloudConfigurationManager.GetSetting ( RetrieveUrlProvider.config_WadoUri_API_URL) ) ;
             
             For<IDCloudCommandFactory> ( ).Use<DCloudCommandFactory> ( ) ;
 
@@ -143,7 +151,7 @@ namespace DICOMcloud.Wado
 
             For<IDicomMediaIdFactory> ( ).Use <DicomMediaIdFactory> ( ) ;
 
-            For<IRetieveUrlProvider> ( ).Use (urlProvider) ;
+            For<IRetrieveUrlProvider> ( ).Use (urlProvider) ;
 
             if ( StorageConection.StartsWith("|datadirectory|", StringComparison.OrdinalIgnoreCase))
             {
