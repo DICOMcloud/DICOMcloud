@@ -153,6 +153,8 @@ namespace DICOMcloud.Wado
 
             For<IRetrieveUrlProvider> ( ).Use (urlProvider) ;
 
+            RegisterStoreCommandSettings( );
+
             if ( StorageConection.StartsWith("|datadirectory|", StringComparison.OrdinalIgnoreCase))
             {
                 var appDataPath  = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) ;
@@ -162,7 +164,7 @@ namespace DICOMcloud.Wado
                 
                 StorageConection = appDataPath + userPathPart ;
             }
-
+            
             if ( System.IO.Path.IsPathRooted ( StorageConection ) )
             {
                 For<IKeyProvider> ( ).Use<HashedFileKeyProvider> ( ) ;
@@ -178,6 +180,33 @@ namespace DICOMcloud.Wado
                 
                 For<IMediaStorageService> ( ).Use <AzureStorageService> ( ).Ctor<CloudStorageAccount> ( ).Is ( StorageAccount ) ;
             }
+        }
+
+        private void RegisterStoreCommandSettings()
+        {
+            StorageSettings storageSettings = new StorageSettings ( ) ;
+
+
+            var validateDuplicateInstance = CloudConfigurationManager.GetSetting("app:storecommand.validateDuplicateInstance");
+            var storeOriginalDataset = CloudConfigurationManager.GetSetting("app:storecommand.storeOriginalDataset");
+            var storeQueryModel = CloudConfigurationManager.GetSetting("app:storecommand.storeQueryModel");
+
+            if (bool.TryParse (validateDuplicateInstance, out bool validateDuplicateValue))
+            { 
+                storageSettings.ValidateDuplicateInstance = validateDuplicateValue;
+            }
+
+            if (bool.TryParse(storeOriginalDataset, out bool storeOriginalDatasetValue))
+            {
+                storageSettings.StoreOriginal = storeOriginalDatasetValue;
+            }
+
+            if (bool.TryParse(storeQueryModel, out bool storeQueryModelValue))
+            {
+                storageSettings.StoreQueryModel = validateDuplicateValue;
+            }
+
+            For<StorageSettings>().Use (@storageSettings);
         }
 
         protected virtual void RegisterMediaWriters ( ) 

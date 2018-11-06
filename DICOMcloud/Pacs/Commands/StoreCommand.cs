@@ -34,9 +34,18 @@ namespace DICOMcloud.Pacs.Commands
             IObjectArchieveDataAccess dataStorage, 
             IDicomMediaWriterFactory mediaFactory
         )
+        : this ( dataStorage, mediaFactory, new StorageSettings())
+        {}
+
+        public StoreCommand 
+        ( 
+            IObjectArchieveDataAccess dataStorage, 
+            IDicomMediaWriterFactory mediaFactory,
+            StorageSettings settings
+        )
         : base ( dataStorage )
         {
-            Settings = new StorageSettings ( ) ;
+            Settings = settings;
             MediaFactory = mediaFactory ;
         }
 
