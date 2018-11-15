@@ -9,6 +9,9 @@ using DICOMcloud.Pacs.Commands;
 using DICOMcloud.IO;
 using DICOMcloud.Media;
 using DICOMcloud.Pacs;
+using Dicom;
+using DICOMcloud.DataAccess;
+using System.Collections.Generic;
 
 namespace DICOMcloud.UnitTest
 {
@@ -44,14 +47,47 @@ namespace DICOMcloud.UnitTest
         [TestMethod]
         public void Pacs_Storage_Simple ( )
         {
-            StoreService.StoreDicom ( DicomHelper.GetDicomDataset (0), new DataAccess.InstanceMetadata ( ) ) ;
-            StoreService.StoreDicom ( DicomHelper.GetDicomDataset (1), new DataAccess.InstanceMetadata ( ) ) ;
-            StoreService.StoreDicom ( DicomHelper.GetDicomDataset (2), new DataAccess.InstanceMetadata ( ) ) ;
+            DicomDataset[] storeDs = new DicomDataset[] 
+            { 
+                DicomHelper.GetDicomDataset (0),
+                DicomHelper.GetDicomDataset (1),
+                DicomHelper.GetDicomDataset (2)
+            };
 
-            // TODO: do a query and compare fields values.
+            StoreService.StoreDicom (storeDs[0], new DataAccess.InstanceMetadata ( ) ) ;
+            StoreService.StoreDicom (storeDs[1], new DataAccess.InstanceMetadata ( ) ) ;
+            StoreService.StoreDicom (storeDs[2], new DataAccess.InstanceMetadata ( ) ) ;
+
+            ValidateStoredMatchQuery (storeDs);
 
             Pacs_Delete_Simple ( ) ;
         }
+
+        private void ValidateStoredMatchQuery(DicomDataset[] storedDs)
+        {
+            var queryDs = DicomHelper.GetQueryDataset ( ) ;
+            var queryFactory = new DataAccess.Matching.ConditionFactory();
+            var matchingElements = queryFactory.ProcessDataSet (queryDs);
+
+            var results = DataAccessHelper.DataAccess.Search ( matchingElements, 
+                                                               new QueryOptions ( ), 
+                                                               DICOMcloud.ObjectQueryLevelConstants.Instance );
+        
+            foreach ( var ds in results)
+            { 
+                var sopUid = ds.Get<string> (DicomTag.SOPInstanceUID);
+
+                var stored = storedDs.Where ( n=> n.Get<string> (DicomTag.SOPInstanceUID) == sopUid).FirstOrDefault ( );
+            
+                Assert.IsNotNull (stored);
+
+                foreach ( var element in stored)
+                { 
+                    Assert.AreEqual ( stored.Get<string> (element.Tag), ds.Get<string> (element.Tag));
+                }
+            }
+        }
+
         protected virtual void EnsureCodecsLoaded ( ) 
         {
             var path = Environment.CurrentDirectory ; //System.IO.Path.Combine ( System.Web.Hosting.HostingEnvironment.MapPath ( "~/" ), "bin" );
@@ -88,7 +124,7 @@ namespace DICOMcloud.UnitTest
             }
         }
 
-        private void Pacs_Delete_Simple ( )
+        private void Pacs_Delete_Simple ()
         {
             var study1    = GetUidElement ( fo.DicomTag.StudyInstanceUID, DicomHelper.Study1UID) ;
             var study2    = GetUidElement ( fo.DicomTag.StudyInstanceUID, DicomHelper.Study2UID) ;

@@ -43,6 +43,11 @@
       <column name="SopInstanceUid" table="ObjectInstance" modelKey="true" defenition="[SopInstanceUid] [nchar](64) NOT NULL" tag="524312" />
       <column name="SopClassUid" table="ObjectInstance" defenition="[SopClassUid] [nchar](43) NOT NULL" tag="524310" />
       <column name="InstanceNumber" table="ObjectInstance" isNum="true" defenition="[InstanceNumber] [int] NULL" tag="2097171" />
+      <column name="Rows" table="ObjectInstance" isNum="true" defenition="[Rows] [int] NULL" tag="2621456" />
+      <column name="Columns" table="ObjectInstance" isNum="true" defenition="[Columns] [int] NULL" tag="2621457" />
+      <column name="BitsAllocated" table="ObjectInstance" isNum="true" defenition="[BitsAllocated] [int] NULL" tag="2621696" />
+      <column name="NumberOfFrames" table="ObjectInstance" isNum="true" defenition="[NumberOfFrames] [int] NULL" tag="2621448" />
+
       <column name="Metadata" table="ObjectInstance" isData="true" defenition="[Metadata] TEXT NULL" tag="" />
       <column name="Owner" table="ObjectInstance" defenition="[Owner] NVARCHAR (265) NULL" tag="" />      
     

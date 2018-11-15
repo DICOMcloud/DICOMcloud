@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DICOMcloud
 {
+    [Serializable]
     public class DCloudException : Exception
     {
         //

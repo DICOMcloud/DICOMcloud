@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using fo = Dicom;
+using Dicom;
 
 namespace DICOMcloud.DataAccess.Database
 {
@@ -94,12 +94,12 @@ namespace DICOMcloud.DataAccess.Database
             if ( column.IsForeign )
             {
                 string keyString = value.ToString ( ) ;
-
+                
                 KeyToDataSetCollection resultSet = null ;
                 
                 if ( ResultSets.TryGetValue ( column.Table.Parent, out resultSet ) )
                 {             
-                    fo.DicomDataset foreignDs = (fo.DicomDataset) resultSet[keyString] ;
+                    DicomDataset foreignDs = (DicomDataset) resultSet[keyString] ;
 
                     if ( QueryLevelTableName == column.Table.Name )
                     { 
@@ -111,8 +111,8 @@ namespace DICOMcloud.DataAccess.Database
                     { 
                         if ( column.Table.IsSequence )
                         { 
-                            fo.DicomSequence sq = (fo.DicomSequence) CurrentData.ForeignDs.Get<fo.DicomSequence> (CurrentData.ForeignTagValue) ;
-                            fo.DicomDataset item = new fo.DicomDataset ( ) ;
+                            DicomSequence sq = (DicomSequence) CurrentData.ForeignDs.Get<DicomSequence> (CurrentData.ForeignTagValue) ;
+                            DicomDataset item = new DicomDataset ( ) ;
                             
                             sq.Items.Add ( item ) ;
 
@@ -143,11 +143,11 @@ namespace DICOMcloud.DataAccess.Database
         {
             foreach ( var dicomTag in dicomTags )
             {
-                fo.DicomDictionaryEntry dicEntry = fo.DicomDictionary.Default[dicomTag];
+                DicomDictionaryEntry dicEntry = DicomDictionary.Default[dicomTag];
                 var vr = dicEntry.ValueRepresentations.First() ;
                 Type valueType = value.GetType ( ) ;
 
-                if ( vr == fo.DicomVR.PN )
+                if ( vr == DicomVR.PN )
                 {
                     PersonNameParts currentPart = SchemaProvider.GetPNColumnPart ( columnName ) ;
 
@@ -185,10 +185,21 @@ namespace DICOMcloud.DataAccess.Database
                 {
                     CurrentData.CurrentDs.AddOrUpdate<DateTime>(dicomTag, (DateTime) value);
                 }
-
                 else if (valueType == typeof(Int32))
                 {
-                    CurrentData.CurrentDs.AddOrUpdate<Int32>(dicomTag, (Int32)value);
+                    DicomTag tag = (DicomTag) dicomTag;
+                    var VR = tag.DictionaryEntry.ValueRepresentations.First();
+
+                    // Unsigned String must be stored as Int in SQL DB 
+                    // https://social.msdn.microsoft.com/Forums/en-US/ff08c190-a981-4896-9542-3f64b95a84a2/sql-server-data-type-for-signedunsigned-integral-c-types?forum=adodotnetdataproviders
+                    if (VR == DicomVR.US )
+                    {
+                        CurrentData.CurrentDs.AddOrUpdate<UInt16>(dicomTag, Convert.ToUInt16 (value));
+                    }
+                    else
+                    { 
+                        CurrentData.CurrentDs.AddOrUpdate<Int32>(dicomTag, (Int32)value);
+                    }
                 }
                 else if (valueType == typeof(Int64))
                 {
@@ -203,14 +214,26 @@ namespace DICOMcloud.DataAccess.Database
             }
         }
         
-        public virtual IEnumerable<fo.DicomDataset> GetResponse ( )
+        public virtual IEnumerable<DicomDataset> GetResponse ( )
         { 
-            if ( !ResultSets.ContainsKey ( QueryLevelTableName) )
+            return GetQueryResults (QueryLevelTableName);
+        }
+
+        public virtual IEnumerable<DicomDataset> GetResults (string queryLevel)
+        {
+            var queryLevelTableName = SchemaProvider.GetQueryTable(queryLevel);
+
+            return GetQueryResults (queryLevelTableName);
+        }
+
+        private IEnumerable<DicomDataset> GetQueryResults (string queryLevelTableName)
+        { 
+            if ( !ResultSets.ContainsKey (queryLevelTableName) )
             {
-                return new KeyToDataSetCollection ( ).Values.OfType<fo.DicomDataset>() ;
+                return new KeyToDataSetCollection ( ).Values.OfType<DicomDataset>() ;
             }
 
-            return ResultSets[QueryLevelTableName].Values.OfType<fo.DicomDataset>() ;
+            return ResultSets[queryLevelTableName].Values.OfType<DicomDataset>() ;
         }
 
         private void UpdateDsPersonName()

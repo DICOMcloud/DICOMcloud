@@ -7,6 +7,10 @@
     [Metadata]                 TEXT           NULL,
     [Owner]                    NVARCHAR (265) NULL,
     [CreatedOn]                DATETIME       DEFAULT (getdate()) NOT NULL,
+    [Rows] INT NULL, 
+    [Columns] INT NULL, 
+    [BitsAllocated] INT NULL, 
+    [NumberOfFrames] INT NULL, 
     CONSTRAINT [PK_ObjectInstance] PRIMARY KEY CLUSTERED ([ObjectInstanceKey] ASC),
     CONSTRAINT [FK_ObjectInstance_ToSeries] FOREIGN KEY ([ObjectInstance_SeriesKey]) REFERENCES [dbo].[Series] ([SeriesKey]) ON DELETE CASCADE ON UPDATE CASCADE
 );
