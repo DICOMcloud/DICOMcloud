@@ -86,24 +86,6 @@ namespace DICOMcloud.DataAccess
                                                      cmd.TotalCount.HasValue ? cmd.TotalCount.Value : cmd.Result.Count()) ;
 
             return result ;
-            
-            /**********TODO: How to add support to ModalitiesInStudy, SeriesCountInStudies, SopInstanceCountInStudy/Series
-            if conditions.contains (ModalitiesInStudies)
-            {
-                condition.add (series.Modality);
-                condition.add (series.SeriesInstanceUID); //to get series count
-                condition.add (sopInstances.SopInsanceUID); //to get instances count
-
-                Search
-                series = ResponseBuilder.ResultSets[Series]
-
-                //Same logic for SeriesCountInStudies and InstanceCountInStudies/Series
-                foreach ( study in studies )
-                {
-                    var modalitiesInStudy = series.Where ( n=>n.StudyInstanceUID = study.StudyInstanceUID).Select (s=>s.Modality);
-                }
-            }
-            **********/
         }
 
         public virtual void StoreInstance 
@@ -439,7 +421,7 @@ namespace DICOMcloud.DataAccess
 
                 studyParams.NumberOfSeries++;
 
-                if (!string.IsNullOrEmpty(modality))
+                if (!string.IsNullOrEmpty(modality) && !studyParams.Modality.Contains (modality))
                 {
                     studyParams.Modality.Add (modality);
                 }
