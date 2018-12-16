@@ -334,11 +334,17 @@ namespace DICOMcloud.Wado
 
         private void CreateElement(string tagString, DicomDataset dicomRequest, string value)
         {
+            // special include fields. Server include all by default.
+            if (tagString.ToLower() == "all")
+            {
+                return;
+            }
+
             uint tag = GetTagValue (tagString);
 
             dicomRequest.AddOrUpdate(tag, value);
         }
-        
+
         private void CreateSequence(List<string> elements, int currentElementIndex, DicomDataset dicomRequest, string value)
         {
             uint tag = GetTagValue ( elements[currentElementIndex] ) ;
@@ -397,7 +403,7 @@ namespace DICOMcloud.Wado
 
             return tag;
         }
-    
+
         private delegate PagedResult<DicomDataset> DoQueryDelegate 
         ( 
             IObjectArchieveQueryService queryService, 
