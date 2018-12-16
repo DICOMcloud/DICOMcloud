@@ -110,6 +110,11 @@ namespace DICOMcloud.Wado
             instanceDs.Add<object>(fo.DicomTag.SOPClassUID,null) ;
             instanceDs.Add<object>(fo.DicomTag.SOPInstanceUID,null) ;
             instanceDs.Add<object>(fo.DicomTag.InstanceNumber,null) ;
+
+            instanceDs.Add<object>(fo.DicomTag.Rows, null);
+            instanceDs.Add<object>(fo.DicomTag.Columns, null);
+            instanceDs.Add<object>(fo.DicomTag.BitsAllocated, null);
+            instanceDs.Add<object>(fo.DicomTag.NumberOfFrames, null);
         }
     }
 }

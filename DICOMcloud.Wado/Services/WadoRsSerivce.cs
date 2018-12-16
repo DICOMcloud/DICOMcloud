@@ -28,32 +28,32 @@ namespace DICOMcloud.Wado
         //octet-stream, jpeg, jp2....
         public virtual HttpResponseMessage RetrieveStudy ( IWadoRsStudiesRequest request )
         {
-            return RetrieveMultipartInstance ( request, new WadoRSInstanceRequest ( request ) ) ;
+            return RetrieveMultipartInstance ( request, new WadoRsInstanceRequest ( request ) ) ;
         }
 
         public virtual HttpResponseMessage RetrieveSeries ( IWadoRsSeriesRequest request )
         {
-            return RetrieveMultipartInstance ( request, new WadoRSInstanceRequest ( request ) ) ;
+            return RetrieveMultipartInstance ( request, new WadoRsInstanceRequest ( request ) ) ;
         }
 
-        public virtual HttpResponseMessage RetrieveInstance ( IWadoRSInstanceRequest request )
+        public virtual HttpResponseMessage RetrieveInstance ( IWadoRsInstanceRequest request )
         {
             return RetrieveMultipartInstance ( request, request ) ;
         }
 
-        public virtual HttpResponseMessage RetrieveFrames ( IWadoRSFramesRequest request )
+        public virtual HttpResponseMessage RetrieveFrames ( IWadoRsFramesRequest request )
         {
             return RetrieveMultipartInstance ( request, request ) ;
         }
 
-        public virtual HttpResponseMessage RetrieveBulkData ( IWadoRSInstanceRequest request )
+        public virtual HttpResponseMessage RetrieveBulkData ( IWadoRsInstanceRequest request )
         {
             //TODO: validation accept header is not dicom...
 
             return RetrieveMultipartInstance ( request, request ) ;
         }
         
-        public virtual HttpResponseMessage RetrieveBulkData ( IWadoRSFramesRequest request )
+        public virtual HttpResponseMessage RetrieveBulkData ( IWadoRsFramesRequest request )
         {
             //TODO: validation accept header is not dicom...
 
@@ -64,15 +64,15 @@ namespace DICOMcloud.Wado
         //Bulk data URL can be returned (which we should) 
         public virtual HttpResponseMessage RetrieveStudyMetadata(IWadoRsStudiesRequest request)
         {
-            return RetrieveInstanceMetadata ( new WadoRSInstanceRequest ( request ) );
+            return RetrieveInstanceMetadata ( new WadoRsInstanceRequest ( request ) );
         }
 
         public virtual HttpResponseMessage RetrieveSeriesMetadata(IWadoRsSeriesRequest request)
         {
-            return RetrieveInstanceMetadata ( new WadoRSInstanceRequest ( request ) );
+            return RetrieveInstanceMetadata ( new WadoRsInstanceRequest ( request ) );
         }
 
-        public virtual HttpResponseMessage RetrieveInstanceMetadata(IWadoRSInstanceRequest request)
+        public virtual HttpResponseMessage RetrieveInstanceMetadata(IWadoRsInstanceRequest request)
         {
             if ( IsMultiPartRequest ( request ) )
             {
@@ -112,9 +112,9 @@ namespace DICOMcloud.Wado
             foreach ( var mediaTypeHeader in header.AcceptHeader ) 
             {
 
-                if ( request is IWadoRSFramesRequest )
+                if ( request is IWadoRsFramesRequest )
                 {
-                    var frames = ((IWadoRSFramesRequest) request ).Frames ;
+                    var frames = ((IWadoRsFramesRequest) request ).Frames ;
                     foreach ( int frame in frames )
                     {
                         request.Frame = frame ;

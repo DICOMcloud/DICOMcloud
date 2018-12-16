@@ -44,7 +44,7 @@ namespace DICOMcloud.Wado.Controllers
         public HttpResponseMessage GetInstance 
         ( 
             [ModelBinder(typeof(RsObjectRequestModelBinder))]  
-            IWadoRSInstanceRequest request 
+            IWadoRsInstanceRequest request 
         )
         {
             return WadoService.RetrieveInstance ( request ) ;
@@ -55,7 +55,7 @@ namespace DICOMcloud.Wado.Controllers
         public HttpResponseMessage GetFrames 
         ( 
             [ModelBinder(typeof(RsFrameRequestModelBinder))]  
-            IWadoRSFramesRequest request 
+            IWadoRsFramesRequest request 
         )
         {
             return WadoService.RetrieveFrames ( request ) ;
@@ -88,7 +88,7 @@ namespace DICOMcloud.Wado.Controllers
         public HttpResponseMessage GetInstanceMetadata
         ( 
             [ModelBinder(typeof(RsObjectRequestModelBinder))]  
-            IWadoRSInstanceRequest request 
+            IWadoRsInstanceRequest request 
         )
         {
             try

@@ -6,7 +6,7 @@ namespace DICOMcloud.Wado
 {
     public interface IWebObjectStoreService
     {
-        Task<HttpResponseMessage> Store  ( WebStoreRequest request, string studyInstanceUID );
+        Task<HttpResponseMessage> Store  ( WebStoreRequest request, IStudyId studyId = null);
         Task<HttpResponseMessage> Delete ( WebDeleteRequest request ) ;
     }
 }

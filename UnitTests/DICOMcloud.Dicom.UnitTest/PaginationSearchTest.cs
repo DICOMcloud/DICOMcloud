@@ -166,7 +166,7 @@ namespace DICOMcloud.UnitTest
 
                         seriesDs.CopyTo (instanceDs);
 
-                        instanceDs.AddOrUpdate (DicomTag.SOPInstanceUID, string.Format ("std.{0}.ser.{0}.inst.{0}", studyIndex, seriesIndex, instanceIndex));
+                        instanceDs.AddOrUpdate (DicomTag.SOPInstanceUID, string.Format ("std.{0}.ser.{1}.inst.{2}", studyIndex, seriesIndex, instanceIndex));
 
                         StoreService.StoreDicom(instanceDs, new DataAccess.InstanceMetadata());
                     }

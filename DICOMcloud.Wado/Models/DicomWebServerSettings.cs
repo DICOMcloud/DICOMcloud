@@ -23,6 +23,7 @@ namespace DICOMcloud.Wado.Models
 
         public double SelfSignedUrlReadExpiryTimeInHours { get; set; }
         public bool CanUserOverrideSelfSignedUrlReadExpiryTime { get; set; }
+        public bool SupportSelfSignedUrls { get; set;}
 
         private static DicomWebServerSettings _instance = DicomWebServerSettingsFactory.Create ( );
 

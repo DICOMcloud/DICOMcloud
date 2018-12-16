@@ -20,7 +20,6 @@ namespace DICOMcloud.Wado
     {
         public IObjectRetrieveService RetrieveService { get; private set ; }
         
-        //public WadoUriService ( WadoResponseProcessorFactory mediaResponseHandlerFactory )
         public WadoUriService ( IObjectRetrieveService retrieveService )
         {
             RetrieveService = retrieveService ;
@@ -50,7 +49,7 @@ namespace DICOMcloud.Wado
 
                 if ( null != dcmLocation && dcmLocation.Exists ( ) )
                 {
-                    if (dcmLocation is ISelfSignedUrlStorageLocation)
+                    if (DicomWebServerSettings.Instance.SupportSelfSignedUrls && dcmLocation is ISelfSignedUrlStorageLocation)
                     {
                         var expiry = DateTime.Now.AddHours(DicomWebServerSettings.Instance.SelfSignedUrlReadExpiryTimeInHours);
                         Uri locationUrl = ((ISelfSignedUrlStorageLocation)dcmLocation).GetReadUrl (null, expiry);
@@ -194,9 +193,6 @@ namespace DICOMcloud.Wado
         }
 
         private readonly MediaTypeHeaderValue AllMimeType = MediaTypeHeaderValue.Parse ("*/*");
-
-        //public WadoResponseProcessorFactory MediaResponseHandlerFactory { get; private set; }
-        
     }
 
     public class MediaTypeHeaderComparer : IEqualityComparer<MediaTypeHeaderValue>

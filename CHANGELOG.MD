@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v0.7.0-beta
+
+### Added
+- Add support for includefield value "all" in qido-rs. Issue #42
+- Support additional attributes in QIDO-RS. Issue #34 [DATABASE BREAKING CHANGE]
+  - ModalitiesInStudy
+  - NumberOfStudyRelatedSeries
+  - NumberOfStudyRelatedInstances 
+  - NumberOfSeriesRelatedInstances * Rows
+  - Columns
+  - BitsAllocated 
+  - NumberOfFrames
+- Allow configuring the StoreCommand by passing "StorageSettings" instance from the application. Issue #40
+- Add a configuration option to support Shared Access Signature/Self-Signed URLs. Issue #37
+- Support generating JPG pre-cached on store. Issue #35
+
+### Changed
+
+- BREAKING CHANGE - Code Refactoring and Name changes. Issue #38 
+- Update MS dependencies to latest version. Issue #36
+
+### Fixed
+- wrong sequence being returned in stow-rs/store response. Issue #43
+
 ## v0.6.0-beta
 
 ### Added

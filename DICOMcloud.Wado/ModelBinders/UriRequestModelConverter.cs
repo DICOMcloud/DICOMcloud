@@ -10,50 +10,55 @@ using System.Threading.Tasks;
 
 namespace DICOMcloud.Wado
 {
-   public class UriRequestModelConverter 
-   {
-      public UriRequestModelConverter ( )
+    public class UriRequestModelConverter 
+    {
+        public UriRequestModelConverter ( )
       { }
 
-      public bool TryParse ( HttpRequestMessage request, out IWadoUriRequest result )
-      {
-         WadoUriRequest wadoReq = new WadoUriRequest ( ) ;
-         
-         wadoReq.Headers             = request.Headers;
-         wadoReq.AcceptHeader        = request.Headers.Accept;
-         wadoReq.AcceptCharsetHeader = request.Headers.AcceptCharset;
+        public bool TryParse ( HttpRequestMessage request, out IWadoUriRequest result )
+        {
+            IWadoUriRequest wadoReq = CreateWadoUriRequestModel ( );
 
-         var query = request.RequestUri.ParseQueryString ( ) ;
-         
-         wadoReq.Query = query;
-         wadoReq.RequestType = query[WadoRequestKeys.RequestType] ;
-         wadoReq.StudyInstanceUID = query[WadoRequestKeys.StudyUID] ;
-         wadoReq.SeriesInstanceUID = query[WadoRequestKeys.SeriesUID] ;
-         wadoReq.SOPInstanceUID = query[WadoRequestKeys.ObjectUID] ;
-         wadoReq.ContentType = query[WadoRequestKeys.ContentType] ;
-         wadoReq.Charset = query[WadoRequestKeys.Charset] ;
+            wadoReq.Headers = request.Headers;
+            wadoReq.AcceptHeader = request.Headers.Accept;
+            wadoReq.AcceptCharsetHeader = request.Headers.AcceptCharset;
 
-         wadoReq.Anonymize = string.Compare (query[WadoRequestKeys.Anonymize], "yes", true ) == 0 ;
-         
-         wadoReq.ImageRequestInfo = new WadoUriImageRequestParams ( ) ;
-         wadoReq.ImageRequestInfo.BurnAnnotation =  ParseAnnotation ( query[WadoRequestKeys.Annotation] ) ;
-         wadoReq.ImageRequestInfo.Rows = GetIntValue (query[WadoRequestKeys.Rows]) ;
-         wadoReq.ImageRequestInfo.Columns = GetIntValue (query[WadoRequestKeys.Columns]) ;
-         wadoReq.ImageRequestInfo.Region = query[WadoRequestKeys.Region] ;
-         wadoReq.ImageRequestInfo.WindowWidth = query[WadoRequestKeys.WindowWidth] ;
-         wadoReq.ImageRequestInfo.WindowCenter = query[WadoRequestKeys.WindowCenter] ;
-         wadoReq.Frame = wadoReq.ImageRequestInfo.FrameNumber = GetIntValue (query[WadoRequestKeys.FrameNumber]) ;
-         wadoReq.ImageRequestInfo.ImageQuality = GetIntValue (query[WadoRequestKeys.ImageQuality]) ;
-         wadoReq.ImageRequestInfo.PresentationUID = query[WadoRequestKeys.PresentationUID] ;
-         wadoReq.ImageRequestInfo.presentationSeriesUID = query[WadoRequestKeys.PresentationSeriesUID] ;
-         wadoReq.ImageRequestInfo.TransferSyntax = query[WadoRequestKeys.TransferSyntax] ;
+            var query = request.RequestUri.ParseQueryString();
 
-         result = wadoReq;
+            wadoReq.Query = query;
+            wadoReq.RequestType = query[WadoRequestKeys.RequestType];
+            wadoReq.StudyInstanceUID = query[WadoRequestKeys.StudyUID];
+            wadoReq.SeriesInstanceUID = query[WadoRequestKeys.SeriesUID];
+            wadoReq.SOPInstanceUID = query[WadoRequestKeys.ObjectUID];
+            wadoReq.ContentType = query[WadoRequestKeys.ContentType];
+            wadoReq.Charset = query[WadoRequestKeys.Charset];
 
-         return true ;
-      }
+            wadoReq.Anonymize = string.Compare(query[WadoRequestKeys.Anonymize], "yes", true) == 0;
 
-      private WadoBurnAnnotation ParseAnnotation ( string annotationString)
+            wadoReq.ImageRequestInfo = new WadoUriImageRequestParams();
+            wadoReq.ImageRequestInfo.BurnAnnotation = ParseAnnotation(query[WadoRequestKeys.Annotation]);
+            wadoReq.ImageRequestInfo.Rows = GetIntValue(query[WadoRequestKeys.Rows]);
+            wadoReq.ImageRequestInfo.Columns = GetIntValue(query[WadoRequestKeys.Columns]);
+            wadoReq.ImageRequestInfo.Region = query[WadoRequestKeys.Region];
+            wadoReq.ImageRequestInfo.WindowWidth = query[WadoRequestKeys.WindowWidth];
+            wadoReq.ImageRequestInfo.WindowCenter = query[WadoRequestKeys.WindowCenter];
+            wadoReq.Frame = wadoReq.ImageRequestInfo.FrameNumber = GetIntValue(query[WadoRequestKeys.FrameNumber]);
+            wadoReq.ImageRequestInfo.ImageQuality = GetIntValue(query[WadoRequestKeys.ImageQuality]);
+            wadoReq.ImageRequestInfo.PresentationUID = query[WadoRequestKeys.PresentationUID];
+            wadoReq.ImageRequestInfo.presentationSeriesUID = query[WadoRequestKeys.PresentationSeriesUID];
+            wadoReq.ImageRequestInfo.TransferSyntax = query[WadoRequestKeys.TransferSyntax];
+
+            result = wadoReq;
+
+            return true;
+        }
+
+        protected virtual IWadoUriRequest CreateWadoUriRequestModel ( )
+        {
+            return new WadoUriRequest();
+        }
+
+        private WadoBurnAnnotation ParseAnnotation ( string annotationString)
       {
          WadoBurnAnnotation annotation = WadoBurnAnnotation.None ;
 

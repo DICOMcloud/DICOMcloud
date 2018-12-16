@@ -18,6 +18,7 @@ using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using DICOMcloud.Wado.WebApi.Exceptions;
 using DICOMcloud.DataAccess.Database;
+using DICOMcloud.Wado.Models;
 
 namespace DICOMcloud.Wado
 {
@@ -56,6 +57,13 @@ namespace DICOMcloud.Wado
         {
             ConnectionStringProvider =  new ConnectionStringProvider ( ) ;
             StorageConection         = CloudConfigurationManager.GetSetting   ( "app:PacsStorageConnection" ) ;
+
+            var supportSSUrl = CloudConfigurationManager.GetSetting("app:supportSelfSignedUrls");
+
+            if (!string.IsNullOrWhiteSpace(supportSSUrl))
+            { 
+                DicomWebServerSettings.Instance.SupportSelfSignedUrls =  bool.Parse (supportSSUrl.Trim());
+            }
         }
 
         protected virtual void RegisterEvents ( )
@@ -126,8 +134,8 @@ namespace DICOMcloud.Wado
             For<ObjectArchieveDataAdapter> ( ).Use <ObjectArchieveDataAdapter> ( ) ;
             For<IObjectArchieveDataAccess> ( ).Use <ObjectArchieveDataAccess> ( ) ;
 
-            IRetieveUrlProvider urlProvider = new RetieveUrlProvider ( CloudConfigurationManager.GetSetting ( RetieveUrlProvider.config_WadoRs_API_URL),
-                                                                       CloudConfigurationManager.GetSetting ( RetieveUrlProvider.config_WadoUri_API_URL) ) ;
+            IRetrieveUrlProvider urlProvider = new RetrieveUrlProvider ( CloudConfigurationManager.GetSetting ( RetrieveUrlProvider.config_WadoRs_API_URL),
+                                                                         CloudConfigurationManager.GetSetting ( RetrieveUrlProvider.config_WadoUri_API_URL) ) ;
             
             For<IDCloudCommandFactory> ( ).Use<DCloudCommandFactory> ( ) ;
 
@@ -143,7 +151,9 @@ namespace DICOMcloud.Wado
 
             For<IDicomMediaIdFactory> ( ).Use <DicomMediaIdFactory> ( ) ;
 
-            For<IRetieveUrlProvider> ( ).Use (urlProvider) ;
+            For<IRetrieveUrlProvider> ( ).Use (urlProvider) ;
+
+            RegisterStoreCommandSettings( );
 
             if ( StorageConection.StartsWith("|datadirectory|", StringComparison.OrdinalIgnoreCase))
             {
@@ -154,7 +164,7 @@ namespace DICOMcloud.Wado
                 
                 StorageConection = appDataPath + userPathPart ;
             }
-
+            
             if ( System.IO.Path.IsPathRooted ( StorageConection ) )
             {
                 For<IKeyProvider> ( ).Use<HashedFileKeyProvider> ( ) ;
@@ -170,6 +180,33 @@ namespace DICOMcloud.Wado
                 
                 For<IMediaStorageService> ( ).Use <AzureStorageService> ( ).Ctor<CloudStorageAccount> ( ).Is ( StorageAccount ) ;
             }
+        }
+
+        private void RegisterStoreCommandSettings()
+        {
+            StorageSettings storageSettings = new StorageSettings ( ) ;
+
+
+            var validateDuplicateInstance = CloudConfigurationManager.GetSetting("app:storecommand.validateDuplicateInstance");
+            var storeOriginalDataset = CloudConfigurationManager.GetSetting("app:storecommand.storeOriginalDataset");
+            var storeQueryModel = CloudConfigurationManager.GetSetting("app:storecommand.storeQueryModel");
+
+            if (bool.TryParse (validateDuplicateInstance, out bool validateDuplicateValue))
+            { 
+                storageSettings.ValidateDuplicateInstance = validateDuplicateValue;
+            }
+
+            if (bool.TryParse(storeOriginalDataset, out bool storeOriginalDatasetValue))
+            {
+                storageSettings.StoreOriginal = storeOriginalDatasetValue;
+            }
+
+            if (bool.TryParse(storeQueryModel, out bool storeQueryModelValue))
+            {
+                storageSettings.StoreQueryModel = validateDuplicateValue;
+            }
+
+            For<StorageSettings>().Use (@storageSettings);
         }
 
         protected virtual void RegisterMediaWriters ( ) 

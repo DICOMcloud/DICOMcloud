@@ -19,8 +19,7 @@ namespace DICOMcloud.DataAccess.UnitTest
             string connectionString = "Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\" + dbName + ";Initial Catalog=" + dbName + ";Integrated Security=True" ;
             //throw new NotImplementedException ( "specify a connection string below" ) ;
             //TODO: To run the test against a database, uncomment the line below and pass the connection string to your database
-            DataAccess = new ObjectArchieveDataAccess ( connectionString,
-                                                        schemaProvider,
+            DataAccess = new ObjectArchieveDataAccess ( schemaProvider,
                                                         new  ObjectArchieveDataAdapter ( schemaProvider, new SqlDatabaseFactory (connectionString))) ;
         }
 

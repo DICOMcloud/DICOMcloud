@@ -21,5 +21,7 @@ namespace DICOMcloud.DataAccess.Database
         bool ResultExists ( string table, object keyValue ) ;
 
         IEnumerable<DicomDataset> GetResponse ( ) ;
+
+        IEnumerable<DicomDataset> GetResults(string resultName);
     }
 }

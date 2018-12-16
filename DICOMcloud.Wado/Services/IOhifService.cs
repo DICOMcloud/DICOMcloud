@@ -4,6 +4,6 @@ namespace DICOMcloud.Wado
 {
     public interface IOhifService
     {
-        HttpResponseMessage GetStudies(string studyInstanceUid);
+        HttpResponseMessage GetStudies(IStudyId studyId);
     }
 }

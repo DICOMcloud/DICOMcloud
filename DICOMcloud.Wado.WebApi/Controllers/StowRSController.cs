@@ -19,12 +19,18 @@ namespace DICOMcloud.Wado.Controllers
         }
 
         [HttpPost]
-        [Route("stowrs/studies/{StudyInstanceUID}")]
+        [Route("stowrs/studies/{studyInstanceUID}")]
         [Route("stowrs")]
-        public async Task<HttpResponseMessage> Post(string StudyInstanceUID = null)
+        public async Task<HttpResponseMessage> Post(string studyInstanceUID = null)
         {
-
             WebStoreRequest webStoreRequest = new WebStoreRequest ( Request) ;
+            IStudyId studyId = null;
+
+
+            if ( !string.IsNullOrWhiteSpace (studyInstanceUID))
+            { 
+                studyId = new ObjectId ( ) {StudyInstanceUID = studyInstanceUID};
+            }
 
             if ( !Request.Content.IsMimeMultipartContent("related") )
             {
@@ -33,7 +39,7 @@ namespace DICOMcloud.Wado.Controllers
 
             await Request.Content.ReadAsMultipartAsync ( webStoreRequest ) ;
 
-            return await StorageService.Store (webStoreRequest, StudyInstanceUID);
+            return await StorageService.Store (webStoreRequest, studyId);
         }
     }
 }

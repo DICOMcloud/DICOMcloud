@@ -20,9 +20,9 @@ namespace DICOMcloud.Wado
     public class WebObjectStoreService : IWebObjectStoreService
     {
         private IObjectStoreService _storageService;
-        private IRetieveUrlProvider _urlProvider ;
-        //public WebObjectStoreService ( ) : this ( new ObjectStoreDataService ( ) ) {}
-        public WebObjectStoreService ( IObjectStoreService storage, IRetieveUrlProvider urlProvider = null ) 
+        private IRetrieveUrlProvider _urlProvider ;
+
+        public WebObjectStoreService ( IObjectStoreService storage, IRetrieveUrlProvider urlProvider = null ) 
         {
             _storageService = storage ;
             _urlProvider    = urlProvider ;
@@ -31,14 +31,14 @@ namespace DICOMcloud.Wado
         public virtual async Task<HttpResponseMessage> Store
         (
             WebStoreRequest request, 
-            string studyInstanceUID 
+            IStudyId studyId = null
         )
         {
             GetDicomHandler getDicomDelegate = CreateDatasetParser(request);
 
             if (null != getDicomDelegate)
             {
-                var storeResult = await StoreStudy        ( request, studyInstanceUID, getDicomDelegate ) ;
+                var storeResult = await StoreStudy        ( request, studyId, getDicomDelegate ) ;
                 var result      = new HttpResponseMessage ( storeResult.HttpStatus ) ;
 
                 
@@ -89,47 +89,51 @@ namespace DICOMcloud.Wado
             return new JsonDicomConverter();
         }
 
+        protected virtual WadoStoreResponse CreateWadoStoreResponseModel(IStudyId studyId)
+        {
+            return new WadoStoreResponse(studyId, _urlProvider);
+        }
+
         private async Task<WadoStoreResponse> StoreStudy 
         ( 
             WebStoreRequest request, 
-            string studyInstanceUID, 
+            IStudyId studyId, 
             GetDicomHandler getDicom 
         )
         {
-            WadoStoreResponse response = new WadoStoreResponse ( studyInstanceUID, _urlProvider );
-
+            WadoStoreResponse response = CreateWadoStoreResponseModel (studyId);
 
             foreach (var mediaContent in request.Contents)
             {
                 Stream dicomStream = await mediaContent.ReadAsStreamAsync();
-                var    dicomDs     = getDicom ( dicomStream ) ; 
+                var dicomDs = getDicom(dicomStream);
 
 
-                PublisherSubscriberFactory.Instance.Publish ( this, 
-                                                              new WebStoreDatasetProcessingMessage ( request, dicomDs ) ) ;
-                
+                PublisherSubscriberFactory.Instance.Publish(this,
+                                                              new WebStoreDatasetProcessingMessage(request, dicomDs));
+
                 try
                 {
-                    var result = _storageService.StoreDicom(dicomDs, CreateObjectMetadata (dicomDs, request));
+                    var result = _storageService.StoreDicom(dicomDs, CreateObjectMetadata(dicomDs, request));
 
-                    
+
                     response.AddResult(dicomDs);
 
-                    PublisherSubscriberFactory.Instance.Publish ( this, 
-                                                                  new WebStoreDatasetProcessedMessage ( request, dicomDs ) ) ;
+                    PublisherSubscriberFactory.Instance.Publish(this,
+                                                                  new WebStoreDatasetProcessedMessage(request, dicomDs));
                 }
                 catch (Exception ex)
                 {
                     response.AddResult(dicomDs, ex);
 
-                    PublisherSubscriberFactory.Instance.Publish ( this, 
-                                                                   new WebStoreDatasetProcessingFailureMessage ( request, dicomDs, ex ) ) ;
+                    PublisherSubscriberFactory.Instance.Publish(this,
+                                                                   new WebStoreDatasetProcessingFailureMessage(request, dicomDs, ex));
                 }
             }
 
             return response;
         }
-    
+
         private GetDicomHandler CreateDatasetParser(WebStoreRequest request)
         {
             GetDicomHandler getDicomDelegate = null ;

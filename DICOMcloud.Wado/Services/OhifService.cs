@@ -14,9 +14,13 @@ namespace DICOMcloud.Wado
     public class OhifService : IOhifService
     {
         protected IObjectArchieveQueryService QueryService {get; set;}
-        protected IRetieveUrlProvider UrlProvier {get; set;}
-
-        public OhifService ( IObjectArchieveQueryService queryService, IRetieveUrlProvider urlProvier )
+        protected IRetrieveUrlProvider UrlProvier {get; set;}
+                  
+        public OhifService 
+        ( 
+            IObjectArchieveQueryService queryService, 
+            IRetrieveUrlProvider urlProvier 
+        )
         {
             QueryService = queryService ;
             UrlProvier   = urlProvier ;
@@ -25,12 +29,12 @@ namespace DICOMcloud.Wado
         }
 
 
-        public HttpResponseMessage GetStudies ( string studyInstanceUid )
+        public HttpResponseMessage GetStudies (IStudyId studyId)
 
         {
-            IEnumerable<DicomDataset> instances = QueryInstances(studyInstanceUid);
+            IEnumerable<DicomDataset> instances = QueryInstances (studyId);
 
-            OHIFViewerModel result = GetOHIFModel(instances);
+            OHIFViewerModel result = GetOHIFModel(instances, studyId);
 
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
 
@@ -40,22 +44,32 @@ namespace DICOMcloud.Wado
             return response;
         }
 
-        private IEnumerable<DicomDataset> QueryInstances(string studyInstanceUid)
+        protected virtual IQueryOptions CreateNewQueryOptions()
+        {
+            return new QueryOptions();
+        }
+
+        protected virtual IQueryOptions GetQueryOptions (IStudyId studyId)
+        {
+            return CreateNewQueryOptions();
+        }
+
+        protected virtual IEnumerable<DicomDataset> QueryInstances (IStudyId studyId)
         {
             Dicom.DicomDataset ds = new Dicom.DicomDataset();
 
-            ds.Add(Dicom.DicomTag.StudyInstanceUID, studyInstanceUid);
+            ds.Add(Dicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
             ds.Add(DicomTag.SeriesInstanceUID, "");
             ds.Add(DicomTag.PatientID, "");
             ds.Add(DicomTag.PatientName, "");
             ds.Add(DicomTag.SeriesDescription, "");
             ds.Add(DicomTag.SOPInstanceUID, "");
             
-            return QueryService.FindObjectInstances(ds, new QueryOptions ( ) );
+            return QueryService.FindObjectInstances (ds, GetQueryOptions(studyId));
             
         }
 
-        private OHIFViewerModel GetOHIFModel(IEnumerable<DicomDataset> instances)
+        protected virtual OHIFViewerModel GetOHIFModel(IEnumerable<DicomDataset> instances, IStudyId studyId)
         {
             Dictionary<string, OHIFStudy>  studies = new Dictionary<string, OHIFStudy>();
             Dictionary<string, OHIFSeries> series = new Dictionary<string, OHIFSeries>();
@@ -97,7 +111,7 @@ namespace DICOMcloud.Wado
                 }
 
                 ohifInstance.Rows = 1;
-                ohifInstance.Url = CreateOHIFUrl(instance );
+                ohifInstance.Url = CreateOHIFUrl (instance, studyId);
 
                 ohifSeries.Instances.Add(ohifInstance);
             }
@@ -105,7 +119,7 @@ namespace DICOMcloud.Wado
             return result;
         }
 
-        private string CreateOHIFUrl(DicomDataset instance)
+        protected virtual string CreateOHIFUrl (DicomDataset instance, IStudyId studyId)
         {
             var url = UrlProvier.GetInstanceUrl(DicomObjectIdFactory.Instance.CreateObjectId(instance));
 

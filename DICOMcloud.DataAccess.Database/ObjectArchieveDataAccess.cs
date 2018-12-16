@@ -11,26 +11,15 @@ namespace DICOMcloud.DataAccess
 {
     public class ObjectArchieveDataAccess : IObjectArchieveDataAccess
     {
-        public string                    ConnectionString { get; set ; }
         public ObjectArchieveDataAdapter DataAdapter      { get; private set; }
         public DbSchemaProvider          SchemaProvider   { get; private set; }
 
         public ObjectArchieveDataAccess
         ( 
-            IConnectionStringProvider connectionStringProvier, 
-            DbSchemaProvider schemaProvier,
-            ObjectArchieveDataAdapter dataAdapter
-        ) : this ( connectionStringProvier.ConnectionString, schemaProvier, dataAdapter)
-        { }
-
-        public ObjectArchieveDataAccess
-        ( 
-            string connectionString, 
             DbSchemaProvider schemaProvier,
             ObjectArchieveDataAdapter dataAdapter
         )
         { 
-            ConnectionString = connectionString ;
             SchemaProvider   = schemaProvier ;
             DataAdapter      = dataAdapter ;
         }
@@ -80,6 +69,8 @@ namespace DICOMcloud.DataAccess
 
             responseBuilder = CreateResponseBuilder ( queryLevel ) ;
 
+            conditions = AddAdditionalQueryParameters(conditions, options, queryLevel);
+
             var cmd = DataAdapter.CreateSelectCommand ( SchemaProvider.GetQueryTable ( queryLevel ), 
                                                         conditions, 
                                                         options, 
@@ -87,30 +78,14 @@ namespace DICOMcloud.DataAccess
 
             cmd.Execute();
 
+            FillAdditionalQueryParameters(conditions, options, responseBuilder, queryLevel);
+
             result = new PagedResult<DicomDataset> ( cmd.Result, 
                                                      options.Offset.Value,  
                                                      options.Limit.Value,
                                                      cmd.TotalCount.HasValue ? cmd.TotalCount.Value : cmd.Result.Count()) ;
 
             return result ;
-            
-            /**********TODO: How to add support to ModalitiesInStudy, SeriesCountInStudies, SopInstanceCountInStudy/Series
-            if conditions.contains (ModalitiesInStudies)
-            {
-                condition.add (series.Modality);
-                condition.add (series.SeriesInstanceUID); //to get series count
-                condition.add (sopInstances.SopInsanceUID); //to get instances count
-
-                Search
-                series = ResponseBuilder.ResultSets[Series]
-
-                //Same logic for SeriesCountInStudies and InstanceCountInStudies/Series
-                foreach ( study in studies )
-                {
-                    var modalitiesInStudy = series.Where ( n=>n.StudyInstanceUID = study.StudyInstanceUID).Select (s=>s.Modality);
-                }
-            }
-            **********/
         }
 
         public virtual void StoreInstance 
@@ -123,7 +98,7 @@ namespace DICOMcloud.DataAccess
             //TODO: use transation
             //dbAdapter.CreateTransation ( ) 
 
-            var cmd = DataAdapter.CreateInsertCommand ( parameters, data );
+            var cmd = DataAdapter.CreateInsertCommand (objectId, parameters, data );
 
             cmd.Connection.Open ( );
 
@@ -278,6 +253,137 @@ namespace DICOMcloud.DataAccess
             
         }
 
+        /// <summary>
+        /// Add additional query parameters to the <paramref name="conditions"/> collection 
+        /// Study Level: (ModalitiesInStudy, NumberOfStudyRelatedSeries, NumberOfStudyRelatedInstances...)
+        /// Series Level:
+        /// Instance Level:
+        /// </summary>
+        /// <param name="conditions">
+        /// A collection of <see cref="IEnumerable<IMatchingCondition>"/> that contains the conditions for the query.
+        /// </param>
+        /// <param name="options">
+        /// An object of <see cref="IQueryOptions"/> with query options.
+        /// </param>
+        /// <param name="queryLevel">
+        /// A <see cref="String"/> representing the DICOM query level (e.g. Study, Series, Instance)
+        /// </param>
+        protected virtual IEnumerable<IMatchingCondition> AddAdditionalQueryParameters
+        (
+            IEnumerable<IMatchingCondition> conditions, 
+            IQueryOptions options, 
+            string queryLevel
+        )
+        {
+            List< IMatchingCondition > matchingConditions = new List<IMatchingCondition> (conditions);
+
+            if (queryLevel == ObjectQueryLevelConstants.Study)
+            {
+                if (conditions.FirstOrDefault ( n=> n.KeyTag == DicomTag.ModalitiesInStudy) != null &&
+                    conditions.FirstOrDefault (n => n.KeyTag == DicomTag.Modality) == null )
+                {
+                    var condition  = new SingleValueMatching ( );
+
+                    condition.KeyTag = (uint) DicomTag.Modality;
+                    condition.VR = DicomTag.Modality.DictionaryEntry.ValueRepresentations.First ( );
+
+                    matchingConditions.Add (condition);
+                }
+
+                if (conditions.FirstOrDefault(n => n.KeyTag == DicomTag.NumberOfStudyRelatedSeries) != null &&
+                    conditions.FirstOrDefault(n => n.KeyTag == DicomTag.SeriesInstanceUID) == null)
+                { 
+                    var condition  = new SingleValueMatching ( );
+
+                    condition.KeyTag = (uint) DicomTag.SeriesInstanceUID;
+                    condition.VR = DicomTag.SeriesInstanceUID.DictionaryEntry.ValueRepresentations.First ( );
+
+                    matchingConditions.Add (condition);                
+                }
+
+                if (conditions.FirstOrDefault(n => n.KeyTag == DicomTag.NumberOfStudyRelatedInstances) != null &&
+                    conditions.FirstOrDefault(n => n.KeyTag == DicomTag.SOPInstanceUID) == null)
+                { 
+                    var condition  = new SingleValueMatching ( );
+
+                    condition.KeyTag = (uint) DicomTag.SOPInstanceUID;
+                    condition.VR = DicomTag.SOPInstanceUID.DictionaryEntry.ValueRepresentations.First ( );
+
+                    matchingConditions.Add (condition);
+                }
+            }
+            else if (queryLevel == ObjectQueryLevelConstants.Series)
+            {
+                if (conditions.FirstOrDefault(n => n.KeyTag == DicomTag.NumberOfSeriesRelatedInstances) != null &&
+                    conditions.FirstOrDefault(n => n.KeyTag == DicomTag.SOPInstanceUID) == null)
+                {
+                    var condition = new SingleValueMatching();
+
+                    condition.KeyTag = (uint)DicomTag.SOPInstanceUID;
+                    condition.VR = DicomTag.SOPInstanceUID.DictionaryEntry.ValueRepresentations.First();
+
+                    matchingConditions.Add(condition);
+                }
+            }
+
+            return matchingConditions;
+        }
+
+        protected virtual void FillAdditionalQueryParameters
+        (
+            IEnumerable<IMatchingCondition> conditions, 
+            IQueryOptions options, 
+            IQueryResponseBuilder responseBuilder, 
+            string queryLevel
+        )
+        {
+            if (queryLevel == ObjectQueryLevelConstants.Study)
+            {
+                Dictionary<string, StudyAdditionalParams> studyKeyValuePairs = new Dictionary<string, StudyAdditionalParams>();
+                var studies = responseBuilder.GetResults(ObjectQueryLevelConstants.Study);
+
+
+                FillStudyRelatedSeriesParameters   (responseBuilder, studyKeyValuePairs);
+                FillStudyRelatedInstancesParameters(responseBuilder, studyKeyValuePairs);
+
+                foreach (var studyDs in studies)
+                {
+                    var studyUid = studyDs.Get (DicomTag.StudyInstanceUID, "");
+                    
+                    if (studyKeyValuePairs.ContainsKey (studyUid))
+                    { 
+                        var studyParams = studyKeyValuePairs[studyUid];
+
+
+                        studyDs.AddOrUpdate (DicomTag.ModalitiesInStudy, studyParams.Modality.ToArray());
+                        studyDs.AddOrUpdate(DicomTag.NumberOfStudyRelatedSeries, studyParams.NumberOfSeries);
+                        studyDs.AddOrUpdate(DicomTag.NumberOfStudyRelatedInstances, studyParams.NumberOfInstances);
+                    }
+                }
+            }
+            else if (queryLevel == ObjectQueryLevelConstants.Series)
+            {
+                Dictionary<string, SeriesAdditionalParams> seriesKeyValuePairs = new Dictionary<string, SeriesAdditionalParams>();
+                var series = responseBuilder.GetResults(ObjectQueryLevelConstants.Series);
+
+
+                FillSeriesRelatedInstancesParameters(responseBuilder, seriesKeyValuePairs);
+
+                foreach (var seriesDs in series)
+                {
+                    var seriesUid = seriesDs.Get (DicomTag.SeriesInstanceUID, "");
+                    
+                    if ( seriesKeyValuePairs.ContainsKey (seriesUid))
+                    { 
+                        var seriesParams = seriesKeyValuePairs[seriesUid];
+
+
+                        seriesDs.AddOrUpdate(DicomTag.NumberOfSeriesRelatedInstances, seriesParams.NumberOfInstances);
+                    }
+                }
+            }
+        }
+
         private static T GetDbScalarValue<T> ( object result, T defaultValue )
         {
             if ( result != null && result != DBNull.Value )
@@ -288,6 +394,101 @@ namespace DICOMcloud.DataAccess
             {
                 return defaultValue;
             }
+        }
+
+        private static void FillStudyRelatedSeriesParameters
+        (
+            IQueryResponseBuilder responseBuilder, 
+            Dictionary<string, StudyAdditionalParams> studyKeyValuePairs
+        )
+        {
+            var series = responseBuilder.GetResults(ObjectQueryLevelConstants.Series);
+
+            foreach (var seriesDs in series)
+            {
+                var studyKey  = seriesDs.Get (DicomTag.StudyInstanceUID, "");
+                var seriesKey = seriesDs.Get (DicomTag.SeriesInstanceUID, "");
+                var modality  = seriesDs.Get (DicomTag.Modality, "");
+                StudyAdditionalParams studyParams = null;
+
+
+                if (!studyKeyValuePairs.TryGetValue(studyKey, out studyParams))
+                {
+                    studyParams = new StudyAdditionalParams();
+
+                    studyKeyValuePairs.Add(studyKey, studyParams);
+                }
+
+                studyParams.NumberOfSeries++;
+
+                if (!string.IsNullOrEmpty(modality) && !studyParams.Modality.Contains (modality))
+                {
+                    studyParams.Modality.Add (modality);
+                }
+            }
+        }
+
+        private static void FillStudyRelatedInstancesParameters
+        (
+            IQueryResponseBuilder responseBuilder, 
+            Dictionary<string, StudyAdditionalParams> studyKeyValuePairs
+        )
+        {
+            var instances = responseBuilder.GetResults(ObjectQueryLevelConstants.Instance);
+
+            foreach (var instanceDs in instances)
+            {
+                var studyKey  = instanceDs.Get (DicomTag.StudyInstanceUID, "");
+                StudyAdditionalParams studyParams = null;
+
+
+                if (!studyKeyValuePairs.TryGetValue(studyKey, out studyParams))
+                {
+                    studyParams = new StudyAdditionalParams();
+
+                    studyKeyValuePairs.Add(studyKey, studyParams);
+                }
+
+                studyParams.NumberOfInstances++;
+            }
+        }
+
+        private static void FillSeriesRelatedInstancesParameters
+        (
+            IQueryResponseBuilder responseBuilder,
+            Dictionary<string, SeriesAdditionalParams> seriesKeyValuePairs
+        )
+        {
+            var instances = responseBuilder.GetResults(ObjectQueryLevelConstants.Instance);
+
+            foreach (var instanceDs in instances)
+            {
+                var seriesKey = instanceDs.Get(DicomTag.SeriesInstanceUID, "");
+                SeriesAdditionalParams seriesParams = null;
+
+
+                if (!seriesKeyValuePairs.TryGetValue(seriesKey, out seriesParams))
+                {
+                    seriesParams = new SeriesAdditionalParams();
+
+                    seriesKeyValuePairs.Add(seriesKey, seriesParams);
+                }
+
+                seriesParams.NumberOfInstances++;
+            }
+        }
+
+        private sealed class StudyAdditionalParams
+        { 
+            public List<string> Modality = new List<string>();
+            public int NumberOfSeries = 0;
+            public int NumberOfInstances = 0;
+
+        }
+
+        private sealed class SeriesAdditionalParams
+        {
+            public int NumberOfInstances = 0;
         }
     }
 }

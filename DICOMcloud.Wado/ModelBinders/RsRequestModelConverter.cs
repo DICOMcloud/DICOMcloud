@@ -21,44 +21,44 @@ namespace DICOMcloud.Wado
 
             if ( typeof(T) == typeof(IWadoRsStudiesRequest) )
             {
-                WadoRSStudiesRequest wadoReq = new WadoRSStudiesRequest ( ) ;
+                IWadoRsStudiesRequest wadoReq = CreateWadoRsStudiesRequestModel( );
 
-                FillStudyParams ( bindingContext.ValueProvider, wadoReq ) ;
-                
-                wadoReq.QueryLevel = ObjectQueryLevel.Study ;
-                
+                FillStudyParams(bindingContext.ValueProvider, wadoReq);
+
+                wadoReq.QueryLevel = ObjectQueryLevel.Study;
+
                 result = wadoReq as T;
             }
 
             if ( typeof(T) == typeof(IWadoRsSeriesRequest) )
             {
-                WadoRSSeriesRequest wadoReq = new WadoRSSeriesRequest ( ) ;
+                IWadoRsSeriesRequest wadoReq = CreateWadoRsSeriesRequestModel ( );
 
-                FillSeriesParams ( bindingContext.ValueProvider, wadoReq ) ;
-             
-                wadoReq.QueryLevel = ObjectQueryLevel.Series ;
-                
+                FillSeriesParams(bindingContext.ValueProvider, wadoReq);
+
+                wadoReq.QueryLevel = ObjectQueryLevel.Series;
+
                 result = wadoReq as T;
             }
 
-            if ( typeof(T) == typeof(IWadoRSInstanceRequest) )
+            if ( typeof(T) == typeof(IWadoRsInstanceRequest) )
             {
-                WadoRSInstanceRequest wadoReq = new WadoRSInstanceRequest ( ) ;
+                IWadoRsInstanceRequest wadoReq = CreateWadoRsInstanceRequestModel ( );
 
-                FillInstanceParams ( bindingContext.ValueProvider, wadoReq ) ;
+                FillInstanceParams(bindingContext.ValueProvider, wadoReq);
 
-                wadoReq.QueryLevel = ObjectQueryLevel.Instance ;
-                
+                wadoReq.QueryLevel = ObjectQueryLevel.Instance;
+
                 result = wadoReq as T;
             }
 
-            if ( typeof(T) == typeof(IWadoRSFramesRequest) )
+            if ( typeof(T) == typeof(IWadoRsFramesRequest) )
             {
-                WadoRSFramesRequest wadoReq = new WadoRSFramesRequest ( ) ;
+                IWadoRsFramesRequest wadoReq = CreateWadoRsFramesRequestModel ( );
 
-                FillIFramesParams ( bindingContext.ValueProvider, wadoReq) ;
+                FillIFramesParams(bindingContext.ValueProvider, wadoReq);
 
-                wadoReq.QueryLevel = ObjectQueryLevel.Instance ;
+                wadoReq.QueryLevel = ObjectQueryLevel.Instance;
 
                 result = wadoReq as T;
             }
@@ -80,17 +80,27 @@ namespace DICOMcloud.Wado
             }
         }
 
-        private int[] ParseFrames(string frames)
+        protected virtual IWadoRsFramesRequest CreateWadoRsFramesRequestModel()
         {
-            if ( !string.IsNullOrEmpty (frames) )
-            { 
-                return frames.Split(',').Select(Int32.Parse).ToArray();
-            }
-
-            return null ;
+            return new WadoRsFramesRequest();
         }
 
-        private WadoBurnAnnotation ParseAnnotation ( string annotationString)
+        protected virtual IWadoRsInstanceRequest CreateWadoRsInstanceRequestModel()
+        {
+            return new WadoRsInstanceRequest();
+        }
+
+        protected virtual IWadoRsSeriesRequest CreateWadoRsSeriesRequestModel()
+        {
+            return new WadoRsSeriesRequest();
+        }
+
+        protected virtual WadoRsStudiesRequest CreateWadoRsStudiesRequestModel ( )
+        {
+            return new WadoRsStudiesRequest();
+        }
+
+        protected virtual WadoBurnAnnotation ParseAnnotation ( string annotationString)
         {
             WadoBurnAnnotation annotation = WadoBurnAnnotation.None ;
 
@@ -132,33 +142,43 @@ namespace DICOMcloud.Wado
             }
             }
         }
-   
-        private void FillStudyParams ( IValueProvider valueProvider, IWadoRsStudiesRequest result )
+
+        protected virtual void FillStudyParams ( IValueProvider valueProvider, IWadoRsStudiesRequest result )
         { 
             result.StudyInstanceUID = valueProvider.GetValue ("StudyInstanceUID").RawValue as string  ;
         }
 
-        private void FillSeriesParams ( IValueProvider valueProvider, IWadoRsSeriesRequest result )
+        protected virtual void FillSeriesParams ( IValueProvider valueProvider, IWadoRsSeriesRequest result )
         { 
             FillStudyParams ( valueProvider, result ) ;
 
             result.SeriesInstanceUID = valueProvider.GetValue ("SeriesInstanceUID").RawValue as string  ;
         }
 
-        private void FillInstanceParams ( IValueProvider valueProvider, IWadoRSInstanceRequest result )
+        protected virtual void FillInstanceParams ( IValueProvider valueProvider, IWadoRsInstanceRequest result )
         { 
             FillSeriesParams ( valueProvider, result ) ;
 
             result.SOPInstanceUID = valueProvider.GetValue ("SOPInstanceUID").RawValue as string  ;
         }
 
-        private void FillIFramesParams ( IValueProvider valueProvider, IWadoRSFramesRequest result )
+        protected virtual void FillIFramesParams ( IValueProvider valueProvider, IWadoRsFramesRequest result )
         { 
             FillInstanceParams ( valueProvider, result ) ;
 
             result.Frames = ParseFrames ( valueProvider.GetValue ( "FrameList" ).RawValue as string ) ;
         }
-   }
+
+        private int[] ParseFrames(string frames)
+        {
+            if (!string.IsNullOrEmpty(frames))
+            {
+                return frames.Split(',').Select(Int32.Parse).ToArray();
+            }
+
+            return null;
+        }
+    }
 
    //public abstract class WadoRequestKeys
    //{

@@ -145,13 +145,14 @@ namespace DICOMcloud.DataAccess.Database
 
         public virtual IDbCommand CreateInsertCommand 
         ( 
+            IObjectId objectId,
             IEnumerable<IDicomDataParameter> conditions,
             InstanceMetadata data = null
         )
         {
             IDbCommand insertCommand = Database.CreateCommand ( ) ;
 
-            BuildInsert ( conditions, data, insertCommand ) ;
+            BuildInsert (objectId, conditions, data, insertCommand ) ;
 
             SetConnectionIfNull ( insertCommand ) ;
             
@@ -331,6 +332,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
 
         protected virtual void BuildInsert 
         ( 
+            IObjectId objectId,
             IEnumerable<IDicomDataParameter> conditions, 
             InstanceMetadata data, 
             IDbCommand insertCommand 

@@ -9,7 +9,7 @@ using System.Web.Http.ModelBinding;
 
 namespace DICOMcloud.Wado
 {
-    public class RsFrameRequestModelBinder : RsRequestModelBinder<IWadoRSFramesRequest> 
+    public class RsFrameRequestModelBinder : RsRequestModelBinder<IWadoRsFramesRequest> 
     {
     }
 }

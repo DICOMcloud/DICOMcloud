@@ -34,9 +34,18 @@ namespace DICOMcloud.Pacs.Commands
             IObjectArchieveDataAccess dataStorage, 
             IDicomMediaWriterFactory mediaFactory
         )
+        : this ( dataStorage, mediaFactory, new StorageSettings())
+        {}
+
+        public StoreCommand 
+        ( 
+            IObjectArchieveDataAccess dataStorage, 
+            IDicomMediaWriterFactory mediaFactory,
+            StorageSettings settings
+        )
         : base ( dataStorage )
         {
-            Settings = new StorageSettings ( ) ;
+            Settings = settings;
             MediaFactory = mediaFactory ;
         }
 
@@ -199,8 +208,9 @@ namespace DICOMcloud.Pacs.Commands
             MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.xmlDicom ) ) ;
             MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossless.UID.UID));
             MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossy.UID.UID));
-            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Jpeg, DicomTransferSyntax.JPEGProcess14SV1.UID.UID ) ) ;
-            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Jpeg, DicomTransferSyntax.JPEGProcess1.UID.UID ) ) ;
+            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.JPEGProcess14SV1.UID.UID ) ) ;
+            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.JPEGProcess1.UID.UID ) ) ;
+            MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.Jpeg));
         }
 
         public IList<DicomMediaProperties> MediaTypes { get; private set ;}

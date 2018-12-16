@@ -7,9 +7,13 @@ using DICOMcloud;
 
 namespace DICOMcloud.Wado.Models
 {
-    public interface IWadoRsStudiesRequest : IWadoRequestHeader, IStudyId
+    public interface IWadoRsRequestBase : IWadoRequestHeader
     {
-    
+        ObjectQueryLevel QueryLevel { get; set; }
+    }
+
+    public interface IWadoRsStudiesRequest : IWadoRsRequestBase, IStudyId
+    {
     }
 
     public interface IWadoRsSeriesRequest : IWadoRsStudiesRequest, ISeriesId
@@ -17,12 +21,12 @@ namespace DICOMcloud.Wado.Models
         
     }
 
-    public interface IWadoRSInstanceRequest : IWadoRsSeriesRequest, IObjectId
+    public interface IWadoRsInstanceRequest : IWadoRsSeriesRequest, IObjectId
     {
 
     }
 
-    public interface IWadoRSFramesRequest :IWadoRSInstanceRequest
+    public interface IWadoRsFramesRequest :IWadoRsInstanceRequest
     {
         int[] Frames { get; set; }
     }

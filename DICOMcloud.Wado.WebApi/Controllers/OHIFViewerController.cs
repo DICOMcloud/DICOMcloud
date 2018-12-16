@@ -22,7 +22,7 @@ namespace DICOMcloud.Wado.WebApi.Controllers
         [HttpGet]
         public HttpResponseMessage GetStudy(string studyUid )
         {
-            return OhifService.GetStudies (studyUid) ;
+            return OhifService.GetStudies (new ObjectId ( ) {StudyInstanceUID = studyUid}) ;
         }
     }
 }

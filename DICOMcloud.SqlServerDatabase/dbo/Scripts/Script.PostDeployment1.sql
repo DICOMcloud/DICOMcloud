@@ -10,4 +10,4 @@ Post-Deployment Script Template
 --------------------------------------------------------------------------------------
 */
 
-INSERT INTO DICOMcloudDbVersion (Major, Minor) VALUES (0, 5)
+INSERT INTO DICOMcloudDbVersion (Major, Minor) VALUES (0, 7)

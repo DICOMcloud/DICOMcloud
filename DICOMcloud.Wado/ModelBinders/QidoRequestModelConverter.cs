@@ -11,90 +11,97 @@ namespace DICOMcloud.Wado
         public QidoRequestModelConverter ( )
         { }
 
-        public bool TryParse ( HttpRequestMessage request, out IQidoRequestModel result )
+        public virtual bool TryParse ( HttpRequestMessage request, out IQidoRequestModel result )
         {
-            QidoRequestModel wadoReq = new QidoRequestModel ( ) ;
-            
-            wadoReq.Query = new QidoQuery ( ) ;
-            
-            wadoReq.AcceptHeader        = request.Headers.Accept;
+            IQidoRequestModel wadoReq = CreateModel ( );
+
+            wadoReq.AcceptHeader = request.Headers.Accept;
             wadoReq.AcceptCharsetHeader = request.Headers.AcceptCharset;
 
-            var query = request.RequestUri.ParseQueryString ( ) ;
+            var query = request.RequestUri.ParseQueryString();
 
-            foreach ( var key in query )
+            foreach (var key in query)
             {
-                string queryKey = ((string)key).Trim ( ).ToLower ( ) ;
+                string queryKey = ((string)key).Trim().ToLower();
 
-                if ( queryKey == "" ) {  continue; }
+                if (queryKey == "") { continue; }
 
-                switch ( queryKey )
+                switch (queryKey)
                 {
                     case QidoRequestKeys.FuzzyMatching:
-                    {
-                        bool fuzzy ;
-                        
-                        if ( bool.TryParse ( query[QidoRequestKeys.FuzzyMatching], out fuzzy ) )
                         {
-                            wadoReq.FuzzyMatching = fuzzy ;
+                            bool fuzzy;
+
+                            if (bool.TryParse(query[QidoRequestKeys.FuzzyMatching], out fuzzy))
+                            {
+                                wadoReq.FuzzyMatching = fuzzy;
+                            }
                         }
-                    }
-                    break ;
+                        break;
 
                     case QidoRequestKeys.Limit:
-                    {
-                        int limit ;
-
-                        if ( int.TryParse ( query[QidoRequestKeys.Limit], out limit ) )
                         {
-                            wadoReq.Limit = limit ;
+                            int limit;
+
+                            if (int.TryParse(query[QidoRequestKeys.Limit], out limit))
+                            {
+                                wadoReq.Limit = limit;
+                            }
                         }
-                    }
-                    break ;
+                        break;
 
                     case QidoRequestKeys.Offset:
-                    {
-                        int offset;
-        
-                        if ( int.TryParse ( query[QidoRequestKeys.Offset], out offset ) )
                         {
-                            wadoReq.Offset = offset ;
+                            int offset;
+
+                            if (int.TryParse(query[QidoRequestKeys.Offset], out offset))
+                            {
+                                wadoReq.Offset = offset;
+                            }
                         }
-                    }
-                    break ;
+                        break;
 
                     case QidoRequestKeys.IncludeField:
-                    {
-                        string includeFields = query[QidoRequestKeys.IncludeField] ;
-
-                        if ( !string.IsNullOrWhiteSpace (includeFields))
                         {
-                            wadoReq.Query.IncludeElements.AddRange ( includeFields.Split (new char[] {','}, StringSplitOptions.RemoveEmptyEntries)) ;
+                            string includeFields = query[QidoRequestKeys.IncludeField];
+
+                            if (!string.IsNullOrWhiteSpace(includeFields))
+                            {
+                                wadoReq.Query.IncludeElements.AddRange(includeFields.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                            }
                         }
-                    }
-                    break ;
+                        break;
 
                     default:
-                    {
-                        string queryValue = query[queryKey].Trim ( ) ;
-                        
+                        {
+                            string queryValue = query[queryKey].Trim();
 
-                        if ( queryKey.StartsWith ( "_"))
-                        {
-                            wadoReq.Query.CustomParameters.Add ( queryKey, queryValue) ;
+
+                            if (queryKey.StartsWith("_"))
+                            {
+                                wadoReq.Query.CustomParameters.Add(queryKey, queryValue);
+                            }
+                            else
+                            {
+                                wadoReq.Query.MatchingElements.Add(queryKey, queryValue);
+                            }
                         }
-                        else
-                        {
-                            wadoReq.Query.MatchingElements.Add ( queryKey, queryValue) ;
-                        }
-                    }
-                    break ;
+                        break;
                 }
             }
 
-            result = wadoReq ;
+            result = wadoReq;
 
-            return true ;
+            return true;
+        }
+
+        protected virtual IQidoRequestModel CreateModel ( )
+        {
+            IQidoRequestModel queryModel = new QidoRequestModel();
+
+            queryModel.Query = new QidoQuery();
+
+            return queryModel;
         }
 
         private WadoBurnAnnotation ParseAnnotation ( string annotationString)

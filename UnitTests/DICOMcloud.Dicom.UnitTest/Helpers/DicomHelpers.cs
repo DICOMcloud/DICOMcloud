@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dicom;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -138,6 +139,34 @@ namespace DICOMcloud.UnitTest
             get; set;
         }
 
+
+        public fo.DicomDataset GetQueryDataset ( ) 
+        {
+            var ds = new fo.DicomDataset ( ) ;
+
+
+            ds.Add<object> ( fo.DicomTag.PatientID, null) ;
+            ds.Add<object>( fo.DicomTag.PatientName, null);
+            ds.Add<object>( fo.DicomTag.StudyInstanceUID, null);
+            ds.Add<object>( fo.DicomTag.StudyID, null);
+            ds.Add<object>(fo.DicomTag.StudyDate, null);
+            ds.Add<object>( fo.DicomTag.AccessionNumber, null);
+            ds.Add<object>(fo.DicomTag.StudyDescription, null);
+            ds.Add<object>( fo.DicomTag.SeriesInstanceUID, null);
+            ds.Add<object>( fo.DicomTag.SeriesNumber, null);
+            ds.Add<object>( fo.DicomTag.Modality, null);
+            ds.Add<object>( fo.DicomTag.SOPInstanceUID, null);
+            ds.Add<object>( fo.DicomTag.SOPClassUID, null);
+            ds.Add<object>( fo.DicomTag.InstanceNumber, null);
+
+            ds.Add<object>(fo.DicomTag.NumberOfFrames, null);
+            ds.Add<object>(fo.DicomTag.BitsAllocated, null);
+            ds.Add<object>(fo.DicomTag.Rows, null);
+            ds.Add<object>(fo.DicomTag.Columns, null);
+
+            return ds ;
+        }
+
         private fo.DicomDataset GetTemplateDataset ( ) 
         {
             var ds = new fo.DicomDataset ( ) ;
@@ -147,6 +176,7 @@ namespace DICOMcloud.UnitTest
             ds.Add ( fo.DicomTag.PatientName, "test^patient name" );
             ds.Add ( fo.DicomTag.StudyInstanceUID, Study1UID );
             ds.Add ( fo.DicomTag.StudyID, "test-studyid" );
+            ds.Add (fo.DicomTag.StudyDate, "20181112");
             ds.Add ( fo.DicomTag.AccessionNumber, "test-accession" );
             ds.Add (fo.DicomTag.StudyDescription, "test-description");
             ds.Add ( fo.DicomTag.SeriesInstanceUID, Series1UID );
@@ -155,6 +185,11 @@ namespace DICOMcloud.UnitTest
             ds.Add ( fo.DicomTag.SOPInstanceUID, Instance1UID );
             ds.Add ( fo.DicomTag.SOPClassUID, "test.instance.class.uid" );
             ds.Add ( fo.DicomTag.InstanceNumber, 1 );
+
+            ds.Add(fo.DicomTag.NumberOfFrames, 1);
+            ds.Add(fo.DicomTag.BitsAllocated, (ushort)16);
+            ds.Add(fo.DicomTag.Rows, (ushort)255);
+            ds.Add(fo.DicomTag.Columns, (ushort)512);
 
             return ds ;
         }

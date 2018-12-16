@@ -26,8 +26,13 @@ namespace DICOMcloud.DataAccess
             if ( Elements.Count == 1 )
             { 
                 var item = Elements.First ( ) as fo.DicomElement ;
-                var value = item.Get<string> ( ).TrimEnd ( '\0' ) ;
+                var value = "" ;
 
+
+                if (item.Length > 0)
+                {
+                    value = item.Get<string>().TrimEnd('\0');
+                }
 
                 if ( item.Tag.DictionaryEntry.ValueMultiplicity.Maximum > 1 ) //better way to find if has multi value
                 {
