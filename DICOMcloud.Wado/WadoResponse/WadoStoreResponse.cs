@@ -84,7 +84,7 @@ namespace DICOMcloud.Wado
         public void AddResult ( DicomDataset ds )
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
-            var referencedSeq      = (_dataset.Contains(DicomTag.ReferencedInstanceSequence)) ? _dataset.Get<DicomSequence>(DicomTag.ReferencedInstanceSequence) : new DicomSequence ( DicomTag.ReferencedInstanceSequence ) ;
+            var referencedSeq      = (_dataset.Contains(DicomTag.ReferencedSOPSequence)) ? _dataset.Get<DicomSequence>(DicomTag.ReferencedSOPSequence) : new DicomSequence ( DicomTag.ReferencedSOPSequence) ;
             var item               = new fo.DicomDataset ( ) ;
 
 
