@@ -4,7 +4,7 @@ using DICOMcloud.Media;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using fo = Dicom ;
+using Dicom ;
 using Dicom.Imaging.Codec ;
 
 namespace DICOMcloud.Pacs
@@ -77,25 +77,36 @@ namespace DICOMcloud.Pacs
             string fromTransferSyntax, 
             string toMediaType, 
             string toTransferSyntax 
-        ) 
+        )
         {
-            var fromMediaProp = new DicomMediaProperties ( fromMediaType, fromTransferSyntax ) ;
-            var fromMediaID   = MediaFactory.Create      ( query, fromMediaProp ) ;
-            var frameList     = ( null != query.Frame ) ? new int[] { query.Frame.Value } : null ;
-            
-             
-            if ( StorageService.Exists ( fromMediaID ) ) 
-            {
-                foreach ( IStorageLocation location in StorageService.EnumerateLocation ( fromMediaID ) )
-                {
-                    fo.DicomFile defaultFile = fo.DicomFile.Open ( location.GetReadStream ( ) ) ;
 
-                    foreach ( var transformedLocation in  TransformDataset ( defaultFile.Dataset, toMediaType, toTransferSyntax, frameList ) )
+            IMediaId fromMediaID = GetFromMediaId(query, fromMediaType, fromTransferSyntax);
+            var frameList = (null != query.Frame) ? new int[] { query.Frame.Value } : null;
+
+
+            if (StorageService.Exists(fromMediaID))
+            {
+                foreach (IStorageLocation location in StorageService.EnumerateLocation(fromMediaID))
+                {
+                    DicomFile defaultFile = DicomFile.Open(location.GetReadStream());
+
+                    foreach (var transformedLocation in TransformDataset(defaultFile.Dataset, toMediaType, toTransferSyntax, frameList))
                     {
-                        yield return new ObjectRetrieveResult ( transformedLocation, toTransferSyntax ) ; 
+                        yield return new ObjectRetrieveResult(transformedLocation, toTransferSyntax);
                     }
                 }
             }
+        }
+
+        private IMediaId GetFromMediaId (IObjectId query, string fromMediaType, string fromTransferSyntax)
+        {
+            DicomDataset ds = new DicomDataset ();
+
+            ds.Add (DicomTag.StudyInstanceUID, query.StudyInstanceUID);
+            ds.Add (DicomTag.SeriesInstanceUID, query.SeriesInstanceUID);
+            ds.Add (DicomTag.SOPInstanceUID, query.SOPInstanceUID);
+
+            return MediaFactory.Create(ds, 1, fromMediaType, fromTransferSyntax);
         }
 
         public virtual bool ObjetInstanceExist ( IObjectId objectId, string mediaType, string transferSyntax )
@@ -109,7 +120,7 @@ namespace DICOMcloud.Pacs
 
         protected virtual IEnumerable<IStorageLocation> TransformDataset 
         ( 
-            fo.DicomDataset dataset, 
+            DicomDataset dataset, 
             string mediaType, 
             string instanceTransfer, 
             int[] frameList = null 
@@ -131,10 +142,10 @@ namespace DICOMcloud.Pacs
             
         }
 
-        protected virtual fo.DicomDataset RetrieveDicomDataset ( IObjectId objectId, DicomMediaProperties mediainfo )
+        protected virtual DicomDataset RetrieveDicomDataset ( IObjectId objectId, DicomMediaProperties mediainfo )
         {
             IStorageLocation location    ;
-            fo.DicomFile defaultFile ;
+            DicomFile defaultFile ;
 
 
             location    = RetrieveSopInstance ( objectId, mediainfo ) ;
@@ -144,7 +155,7 @@ namespace DICOMcloud.Pacs
                 return null ;
             }
 
-            defaultFile = fo.DicomFile.Open ( location.GetReadStream ( ) ) ;
+            defaultFile = DicomFile.Open ( location.GetReadStream ( ) ) ;
 
             return defaultFile.Dataset ;
 

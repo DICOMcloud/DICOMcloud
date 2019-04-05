@@ -22,7 +22,7 @@ namespace DICOMcloud.Wado
         private DefaultMediaTransferSyntax ( ) 
         {
             Add ( MimeMediaTypes.DICOM, "1.2.840.10008.1.2.1" ) ;
-            //Add ( MimeMediaTypes.UncompressedData, "1.2.840.10008.1.2.1" ) ;
+            Add(MimeMediaTypes.UncompressedData, "1.2.840.10008.1.2.1");
             //Add ( MimeMediaTypes.Jpeg, "" ) ;
             //Add ( MimeMediaTypes.Jpeg, "1.2.840.10008.1.2.4.70" ) ;
             //Add( MimeMediaTypes.Rle, "1.2.840.10008.1.2.5" ) ;

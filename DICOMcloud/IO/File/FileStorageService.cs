@@ -44,9 +44,9 @@ namespace DICOMcloud.IO
 
         protected override IEnumerable<IStorageContainer> GetContainers ( string containerKey ) 
         {
-            if ( !Directory.Exists ( BaseStorePath ) )
+            if ( !Directory.Exists (Path.Combine(BaseStorePath,containerKey)))
             {
-                yield return null ;
+                yield break;
             }
 
             foreach ( string folder in Directory.EnumerateDirectories ( BaseStorePath, containerKey, SearchOption.TopDirectoryOnly ))
