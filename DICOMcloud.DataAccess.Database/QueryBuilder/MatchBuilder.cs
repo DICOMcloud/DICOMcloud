@@ -1,4 +1,5 @@
 ﻿using DICOMcloud.DataAccess.Database.Schema;
+using DICOMcloud.DataAccess.Database.SQL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +11,18 @@ namespace DICOMcloud.DataAccess.Database
     public partial class QueryBuilder
     { 
         class MatchBuilder
-        { 
+        {
+            public IGeneralStatementsProvider GeneralStatementsProvider { get; }
+
             private ColumnInfo _lastColumn ;
             private bool       _inOR ;
             private int        _lastColumnStartIndex = 0 ;
             public StringBuilder Match { get;set; }
 
-            public MatchBuilder ( )
-            { 
+            public MatchBuilder (IGeneralStatementsProvider generalStatementsProvider)
+            {
+                GeneralStatementsProvider = generalStatementsProvider;
+                
                 _lastColumn = null ; 
 
                 Match = new StringBuilder ( ) ;
@@ -29,7 +34,7 @@ namespace DICOMcloud.DataAccess.Database
 
                 _lastColumnStartIndex = Match.Length + 1 ;
 
-                Match.Append ( string.Format ( ( _inOR ? "" : "(" ) + "[{0}].[{1}]", column.Table.Name, column.Name ) ) ;
+                Match.Append ( ( _inOR ? "" : "(" ) + GeneralStatementsProvider.WrapColumn (column.Table.Name, column.Name ) ) ;
             
                 return this ;
             }

@@ -1,4 +1,5 @@
 ﻿using DICOMcloud.DataAccess.Database.Schema;
+using DICOMcloud.DataAccess.Database.SQL;
 using DICOMcloud.DataAccess.Matching;
 using System;
 using System.Collections.Generic;
@@ -10,13 +11,15 @@ namespace DICOMcloud.DataAccess.Database
     {
         public SortedDictionary<TableKey, List<string>> ProcessedColumns {  get { return _processedColumns; } }
 
-        public QueryBuilder ( ) 
+        public QueryBuilder (SelectStatementsProvider selectStatementsProvider) 
         {
+            SelectStatementsProvider = selectStatementsProvider;
+
             Returns           = new List<string>   ( ) ;
             Conditions        = new List<string>   ( ) ;
             ColumnDefenitions = new List<string>   ( ) ;
-            Joins             = new SqlJoinBuilder ( ) ;
-            ConditionBuilder  = new DicomConditionBuilder ( ) ;
+            Joins             = new SqlJoinBuilder        ( selectStatementsProvider ) ;
+            ConditionBuilder  = new DicomConditionBuilder (selectStatementsProvider.GeneralStatementsProvider) ;
         }
 
         public virtual string GetQueryText 
@@ -51,7 +54,7 @@ namespace DICOMcloud.DataAccess.Database
             StringBuilder queryBuilder = new StringBuilder ( ) ;
 
             
-            queryBuilder.AppendFormat ( SqlQueries.Select_Command_Formatted, selectText, sourceTable, joinsText , whereText ) ;
+            queryBuilder.AppendFormat (SelectStatementsProvider.GetSelectStatement(selectText, sourceTable, joinsText , whereText) ) ;
 
 
             
@@ -99,7 +102,7 @@ namespace DICOMcloud.DataAccess.Database
             if ( !_processedColumns[column.Table].Contains ( column.Name ) )
             {
                 //always return any matching
-                Returns.Add ( string.Format (SqlQueries.Table_Column_Formatted, column.Table.Name, column.Name )) ;
+                Returns.Add (SelectStatementsProvider.GeneralStatementsProvider.WrapColumn (column.Table.Name, column.Name )) ;
             
                 _processedColumns[column.Table].Add ( column.Name ) ;
             
@@ -123,16 +126,18 @@ namespace DICOMcloud.DataAccess.Database
             }
         }
 
+        public SelectStatementsProvider SelectStatementsProvider { get; private set; }
         protected virtual List<string>          Returns           { get; set; }
         protected virtual List<string>          Conditions        { get; set; }
         protected virtual List<string>          ColumnDefenitions { get; set; }
         protected virtual SqlJoinBuilder        Joins             { get; set; }
         protected virtual DicomConditionBuilder ConditionBuilder  { get; set; } 
 
-        private static string GetJoinKey(string sourceTable, string destTable)
+        private string GetJoinKey(string sourceTable, string destTable)
         {
-            return string.Format ( SqlQueries.Table_Column_Formatted, sourceTable, destTable) ;
+            return SelectStatementsProvider.GeneralStatementsProvider.WrapColumn (sourceTable, destTable) ;
         }
+
         private SortedDictionary<TableKey, List<string>> _processedColumns = new SortedDictionary<TableKey, List<string>>();
     }
 
@@ -140,6 +145,13 @@ namespace DICOMcloud.DataAccess.Database
     {
         public class DicomConditionBuilder
         {
+            public DicomConditionBuilder (IGeneralStatementsProvider generalStatementsProvider)
+            { 
+                GeneralStatementsProvider = generalStatementsProvider;
+            }
+
+            public IGeneralStatementsProvider GeneralStatementsProvider { get; }
+
             public virtual string CreateMatching
             ( 
                 string sourceTable, 
@@ -150,7 +162,7 @@ namespace DICOMcloud.DataAccess.Database
             {
                 if ( (null!= matchValues) && (matchValues.Count != 0) )
                 {
-                    MatchBuilder matchBuilder = new MatchBuilder ( ) ;
+                    MatchBuilder matchBuilder = new MatchBuilder (GeneralStatementsProvider) ;
                 
                     if ( column.IsDateTime && matchValues.Count >= 2 )
                     {

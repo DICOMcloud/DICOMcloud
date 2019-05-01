@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Dicom;
 using DICOMcloud.DataAccess.Database;
 using DICOMcloud.DataAccess.Database.Schema;
+using DICOMcloud.DataAccess.Database.SQL;
 using DICOMcloud.DataAccess.Matching;
 
 namespace DICOMcloud.DataAccess.UnitTest
@@ -16,11 +17,14 @@ namespace DICOMcloud.DataAccess.UnitTest
         private DataAccessHelpers ( string dbName ) 
         {
             DbSchemaProvider schemaProvider = new StorageDbSchemaProvider ( ) ;
-            string connectionString = "Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\" + dbName + ";Initial Catalog=" + dbName + ";Integrated Security=True" ;
+            //string connectionString = "Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\\" + dbName + ";Initial Catalog=" + dbName + ";Integrated Security=True" ;
+            string connectionString = $"server=127.0.0.1;uid=zaid;pwd=guesswhat;database=dicomcloud;Allow User Variables=True" ;
             //throw new NotImplementedException ( "specify a connection string below" ) ;
             //TODO: To run the test against a database, uncomment the line below and pass the connection string to your database
             DataAccess = new ObjectArchieveDataAccess ( schemaProvider,
-                                                        new  ObjectArchieveDataAdapter ( schemaProvider, new SqlDatabaseFactory (connectionString))) ;
+                                                        new  ObjectArchieveDataAdapter ( schemaProvider, 
+                                                        new MySQLDatabaseFactory (connectionString),
+                                                        new MySQLStatementsProvider())) ;
         }
 
         internal void EmptyDatabase()

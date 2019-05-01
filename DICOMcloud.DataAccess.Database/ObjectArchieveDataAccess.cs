@@ -95,9 +95,6 @@ namespace DICOMcloud.DataAccess
             InstanceMetadata data = null
         )
         {
-            //TODO: use transation
-            //dbAdapter.CreateTransation ( ) 
-
             var cmd = DataAdapter.CreateInsertCommand (objectId, parameters, data );
 
             cmd.Connection.Open ( );

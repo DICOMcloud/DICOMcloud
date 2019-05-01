@@ -1,4 +1,5 @@
 ﻿using DICOMcloud.DataAccess.Database.Schema;
+using DICOMcloud.DataAccess.Database.SQL;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,9 +11,16 @@ namespace DICOMcloud.DataAccess.Database
 {
     public class SqlJoinBuilder
     {
+        public SqlJoinBuilder (SelectStatementsProvider selectStatementsProvider)
+        {
+            SelectStatementsProvider = selectStatementsProvider;
+        }
+
         private static ConcurrentDictionary<DbJoin, ICollection<string>> _cachedJoins = new ConcurrentDictionary<DbJoin,ICollection<string>> ( ) ;
         private static Random _aliasGenerator = new Random ( ) ;
         private Dictionary<int,string> _generatedJoins = new Dictionary<int,string> ( ) ;
+
+        internal SelectStatementsProvider SelectStatementsProvider { get; private set; }
 
         public void AddJoins ( TableKey source, TableKey destination )
         { 
@@ -104,18 +112,17 @@ namespace DICOMcloud.DataAccess.Database
             //{2}=Study_PatientKey (child foriegn)
             //{3}=PatientKey (parent foriegn)
 
-            return string.Format ( SqlQueries.Joins.JoinFormattedTemplate,
-                                                table.Parent.Name, 
-                                                table.Name, 
-                                                table.ForeignColumn.Name, 
-                                                table.Parent.KeyColumn.Name ) ;
+            return SelectStatementsProvider.GetInnerJoinStatement ( table.Parent.Name, 
+                                                                    table.Name, 
+                                                                    table.ForeignColumn.Name, 
+                                                                    table.Parent.KeyColumn.Name ) ;
 
         }
 
         private string GetJoinWithChild ( TableKey child )
         {
-            return string.Format ( SqlQueries.Joins.OuterJoinFormattedTemplate,
-                                                child.Name, 
+
+            return SelectStatementsProvider.GetLeftOuterJoinStatement ( child.Name, 
                                                 child.Parent.Name, 
                                                 child.Parent.KeyColumn.Name,
                                                 child.ForeignColumn.Name ) ;

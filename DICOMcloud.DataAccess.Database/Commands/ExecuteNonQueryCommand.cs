@@ -14,7 +14,7 @@ namespace DICOMcloud.DataAccess.Database.Commands
             Command.Connection.Open ( );
 
             try
-            {
+            {   
                 Result = Command.ExecuteNonQuery ( ) ;
 
                 if ( Result > 0 )

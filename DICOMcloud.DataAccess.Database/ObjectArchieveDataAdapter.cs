@@ -9,6 +9,7 @@ using System.Data;
 using System.Linq;
 using fo = Dicom;
 using Dicom;
+using DICOMcloud.DataAccess.Database.SQL;
 
 namespace DICOMcloud.DataAccess.Database
 {
@@ -19,8 +20,9 @@ namespace DICOMcloud.DataAccess.Database
         public ObjectArchieveDataAdapter 
         ( 
             DbSchemaProvider schemaProvider, 
-            IDatabaseFactory database 
-        ) : this ( schemaProvider, database, null)
+            IDatabaseFactory database,
+            ISQLStatementsProvider sqlStatementsProvider
+        ) : this ( schemaProvider, database, sqlStatementsProvider, null)
         {
         }
 
@@ -28,11 +30,13 @@ namespace DICOMcloud.DataAccess.Database
         ( 
             DbSchemaProvider schemaProvider, 
             IDatabaseFactory database,
+            ISQLStatementsProvider sqlStatementsProvider,
             ISortingStrategyFactory sortingStrategyFactory = null
         )
         {
             SchemaProvider          = schemaProvider ;
             Database                = database ;
+            SqlStatementsProvider   = sqlStatementsProvider;
             SortingStrategyFactory  = sortingStrategyFactory ?? new SortingStrategyFactory ( schemaProvider ) ;
         }
 
@@ -47,7 +51,7 @@ namespace DICOMcloud.DataAccess.Database
             get ;
             protected set ;
         }
-
+        public ISQLStatementsProvider SqlStatementsProvider { get; private set; }
         public ISortingStrategyFactory SortingStrategyFactory { get; set; }
 
         public IDbCommand CreateCommand ( string commandText )
@@ -344,7 +348,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
             
             FillInsertParameters ( conditions, data, insertCommand, stroageBuilder ) ;
             
-            insertCommand.CommandText = stroageBuilder.GetInsertText ( ) ;
+            stroageBuilder.SetInsertText (insertCommand) ;
         }
         
         protected virtual void ProcessSelectStudy
@@ -432,7 +436,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
                         foreach ( var column in SchemaProvider.GetColumnInfo ( dicomParam.KeyTag ) )
                         { 
                             column.Values = new string [] { stringValues[++index]} ;
-                                
+
                             stroageBuilder.ProcessColumn ( column, insertCommad, Database.CreateParameter ) ;
                         }
                     }
@@ -452,12 +456,12 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
 
         protected virtual QueryBuilder CreateQueryBuilder ( ) 
         {
-            return new QueryBuilder ( ) ;
+            return new QueryBuilder (SqlStatementsProvider.SelectStatementsProvider) ;
         }
 
         protected virtual ObjectArchieveStorageBuilder CreateStorageBuilder ( ) 
         {
-            return new ObjectArchieveStorageBuilder ( ) ;
+            return new ObjectArchieveStorageBuilder (SqlStatementsProvider) ;
         }
 
         protected virtual IList<string> GetValues ( IDicomDataParameter condition )

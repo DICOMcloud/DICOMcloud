@@ -342,7 +342,7 @@ namespace DICOMcloud.Wado
 
             uint tag = GetTagValue (tagString);
 
-            dicomRequest.AddOrUpdate(tag, value);
+            InsertQidoValueAsDicom (tag, dicomRequest, value);
         }
 
         private void CreateSequence(List<string> elements, int currentElementIndex, DicomDataset dicomRequest, string value)
@@ -375,7 +375,7 @@ namespace DICOMcloud.Wado
                 }
                 else
                 {
-                    item.AddOrUpdate<string> ( tag, value) ;
+                    InsertQidoValueAsDicom (tag, item, value);
                 }
             }
         }
@@ -402,6 +402,20 @@ namespace DICOMcloud.Wado
             }
 
             return tag;
+        }
+
+        private void InsertQidoValueAsDicom (uint tag, DicomDataset dicomRequest, string value)
+        {
+            DicomTag dTag = tag;
+
+            if (dTag.DictionaryEntry.ValueRepresentations.Contains ( DicomVR.UI))
+            { 
+                var values = value.Split (',');
+
+                dicomRequest.AddOrUpdate(tag, values);
+            }
+
+            dicomRequest.AddOrUpdate(tag, value);
         }
 
         private delegate PagedResult<DicomDataset> DoQueryDelegate 
