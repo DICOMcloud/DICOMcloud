@@ -64,7 +64,8 @@ namespace DICOMcloud.Wado
             ds.Add(DicomTag.PatientName, "");
             ds.Add(DicomTag.SeriesDescription, "");
             ds.Add(DicomTag.SOPInstanceUID, "");
-            
+            ds.Add(DicomTag.NumberOfFrames, "");
+
             return QueryService.FindObjectInstances (ds, GetQueryOptions(studyId));
             
         }
@@ -112,6 +113,7 @@ namespace DICOMcloud.Wado
 
                 ohifInstance.Rows = 1;
                 ohifInstance.Url = CreateOHIFUrl (instance, studyId);
+                ohifInstance.NumberOfFrames = instance.Get<int?>(DicomTag.NumberOfFrames, null);
 
                 ohifSeries.Instances.Add(ohifInstance);
             }
