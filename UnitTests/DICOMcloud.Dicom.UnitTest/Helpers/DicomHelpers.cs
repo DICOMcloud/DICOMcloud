@@ -145,24 +145,24 @@ namespace DICOMcloud.UnitTest
             var ds = new fo.DicomDataset ( ) ;
 
 
-            ds.Add<object> ( fo.DicomTag.PatientID, null) ;
-            ds.Add<object>( fo.DicomTag.PatientName, null);
-            ds.Add<object>( fo.DicomTag.StudyInstanceUID, null);
-            ds.Add<object>( fo.DicomTag.StudyID, null);
-            ds.Add<object>(fo.DicomTag.StudyDate, null);
-            ds.Add<object>( fo.DicomTag.AccessionNumber, null);
-            ds.Add<object>(fo.DicomTag.StudyDescription, null);
-            ds.Add<object>( fo.DicomTag.SeriesInstanceUID, null);
-            ds.Add<object>( fo.DicomTag.SeriesNumber, null);
-            ds.Add<object>( fo.DicomTag.Modality, null);
-            ds.Add<object>( fo.DicomTag.SOPInstanceUID, null);
-            ds.Add<object>( fo.DicomTag.SOPClassUID, null);
-            ds.Add<object>( fo.DicomTag.InstanceNumber, null);
+            ds.Add<object> ( fo.DicomTag.PatientID,(object) null) ;
+            ds.Add<object>( fo.DicomTag.PatientName, (object)null);
+            ds.Add<object>( fo.DicomTag.StudyInstanceUID, (object)null);
+            ds.Add<object>( fo.DicomTag.StudyID, (object)null);
+            ds.Add<object>(fo.DicomTag.StudyDate, (object)null);
+            ds.Add<object>( fo.DicomTag.AccessionNumber, (object)null);
+            ds.Add<object>(fo.DicomTag.StudyDescription, (object)null);
+            ds.Add<object>( fo.DicomTag.SeriesInstanceUID, (object)null);
+            ds.Add<object>( fo.DicomTag.SeriesNumber, (object)null);
+            ds.Add<object>( fo.DicomTag.Modality, (object)null);
+            ds.Add<object>( fo.DicomTag.SOPInstanceUID, (object)null);
+            ds.Add<object>( fo.DicomTag.SOPClassUID, (object)null);
+            ds.Add<object>( fo.DicomTag.InstanceNumber, (object)null);
 
-            ds.Add<object>(fo.DicomTag.NumberOfFrames, null);
-            ds.Add<object>(fo.DicomTag.BitsAllocated, null);
-            ds.Add<object>(fo.DicomTag.Rows, null);
-            ds.Add<object>(fo.DicomTag.Columns, null);
+            ds.Add<object>(fo.DicomTag.NumberOfFrames, (object)null);
+            ds.Add<object>(fo.DicomTag.BitsAllocated,(object) null);
+            ds.Add<object>(fo.DicomTag.Rows,(object) null);
+            ds.Add<object>(fo.DicomTag.Columns,(object) null);
 
             return ds ;
         }

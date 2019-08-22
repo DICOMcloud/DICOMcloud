@@ -18,12 +18,12 @@ namespace DICOMcloud.Pacs.Commands
         {
             RequiredDsElements = new DicomDataset ( ) ;
 
-            RequiredDsElements.Add<object> ( DicomTag.PatientID, null) ;
-            RequiredDsElements.Add<object> ( DicomTag.StudyInstanceUID, null) ;
-            RequiredDsElements.Add<object> ( DicomTag.SeriesInstanceUID, null) ;
-            RequiredDsElements.Add<object> ( DicomTag.Modality, null) ;
-            RequiredDsElements.Add<object> ( DicomTag.SOPClassUID, null) ;
-            RequiredDsElements.Add<object> ( DicomTag.SOPInstanceUID, null) ;
+            RequiredDsElements.Add<object> ( DicomTag.PatientID,(object) null) ;
+            RequiredDsElements.Add<object> ( DicomTag.StudyInstanceUID, (object)null) ;
+            RequiredDsElements.Add<object> ( DicomTag.SeriesInstanceUID, (object)null) ;
+            RequiredDsElements.Add<object> ( DicomTag.Modality, (object)null) ;
+            RequiredDsElements.Add<object> ( DicomTag.SOPClassUID, (object)null) ;
+            RequiredDsElements.Add<object> ( DicomTag.SOPInstanceUID, (object)null) ;
         }
 
         public StoreCommand ( ) : this ( null, null ) 
