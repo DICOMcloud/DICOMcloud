@@ -91,7 +91,7 @@ namespace DICOMcloud.UnitTest
 
             Assert.IsNotNull ( queryDs);
             Assert.AreEqual  ( queryDs.Count ( ), 1 ) ;
-            Assert.AreEqual  ( ds.Get<string>(DicomTag.SOPInstanceUID), queryDs.First ( ).Get<string>(DicomTag.SOPInstanceUID));
+            Assert.AreEqual  ( ds.GetSingleValue<string>(DicomTag.SOPInstanceUID), queryDs.First ( ).GetSingleValue<string>(DicomTag.SOPInstanceUID));
         }
 
         private void ValidateStudyCount ( int studies ) 

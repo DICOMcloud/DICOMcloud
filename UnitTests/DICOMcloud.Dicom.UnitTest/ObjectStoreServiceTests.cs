@@ -75,15 +75,15 @@ namespace DICOMcloud.UnitTest
         
             foreach ( var ds in results)
             { 
-                var sopUid = ds.Get<string> (DicomTag.SOPInstanceUID);
+                var sopUid = ds.GetSingleValue<string> (DicomTag.SOPInstanceUID);
 
-                var stored = storedDs.Where ( n=> n.Get<string> (DicomTag.SOPInstanceUID) == sopUid).FirstOrDefault ( );
+                var stored = storedDs.FirstOrDefault (n => n.GetSingleValue<string> (DicomTag.SOPInstanceUID) == sopUid);
             
                 Assert.IsNotNull (stored);
 
                 foreach ( var element in stored)
                 { 
-                    Assert.AreEqual ( stored.Get<string> (element.Tag), ds.Get<string> (element.Tag));
+                    Assert.AreEqual ( stored.GetSingleValue<string> (element.Tag), ds.GetSingleValue<string> (element.Tag));
                 }
             }
         }

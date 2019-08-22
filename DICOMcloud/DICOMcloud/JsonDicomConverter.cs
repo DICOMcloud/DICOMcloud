@@ -413,7 +413,6 @@ namespace DICOMcloud
             if ( reader.Read ( ) )
             {
                 fo.IO.Buffer.MemoryByteBuffer buffer = null ;
-                byte[] data   = new byte[0] ;
                 string base64 = (string) reader.Value ;
             
                 

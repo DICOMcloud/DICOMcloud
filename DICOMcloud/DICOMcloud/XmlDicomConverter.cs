@@ -229,7 +229,7 @@ namespace DICOMcloud
                     
                 if ( dicomVr.Equals(fo.DicomVR.AT))
                 {
-                    var    atElement   = ds.Get<fo.DicomElement>    ( element.Tag, null ) ;
+                    var    atElement   = ds.GetSingleValueOrDefault<fo.DicomElement>    ( element.Tag, null ) ;
                     var    tagValue    = atElement.Get<fo.DicomTag> ( ) ;
                     string stringValue = tagValue.ToString          ( "J", null ) ;
 
@@ -237,7 +237,7 @@ namespace DICOMcloud
                 }
                 else
                 {
-                    writer.WriteString ( GetTrimmedString ( ds.Get<string> ( element.Tag, index, string.Empty ) ) ); 
+                    writer.WriteString ( GetTrimmedString ( ds.GetValueOrDefault( element.Tag, index, string.Empty ) ) ); 
                 }
 
                 writer.WriteEndElement ( );

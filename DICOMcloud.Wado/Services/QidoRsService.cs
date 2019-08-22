@@ -284,8 +284,8 @@ namespace DICOMcloud.Wado
             foreach ( var result in results ) 
             {
                 var queryDs = DefaultDicomQueryElements.GetDefaultInstanceQuery();
-                string studyUid  = result.Get<string> ( DicomTag.StudyInstanceUID, "" ) ;
-                string seriesUid = result.Get<string> ( DicomTag.SeriesInstanceUID, "" ) ;
+                string studyUid  = result.GetSingleValueOrDefault<string> ( DicomTag.StudyInstanceUID, "" ) ;
+                string seriesUid = result.GetSingleValueOrDefault<string> ( DicomTag.SeriesInstanceUID, "" ) ;
                 var queryOptions = CreateNewQueryOptions ( ) ;
             
                 queryDs.AddOrUpdate ( DicomTag.StudyInstanceUID, studyUid );
@@ -298,9 +298,9 @@ namespace DICOMcloud.Wado
 
                 foreach  ( var instance in instances )
                 {
-                    queryStudyUid = instance.Get<string> ( DicomTag.StudyInstanceUID, "" ) ;
-                    querySeriesUid = instance.Get<string> ( DicomTag.SeriesInstanceUID, "" ) ;
-                    queryInstanceUid = instance.Get<string> ( DicomTag.SOPInstanceUID, "" ) ;
+                    queryStudyUid = instance.GetSingleValueOrDefault<string> ( DicomTag.StudyInstanceUID, "" ) ;
+                    querySeriesUid = instance.GetSingleValueOrDefault<string> ( DicomTag.SeriesInstanceUID, "" ) ;
+                    queryInstanceUid = instance.GetSingleValueOrDefault<string> ( DicomTag.SOPInstanceUID, "" ) ;
 
                     break ;
                 }
@@ -353,7 +353,7 @@ namespace DICOMcloud.Wado
             DicomDataset  item ;
             
             dicomRequest.AddOrUpdate ( new DicomSequence ( dicEntry.Tag ) ) ;
-            sequence = dicomRequest.Get<DicomSequence>(dicEntry.Tag);
+            sequence = dicomRequest.GetSingleValue<DicomSequence>(dicEntry.Tag);
 
 
             item = new DicomDataset ( ) ;

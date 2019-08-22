@@ -73,7 +73,7 @@ namespace DICOMcloud.UnitTest
             
                 var dsF = new fo.DicomFile ( targetDs ) ;
             
-                dsF.FileMetaInfo.TransferSyntax = fo.DicomTransferSyntax.Parse( targetDs.Get ( fo.DicomTag.TransferSyntaxUID, targetDs.InternalTransferSyntax.ToString ( ) ) ) ;
+                dsF.FileMetaInfo.TransferSyntax = fo.DicomTransferSyntax.Parse( targetDs.GetSingleValueOrDefault ( fo.DicomTag.TransferSyntaxUID, targetDs.InternalTransferSyntax.ToString ( ) ) ) ;
                 
                 dsF.Save ( fullPath + ".gen.dcm" ) ;
 

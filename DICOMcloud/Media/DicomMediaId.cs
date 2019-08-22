@@ -43,9 +43,9 @@ namespace DICOMcloud.Media
         )
         {
             var dicomObject   = new ObjectId ( ) {
-            StudyInstanceUID  = dataset.Get<string> ( fo.DicomTag.StudyInstanceUID, 0, "" ),
-            SeriesInstanceUID = dataset.Get<string> ( fo.DicomTag.SeriesInstanceUID, 0,""), 
-            SOPInstanceUID    = dataset.Get<string> ( fo.DicomTag.SOPInstanceUID, 0, ""),
+            StudyInstanceUID  = dataset.GetValueOrDefault(fo.DicomTag.StudyInstanceUID, 0, "" ),
+            SeriesInstanceUID = dataset.GetValueOrDefault ( fo.DicomTag.SeriesInstanceUID, 0,""), 
+            SOPInstanceUID    = dataset.GetValueOrDefault ( fo.DicomTag.SOPInstanceUID, 0, ""),
             Frame             = frame } ;
             
             Init ( dicomObject, mediaType, transferSyntax ) ;

@@ -57,7 +57,7 @@ namespace DICOMcloud.Wado
         public void AddResult ( DicomDataset ds, Exception ex )
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
-            var failedSeq          = (_dataset.Contains (DicomTag.FailedSOPSequence)) ? _dataset.Get<DicomSequence>(DicomTag.FailedSOPSequence) : new DicomSequence ( DicomTag.FailedSOPSequence ) ;
+            var failedSeq          = (_dataset.Contains (DicomTag.FailedSOPSequence)) ? _dataset.GetSingleValue<DicomSequence>(DicomTag.FailedSOPSequence) : new DicomSequence ( DicomTag.FailedSOPSequence ) ;
             var item               = new DicomDataset ( ) ;
 
 
@@ -84,7 +84,7 @@ namespace DICOMcloud.Wado
         public void AddResult ( DicomDataset ds )
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
-            var referencedSeq      = (_dataset.Contains(DicomTag.ReferencedSOPSequence)) ? _dataset.Get<DicomSequence>(DicomTag.ReferencedSOPSequence) : new DicomSequence ( DicomTag.ReferencedSOPSequence) ;
+            var referencedSeq      = (_dataset.Contains(DicomTag.ReferencedSOPSequence)) ? _dataset.GetSingleValue<DicomSequence>(DicomTag.ReferencedSOPSequence) : new DicomSequence ( DicomTag.ReferencedSOPSequence) ;
             var item               = new fo.DicomDataset ( ) ;
 
 
@@ -109,8 +109,8 @@ namespace DICOMcloud.Wado
         
         private fo.DicomDataset GetReferencedInstsance ( fo.DicomDataset ds )
         {
-            var classUID = ds.Get<fo.DicomElement> ( fo.DicomTag.SOPClassUID, null ) ;
-            var sopUID   = ds.Get<fo.DicomElement> ( fo.DicomTag.SOPInstanceUID, null ) ;
+            var classUID = ds.GetSingleValueOrDefault<fo.DicomElement> ( fo.DicomTag.SOPClassUID, null ) ;
+            var sopUID   = ds.GetSingleValueOrDefault<fo.DicomElement> ( fo.DicomTag.SOPInstanceUID, null ) ;
             var dataset  = new fo.DicomDataset ( ) ;
 
 
