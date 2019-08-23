@@ -114,9 +114,9 @@ namespace DICOMcloud.UnitTest
                 //location include the UIDs, so make sure your storage
                 // folder is close to the root when keeping the original UIDs
                 dataset.AddOrUpdate ( fo.DicomTag.PatientID, "Patient_" + counter ) ;
-                dataset.AddOrUpdate ( fo.DicomTag.StudyInstanceUID, "Study_" + counter ) ;
-                dataset.AddOrUpdate ( fo.DicomTag.SeriesInstanceUID, "Series_" + counter ) ;
-                dataset.AddOrUpdate ( fo.DicomTag.SOPInstanceUID, "Instance_" + counter ) ;
+                dataset.AddOrUpdate ( fo.DicomTag.StudyInstanceUID, "1112." + counter ) ;
+                dataset.AddOrUpdate ( fo.DicomTag.SeriesInstanceUID, "1113." + counter ) ;
+                dataset.AddOrUpdate ( fo.DicomTag.SOPInstanceUID, "1114." + counter ) ;
                 
                 StoreService.StoreDicom ( dataset, new DataAccess.InstanceMetadata ( ) ) ;
 
