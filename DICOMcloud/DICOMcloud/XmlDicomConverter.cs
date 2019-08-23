@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.IO;
+using Dicom.Imaging;
 
 namespace DICOMcloud
 {
@@ -405,7 +406,9 @@ namespace DICOMcloud
                     
                     if ( tag == fo.DicomTag.PixelData && level == 0 ) 
                     {
-                        ds.AddOrUpdatePixelData ( dicomVr, data, TransferSyntax ) ;
+                     
+                        var pixelData= DicomPixelData.Create(ds, true);  //2nd parameter is true since we are adding new data here
+                        pixelData.AddFrame(data);
                     }
                     else
                     {
