@@ -14,15 +14,21 @@ namespace DICOMcloud.UnitTest
     {
         public DicomHelpers ( ) 
         {
-            Study1UID    = "test.study.1" ;
-            Study2UID    = "test.study.2" ;
+            // the new fo-dicom 4.0.0 does not allow letters in UIDs  the standard allows only 0-9 and . separator
+          // leading zeros are also not allowed
+            Study1UID    = "9999.1111.1" ;
+            Study2UID    = "9999.1111.2" ;
             Study3UID    =  Study2UID ;
-            Series1UID   = "test.series.1" ;
-            Series2UID   = "test.series.2" ;
-            Series3UID   = "test.series.3" ;
-            Instance1UID = "test.instance.1" ;
-            Instance2UID = "test.instance.2" ;
-            Instance3UID = "test.instance.3" ;
+            
+            Series1UID   = "1111.1111.1" ;
+            Series2UID   = "1111.1111.2" ;
+            Series3UID   = "1111.1111.3" ;
+            
+            Instance1UID = "2222.1111.1" ;
+            Instance2UID = "2222.1111.2" ;
+            Instance3UID = "2222.1111.3" ;
+
+            SOPClass1UID = "3333.1111.1" ;
         }
         
         public static string GetBaseFolder ( ) 
@@ -138,6 +144,10 @@ namespace DICOMcloud.UnitTest
         {
             get; set;
         }
+        public string SOPClass1UID
+        {
+            get; set;
+        }
 
 
         public fo.DicomDataset GetQueryDataset ( ) 
@@ -183,7 +193,7 @@ namespace DICOMcloud.UnitTest
             ds.Add ( fo.DicomTag.SeriesNumber, 1 );
             ds.Add ( fo.DicomTag.Modality, "XA" );
             ds.Add ( fo.DicomTag.SOPInstanceUID, Instance1UID );
-            ds.Add ( fo.DicomTag.SOPClassUID, "test.instance.class.uid" );
+            ds.Add ( fo.DicomTag.SOPClassUID, SOPClass1UID);
             ds.Add ( fo.DicomTag.InstanceNumber, 1 );
 
             ds.Add(fo.DicomTag.NumberOfFrames, 1);
