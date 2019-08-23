@@ -393,6 +393,7 @@ namespace DICOMcloud
                 if ( tag == fo.DicomTag.PixelData && level == 0 )
                 {
                     dataset.AddOrUpdatePixelData ( vr, data, fo.DicomTransferSyntax.Parse ( TransferSyntaxUID ) ) ;
+
                 }
                 else
                 {

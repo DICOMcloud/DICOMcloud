@@ -49,7 +49,7 @@ namespace DICOMcloud.Media
         {
             var frameIndex = frame - 1 ;
             var dicomImage = new DicomImage (dicomObject, frameIndex);
-            var bitmap = dicomImage.RenderImage (frameIndex).AsBitmap();
+            var bitmap = dicomImage.RenderImage (frameIndex).AsSharedBitmap();
             var stream = new MemoryStream ( ) ;
             
             bitmap.Save (stream, System.Drawing.Imaging.ImageFormat.Jpeg );
