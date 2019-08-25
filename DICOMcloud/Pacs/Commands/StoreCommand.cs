@@ -18,12 +18,12 @@ namespace DICOMcloud.Pacs.Commands
         {
             RequiredDsElements = new DicomDataset ( ) ;
 
-            RequiredDsElements.Add<object> ( DicomTag.PatientID, null) ;
-            RequiredDsElements.Add<object> ( DicomTag.StudyInstanceUID, null) ;
-            RequiredDsElements.Add<object> ( DicomTag.SeriesInstanceUID, null) ;
-            RequiredDsElements.Add<object> ( DicomTag.Modality, null) ;
-            RequiredDsElements.Add<object> ( DicomTag.SOPClassUID, null) ;
-            RequiredDsElements.Add<object> ( DicomTag.SOPInstanceUID, null) ;
+            RequiredDsElements.Add<string> ( DicomTag.PatientID,(string) null) ;
+            RequiredDsElements.Add<string> ( DicomTag.StudyInstanceUID, (string)null) ;
+            RequiredDsElements.Add<string> ( DicomTag.SeriesInstanceUID, (string)null) ;
+            RequiredDsElements.Add<string> ( DicomTag.Modality, (string)null) ;
+            RequiredDsElements.Add<string> ( DicomTag.SOPClassUID, (string)null) ;
+            RequiredDsElements.Add<string> ( DicomTag.SOPInstanceUID, (string)null) ;
         }
 
         public StoreCommand ( ) : this ( null, null ) 
@@ -100,7 +100,7 @@ namespace DICOMcloud.Pacs.Commands
                     throw new DCloudException ( "Required element is missing. Element: " + element.Tag.DictionaryEntry.Name.ToString ( ) ) ;
                 }
 
-                if ( dataset.Get<string> (element.Tag, null) == null )
+                if ( dataset.GetSingleValueOrDefault<string> (element.Tag, null) == null )
                 {
                     throw new DCloudException ( "Required element has no value. Element: " + element.Tag.DictionaryEntry.Name.ToString ( ) ) ;
                 }

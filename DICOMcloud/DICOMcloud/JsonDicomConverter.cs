@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Linq;
+using Dicom.Imaging;
 using Newtonsoft.Json;
 using fo = Dicom;
 
@@ -392,7 +393,9 @@ namespace DICOMcloud
 
                 if ( tag == fo.DicomTag.PixelData && level == 0 )
                 {
-                    dataset.AddOrUpdatePixelData ( vr, data, fo.DicomTransferSyntax.Parse ( TransferSyntaxUID ) ) ;
+                  var pixelData= DicomPixelData.Create(dataset, true);  //2nd parameter is true since we are adding new data here
+                    pixelData.AddFrame(data);
+
                 }
                 else
                 {
@@ -413,7 +416,6 @@ namespace DICOMcloud
             if ( reader.Read ( ) )
             {
                 fo.IO.Buffer.MemoryByteBuffer buffer = null ;
-                byte[] data   = new byte[0] ;
                 string base64 = (string) reader.Value ;
             
                 
@@ -424,7 +426,10 @@ namespace DICOMcloud
             
                 if ( tag == fo.DicomTag.PixelData && level == 0 )
                 {
-                    dataset.AddOrUpdatePixelData ( vr, buffer, fo.DicomTransferSyntax.Parse ( TransferSyntaxUID ) ) ;
+                    
+                    var pixelData= DicomPixelData.Create(dataset, true);  //2nd parameter is true since we are adding new data here
+                 
+                    pixelData.AddFrame(buffer);
                 }
                 else
                 {

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.IO;
+using Dicom.Imaging;
 
 namespace DICOMcloud
 {
@@ -229,7 +230,7 @@ namespace DICOMcloud
                     
                 if ( dicomVr.Equals(fo.DicomVR.AT))
                 {
-                    var    atElement   = ds.Get<fo.DicomElement>    ( element.Tag, null ) ;
+                    var    atElement   = ds.GetSingleValueOrDefault<fo.DicomElement>    ( element.Tag, null ) ;
                     var    tagValue    = atElement.Get<fo.DicomTag> ( ) ;
                     string stringValue = tagValue.ToString          ( "J", null ) ;
 
@@ -237,7 +238,7 @@ namespace DICOMcloud
                 }
                 else
                 {
-                    writer.WriteString ( GetTrimmedString ( ds.Get<string> ( element.Tag, index, string.Empty ) ) ); 
+                    writer.WriteString ( GetTrimmedString ( ds.GetValueOrDefault( element.Tag, index, string.Empty ) ) ); 
                 }
 
                 writer.WriteEndElement ( );
@@ -405,7 +406,9 @@ namespace DICOMcloud
                     
                     if ( tag == fo.DicomTag.PixelData && level == 0 ) 
                     {
-                        ds.AddOrUpdatePixelData ( dicomVr, data, TransferSyntax ) ;
+                     
+                        var pixelData= DicomPixelData.Create(ds, true);  //2nd parameter is true since we are adding new data here
+                        pixelData.AddFrame(data);
                     }
                     else
                     {

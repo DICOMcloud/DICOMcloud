@@ -147,7 +147,7 @@ namespace DICOMcloud.UnitTest
                 
                 templateDS.CopyTo ( studyDs );
 
-                studyDs.AddOrUpdate (DicomTag.StudyInstanceUID, string.Format ("std.{0}", studyIndex));
+                studyDs.AddOrUpdate (DicomTag.StudyInstanceUID, string.Format ("999.{0}", studyIndex));
 
                 for (int seriesIndex = 0; seriesIndex  < NumberOfSeriesInStudy; seriesIndex++)
                 {
@@ -156,7 +156,7 @@ namespace DICOMcloud.UnitTest
 
                     studyDs.CopyTo (seriesDs);
 
-                    seriesDs.AddOrUpdate (DicomTag.SeriesInstanceUID, string.Format ("std.{0}.ser.{1}", studyIndex, seriesIndex));
+                    seriesDs.AddOrUpdate (DicomTag.SeriesInstanceUID, string.Format ("333.{0}.444.{1}", studyIndex, seriesIndex));
                     seriesDs.AddOrUpdate(DicomTag.Modality, modalities[studyIndex% modalities.Length]);
                     
                     for (int instanceIndex = 0; instanceIndex < NumberOfInstancesInSeries; instanceIndex++ )
@@ -166,7 +166,7 @@ namespace DICOMcloud.UnitTest
 
                         seriesDs.CopyTo (instanceDs);
 
-                        instanceDs.AddOrUpdate (DicomTag.SOPInstanceUID, string.Format ("std.{0}.ser.{1}.inst.{2}", studyIndex, seriesIndex, instanceIndex));
+                        instanceDs.AddOrUpdate (DicomTag.SOPInstanceUID, string.Format ("333.{0}.444.{1}.555.{2}", studyIndex, seriesIndex, instanceIndex));
 
                         StoreService.StoreDicom(instanceDs, new DataAccess.InstanceMetadata());
                     }
