@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using fo = Dicom;
 using Dicom.Imaging.Codec;
 using System.IO;
+using System.Net.Http.Headers;
+using System.Reflection;
 
 namespace DICOMcloud.UnitTest
 {

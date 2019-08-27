@@ -76,8 +76,9 @@ namespace DICOMcloud.Wado
 
         public virtual HttpResponseMessage SearchForSeries(IQidoRequestModel request)
         {
-            return SearchForDicomEntity ( request, 
-            DefaultDicomQueryElements.GetDefaultSeriesQuery ( ),
+            var queryElements = DefaultDicomQueryElements.GetDefaultSeriesQuery();
+            return SearchForDicomEntity ( request, queryElements
+           ,
             delegate 
             ( 
                 IObjectArchieveQueryService queryService, 

@@ -4,7 +4,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using fo = Dicom;
 using Dicom.Imaging.Codec;
 using System.IO;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using DICOMcloud.DataAccess.UnitTest;
 using Dicom;
 using DICOMcloud.Pacs;
@@ -64,22 +66,38 @@ namespace DICOMcloud.UnitTest
         /// <summary>
         /// simulates the Dicomweb-JS button push "Search on the Query & retrieve page when all the search fields are blank
         /// </summary>
-        [TestMethod]
+        //[TestMethod]
         public void QidoControllerSearchForStudiesEmptyParams()
         {
-            QidoRsService service =new QidoRsService(QueryService,new DicomMediaIdFactory(),new FileStorageService(storagePath));
-            QidoRequestModel request=new QidoRequestModel();
+            QidoRsService service = new QidoRsService(QueryService, new DicomMediaIdFactory(),
+                new FileStorageService(storagePath));
+            QidoRequestModel request = new QidoRequestModel();
             // setup the parameters so that they are the same as the default request sent with empty params from the search page (Query and Retrieve)
             request.Limit = 12;
             request.Offset = 0;
-            request.Query=new QidoQuery();
+            request.Query = new QidoQuery();
             request.Query.IncludeElements.Add("00200010");
             request.Query.IncludeElements.Add("00080020");
             request.Query.IncludeElements.Add("00100010");
             request.Query.IncludeElements.Add("00100020");
-
+            var client = new HttpClient();
+            var headers = client.DefaultRequestHeaders;
+            request.AcceptCharsetHeader =client.DefaultRequestHeaders.AcceptCharset;
+            request.AcceptHeader = client.DefaultRequestHeaders.Accept;
+            request.AcceptHeader.Add(new MediaTypeWithQualityHeaderValue( "application/dicom+json"));
 
             service.SearchForSeries(request);
+        }
+        /// <summary>
+        /// force instantiation of the DefaultDicomQueryElements class,  the static constructor
+        /// had some issues with the types in the underlying dataset, this test method throws an exception if that setup fails
+        /// </summary>
+        [TestMethod]
+        public void TestDicomQueryElements()
+        {
+            DefaultDicomQueryElements.GetDefaultStudyQuery();
+            DefaultDicomQueryElements.GetDefaultInstanceQuery();
+            DefaultDicomQueryElements.GetDefaultSeriesQuery();
         }
 
         [TestMethod]
