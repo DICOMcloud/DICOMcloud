@@ -7,6 +7,8 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Web;
+using System.Web.SessionState;
 using DICOMcloud.DataAccess.UnitTest;
 using Dicom;
 using DICOMcloud.Pacs;
@@ -23,6 +25,24 @@ namespace DICOMcloud.UnitTest
     [TestClass]
     public class PaginationSearchTest
     {
+        /// <summary>
+        /// force empty the database before running any tests this avoids issues when we debug tests and exit
+        /// before the test finishes
+        /// </summary>
+        /// <param name="context">The context.</param>
+        [ClassInitialize]
+        public static void ClassSetup(TestContext context)
+        {
+            try
+            {
+             new DataAccessHelpers().EmptyDatabase();
+            }
+            catch
+            {
+
+            }
+        }
+
         readonly string storagePath = DicomHelpers.GetTestDataFolder("storage", true);
         [TestInitialize]
         public void Initialize ( ) 
@@ -62,11 +82,31 @@ namespace DICOMcloud.UnitTest
         {
             DataAccessHelper.EmptyDatabase ( ) ;
         }
+         static HttpContext FakeHttpContext()
+        {
+            var httpRequest = new HttpRequest("", "http://localhost:44301/", "");
+            var stringWriter = new StringWriter();
+            var httpResponse = new HttpResponse(stringWriter);
+            var httpContext = new HttpContext(httpRequest, httpResponse);
+            /*
+            var sessionContainer = new HttpSessionStateContainer("id", new SessionStateItemCollection(),
+                new HttpStaticObjectsCollection(), 10, true,
+                HttpCookieMode.AutoDetect,
+                SessionStateMode.InProc, false);
 
+            httpContext.Items["AspSession"] = typeof(HttpSessionState).GetConstructor(
+                    BindingFlags.NonPublic | BindingFlags.Instance,
+                    null, CallingConventions.Standard,
+                    new[] { typeof(HttpSessionStateContainer) },
+                    null)
+                .Invoke(new object[] { sessionContainer });
+            */
+            return httpContext;
+        }
         /// <summary>
         /// simulates the Dicomweb-JS button push "Search on the Query & retrieve page when all the search fields are blank
         /// </summary>
-        //[TestMethod]
+        [TestMethod]
         public void QidoControllerSearchForStudiesEmptyParams()
         {
             QidoRsService service = new QidoRsService(QueryService, new DicomMediaIdFactory(),
@@ -85,7 +125,9 @@ namespace DICOMcloud.UnitTest
             request.AcceptCharsetHeader =client.DefaultRequestHeaders.AcceptCharset;
             request.AcceptHeader = client.DefaultRequestHeaders.Accept;
             request.AcceptHeader.Add(new MediaTypeWithQualityHeaderValue( "application/dicom+json"));
-
+            //the following is needed since the SearchForSeries will use HttpContext.Current to get the uri
+            //and implement pagination
+            HttpContext.Current = FakeHttpContext();
             service.SearchForSeries(request);
         }
         /// <summary>
