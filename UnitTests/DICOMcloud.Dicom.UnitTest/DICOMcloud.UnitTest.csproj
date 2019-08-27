@@ -46,6 +46,7 @@
       <HintPath>..\..\packages\fo-dicom.Desktop.3.0.2\build\net452\Dicom.Native.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Net.Http" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -76,6 +77,10 @@
     <ProjectReference Include="..\..\DICOMcloud.DataAccess.Database\DICOMcloud.DataAccess.Database.csproj">
       <Project>{4dbfd788-2ce9-449e-885a-70e55d83b528}</Project>
       <Name>DICOMcloud.DataAccess.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DICOMcloud.Wado\DICOMcloud.Wado.csproj">
+      <Project>{55007666-7177-49CB-8577-80A013046A28}</Project>
+      <Name>DICOMcloud.Wado</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\DICOMcloud\DICOMcloud.csproj">
       <Project>{c9278c3e-53cb-4cb3-adb6-fe64d2585e7a}</Project>

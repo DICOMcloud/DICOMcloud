@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using fo = Dicom;
 using Dicom.Imaging.Codec;
 using System.IO;
+using System.Net.Http.Headers;
 using DICOMcloud.DataAccess.UnitTest;
 using Dicom;
 using DICOMcloud.Pacs;
@@ -11,12 +13,15 @@ using DICOMcloud.IO;
 using DICOMcloud.DataAccess;
 using DICOMcloud.DataAccess.Database;
 using DICOMcloud.DataAccess.Database.Schema;
+using DICOMcloud.Wado;
+using DICOMcloud.Wado.Models;
 
 namespace DICOMcloud.UnitTest
 {
     [TestClass]
     public class PaginationSearchTest
     {
+        readonly string storagePath = DicomHelpers.GetTestDataFolder("storage", true);
         [TestInitialize]
         public void Initialize ( ) 
         {
@@ -25,7 +30,7 @@ namespace DICOMcloud.UnitTest
                 DicomHelper      = new DicomHelpers ( ) ;
                 DataAccessHelper = new DataAccessHelpers ( ) ;
 
-                var storagePath = DicomHelpers.GetTestDataFolder("storage", true);
+               
                 var mediaIdFactory = new DicomMediaIdFactory();
 
 
@@ -54,6 +59,27 @@ namespace DICOMcloud.UnitTest
         public void Cleanup ( )
         {
             DataAccessHelper.EmptyDatabase ( ) ;
+        }
+
+        /// <summary>
+        /// simulates the Dicomweb-JS button push "Search on the Query & retrieve page when all the search fields are blank
+        /// </summary>
+        [TestMethod]
+        public void QidoControllerSearchForStudiesEmptyParams()
+        {
+            QidoRsService service =new QidoRsService(QueryService,new DicomMediaIdFactory(),new FileStorageService(storagePath));
+            QidoRequestModel request=new QidoRequestModel();
+            // setup the parameters so that they are the same as the default request sent with empty params from the search page (Query and Retrieve)
+            request.Limit = 12;
+            request.Offset = 0;
+            request.Query=new QidoQuery();
+            request.Query.IncludeElements.Add("00200010");
+            request.Query.IncludeElements.Add("00080020");
+            request.Query.IncludeElements.Add("00100010");
+            request.Query.IncludeElements.Add("00100020");
+
+
+            service.SearchForSeries(request);
         }
 
         [TestMethod]
