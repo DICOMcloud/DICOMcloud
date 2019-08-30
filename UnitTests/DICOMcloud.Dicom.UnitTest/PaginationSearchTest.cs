@@ -130,6 +130,8 @@ namespace DICOMcloud.UnitTest
             HttpContext.Current = FakeHttpContext();
             service.SearchForSeries(request);
         }
+
+
         /// <summary>
         /// force instantiation of the DefaultDicomQueryElements class,  the static constructor
         /// had some issues with the types in the underlying dataset, this test method throws an exception if that setup fails
