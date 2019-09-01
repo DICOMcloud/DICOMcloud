@@ -67,54 +67,51 @@ namespace DICOMcloud.Wado
 
         private static void FillStudyLevel(fo.DicomDataset studyDs)
         {
-            studyDs.Add<object>(fo.DicomTag.SpecificCharacterSet,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.StudyDate,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.StudyTime,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.StudyDescription,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.AccessionNumber,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.InstanceAvailability,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.ModalitiesInStudy,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.ReferringPhysicianName,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.TimezoneOffsetFromUTC,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.RetrieveURI,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.PatientName,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.PatientID,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.PatientBirthDate,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.PatientSex,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.StudyInstanceUID,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.StudyID,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.NumberOfStudyRelatedSeries,(object)null) ;
-            studyDs.Add<object>(fo.DicomTag.NumberOfStudyRelatedInstances,(object)null) ;
+            studyDs.Add<string>(fo.DicomTag.SpecificCharacterSet) ;
+            studyDs.Add<DateTime>(fo.DicomTag.StudyDate) ;
+            studyDs.Add<DateTime>(fo.DicomTag.StudyTime) ;
+            studyDs.Add<string>(fo.DicomTag.StudyDescription) ;
+            studyDs.Add<string>(fo.DicomTag.AccessionNumber) ;
+            studyDs.Add<string>(fo.DicomTag.InstanceAvailability) ;
+            studyDs.Add<string>(fo.DicomTag.ModalitiesInStudy) ;
+            studyDs.Add<string>(fo.DicomTag.ReferringPhysicianName) ;
+            studyDs.Add<string>(fo.DicomTag.TimezoneOffsetFromUTC) ;
+            studyDs.Add<string>(fo.DicomTag.RetrieveURI, string.Empty) ;
+            studyDs.Add<string>(fo.DicomTag.PatientName) ;
+            studyDs.Add<string>(fo.DicomTag.PatientID) ;
+            studyDs.Add<DateTime>(fo.DicomTag.PatientBirthDate) ;
+            studyDs.Add<string>(fo.DicomTag.PatientSex) ;
+            studyDs.Add<string>(fo.DicomTag.StudyInstanceUID) ;
+            studyDs.Add<string>(fo.DicomTag.StudyID) ;
+            studyDs.Add<string>(fo.DicomTag.NumberOfStudyRelatedSeries) ;
+            studyDs.Add<string>(fo.DicomTag.NumberOfStudyRelatedInstances) ;
         }
 
         private static void FillSeriesLevel(fo.DicomDataset seriesDs)
         {
-            seriesDs.Add<object>(fo.DicomTag.SpecificCharacterSet,(object)null) ;
-            seriesDs.Add<object>(fo.DicomTag.Modality,(object)null) ;
-            seriesDs.Add<object>(fo.DicomTag.TimezoneOffsetFromUTC,(object)null) ;
-            seriesDs.Add<object>(fo.DicomTag.SeriesDescription,(object)null) ;
-            seriesDs.Add<object>(fo.DicomTag.RetrieveURI,(object)null) ;
-            seriesDs.Add<object>(fo.DicomTag.SeriesInstanceUID,(object)null) ;
-            seriesDs.Add<object>(fo.DicomTag.SeriesNumber,(object)null) ;
-            seriesDs.Add<object>(fo.DicomTag.NumberOfSeriesRelatedInstances,(object)null) ;
-            seriesDs.Add<object>(fo.DicomTag.PerformedProcedureStepStartDate,(object)null) ;
-            seriesDs.Add<object>(fo.DicomTag.PerformedProcedureStepStartTime,(object)null) ;
+            seriesDs.Add<string>(fo.DicomTag.SpecificCharacterSet) ;
+            seriesDs.Add<string>(fo.DicomTag.Modality) ;
+            seriesDs.Add<string>(fo.DicomTag.TimezoneOffsetFromUTC) ;
+            seriesDs.Add<string>(fo.DicomTag.SeriesDescription) ;
+            seriesDs.Add<string>(fo.DicomTag.SeriesInstanceUID) ;
+            seriesDs.Add<string>(fo.DicomTag.SeriesNumber) ;
+            seriesDs.Add<string>(fo.DicomTag.NumberOfSeriesRelatedInstances) ;
+            seriesDs.Add<string>(fo.DicomTag.PerformedProcedureStepStartDate) ;
+            seriesDs.Add<string>(fo.DicomTag.PerformedProcedureStepStartTime) ;
             //seriesDs.Add<object>(fo.DicomTag.RequestAttributesSequence,null) ; //Not supported yet
-
-
         }
 
         private static void FillInstsanceLevel(fo.DicomDataset instanceDs)
         {
-            instanceDs.Add<object>(fo.DicomTag.SpecificCharacterSet,(object)null) ;
-            instanceDs.Add<object>(fo.DicomTag.SOPClassUID,(object)null) ;
-            instanceDs.Add<object>(fo.DicomTag.SOPInstanceUID,(object)null) ;
-            instanceDs.Add<object>(fo.DicomTag.InstanceNumber,(object)null) ;
+            instanceDs.Add<string>(fo.DicomTag.SpecificCharacterSet) ;
+            instanceDs.Add<string>(fo.DicomTag.SOPClassUID) ;
+            instanceDs.Add<string>(fo.DicomTag.SOPInstanceUID) ;
+            instanceDs.Add<string>(fo.DicomTag.InstanceNumber) ;
 
-            instanceDs.Add<object>(fo.DicomTag.Rows, (object)null);
-            instanceDs.Add<object>(fo.DicomTag.Columns, (object)null);
-            instanceDs.Add<object>(fo.DicomTag.BitsAllocated, (object)null);
-            instanceDs.Add<object>(fo.DicomTag.NumberOfFrames, (object)null);
+            instanceDs.Add<ushort>(fo.DicomTag.Rows);
+            instanceDs.Add<ushort>(fo.DicomTag.Columns);
+            instanceDs.Add<ushort>(fo.DicomTag.BitsAllocated);
+            instanceDs.Add<string>(fo.DicomTag.NumberOfFrames);
         }
     }
 }
