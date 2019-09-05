@@ -17,21 +17,25 @@ namespace DICOMcloud.Wado
       
         static readonly ILogger _log= LogManager.GetCurrentClassLogger();
 
-        public override void OnActionExecuting(HttpActionContext filterContext)
+        public override void OnActionExecuting(HttpActionContext filter)
         {
-            if (filterContext.RequestContext.RouteData.Values.ContainsKey("Controller"))
+            if (filter.ControllerContext.Controller != null)
             {
+                _log.Debug($"found controller {filter.ControllerContext.Controller}");
+                var s = "";
+                foreach (var kv in filter.ActionArguments)
+                {
+                    s += "key=" + kv.Key + " value= " + (kv.Value ?? " " )+ " ; ";
+                }
+                _log.Debug($"actiondescriptor= {filter.ActionDescriptor.ActionName}; actionParams={s}");
+                
 
-                var controller = filterContext.RequestContext.RouteData.Values["Controller"];
-                var action = filterContext.RequestContext.RouteData.Values["Action"];
-                _log.Debug($"Processing action {action} in controller {controller}");
-            }
-            else
-            {
-                _log.Warn($"no action controller pair found for {filterContext.Request.RequestUri.AbsoluteUri}");
             }
 
-            base.OnActionExecuting(filterContext);
+           
+           
+
+            base.OnActionExecuting(filter);
         }
     }
 

@@ -15,11 +15,11 @@ namespace DICOMcloud.DataAccess.Database
             ConnectionString = connectionString ;
         }
 
-        public virtual IDbConnection CreateConnection ( )
+        public virtual IDbConnection CreateConnection()
         {
-            return new SqlConnection ( ConnectionString ) ;
+            return new SqlConnection(ConnectionString);
         }
-        
+
         public string ConnectionString {  get; protected set ; }
 
         public virtual IDbCommand CreateCommand ( )

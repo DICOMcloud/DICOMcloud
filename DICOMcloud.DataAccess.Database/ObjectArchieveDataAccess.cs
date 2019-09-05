@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using Dicom;
 using System.Linq;
+using DICOMcloud.Extensions;
+using NLog;
 
 namespace DICOMcloud.DataAccess
 {
@@ -162,7 +164,7 @@ namespace DICOMcloud.DataAccess
         {
             var command = DataAdapter.CreateSelectInstanceKeyCommand ( instance ) ;
 
-
+            _log.Debug($"cheking existence of object with ids={instance.StudyInstanceUID},{instance.StudyInstanceUID},   {instance.SOPInstanceUID}");
             command.Execute ( ) ;
 
             return command.Result > 0 ; 
@@ -236,11 +238,12 @@ namespace DICOMcloud.DataAccess
                 throw new DCloudNotFoundException ( "series is not found." ) ;
             }
         }
+        static readonly ILogger _log= LogManager.GetCurrentClassLogger();
 
         protected virtual long GetInstanceKey ( ObjectArchieveDataAdapter adapter, IObjectId instance )
         {
             var cmd = adapter.CreateSelectInstanceKeyCommand ( instance ) ;
-
+            _log.Debug($"executing command {cmd.ToJson()}");
 
             if ( cmd.Execute ( ) )
             {

@@ -9,6 +9,7 @@ using System.Data;
 using System.Linq;
 using fo = Dicom;
 using Dicom;
+using NLog;
 
 namespace DICOMcloud.DataAccess.Database
 {
@@ -57,9 +58,11 @@ namespace DICOMcloud.DataAccess.Database
             SetConnectionIfNull ( command );
 
             command.CommandText = commandText ;
+            _log.Debug($"obtain sql command {commandText}");
 
             return command;
         }
+        static readonly ILogger _log= LogManager.GetCurrentClassLogger();
 
         public virtual IPagedDataAdapterCommand<DicomDataset> CreateSelectCommand 
         ( 
