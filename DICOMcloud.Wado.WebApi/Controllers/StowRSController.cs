@@ -7,7 +7,8 @@ using DICOMcloud.Wado.Models;
 
 
 namespace DICOMcloud.Wado.Controllers
-{
+{ 
+    [LogAction]
     public class StowRSController : ApiController
     {
         public IWebObjectStoreService StorageService { get; set; }

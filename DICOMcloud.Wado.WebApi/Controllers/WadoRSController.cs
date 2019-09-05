@@ -8,6 +8,7 @@ using DICOMcloud.Wado.Models;
 
 namespace DICOMcloud.Wado.Controllers
 {
+    [LogAction]
     public class WadoRSController : ApiController
     {
         IWadoRsService WadoService { get; set;  }
@@ -93,7 +94,8 @@ namespace DICOMcloud.Wado.Controllers
         {
             try
             { 
-                return WadoService.RetrieveInstanceMetadata ( request ) ;
+                var response= WadoService.RetrieveInstanceMetadata ( request ) ;
+                return response;
             }
             catch ( Exception ex )
             { 

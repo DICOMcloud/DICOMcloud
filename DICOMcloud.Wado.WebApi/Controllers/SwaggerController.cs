@@ -2,6 +2,7 @@
 
 namespace DICOMcloud.Wado.Controllers
 {
+    [LogAction]
     public class SwaggerController : Controller
     {
         // GET: Swagger

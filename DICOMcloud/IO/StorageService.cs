@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,9 +39,12 @@ namespace DICOMcloud.IO
             string  key          = KeyProvider.GetStorageKey ( id ) ;
             string containerName = KeyProvider.GetContainerName ( key) ;
             
-            
+            Trace.WriteLine($"enumerating locations for id={id} and key={key}");
+
             foreach ( IStorageContainer container in GetContainers ( containerName ) )
             {
+                Trace.WriteLine($"processing container {containerName} id={id} and key={key}");
+
                 foreach ( IStorageLocation location in container.GetLocations ( KeyProvider.GetLocationName (key) ) )
                 {
                     yield return location ;

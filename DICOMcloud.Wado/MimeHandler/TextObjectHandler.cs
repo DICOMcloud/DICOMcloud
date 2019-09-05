@@ -1,10 +1,7 @@
 ﻿using DICOMcloud.Wado.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
 using fo = Dicom;
 using System.IO;
 using DICOMcloud.Media;

@@ -7,6 +7,9 @@ using DICOMcloud.DataAccess.Matching;
 
 namespace DICOMcloud.DataAccess.UnitTest
 {
+    /// <summary>
+    /// THe DB is stored in the App_Data/DB folder for testing it is useful to delete the .ldf and .mdf files to clean the DB completely
+    /// </summary>
     public class DataAccessHelpers
     {
         public DataAccessHelpers ( ) 

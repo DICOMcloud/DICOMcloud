@@ -9,6 +9,7 @@ using DICOMcloud.Wado.Models;
 
 namespace DICOMcloud.Wado.Controllers
 {
+    [LogAction]
     [Authorize]
     public class DelowRSController : ApiController
     {
