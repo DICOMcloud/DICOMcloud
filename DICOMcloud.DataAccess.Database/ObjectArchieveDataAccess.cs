@@ -164,7 +164,7 @@ namespace DICOMcloud.DataAccess
         {
             var command = DataAdapter.CreateSelectInstanceKeyCommand ( instance ) ;
 
-            _log.Debug($"cheking existence of object with ids={instance.StudyInstanceUID},{instance.StudyInstanceUID},   {instance.SOPInstanceUID}");
+            _log.Debug($"cheking existence of object with ids={instance.StudyInstanceUID},{instance.SeriesInstanceUID},   {instance.SOPInstanceUID}");
             command.Execute ( ) ;
 
             return command.Result > 0 ; 
