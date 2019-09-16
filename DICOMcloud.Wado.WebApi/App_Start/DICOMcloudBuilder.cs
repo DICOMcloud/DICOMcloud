@@ -56,7 +56,7 @@ namespace DICOMcloud.Wado
         protected virtual void Init ( )
         {
             ConnectionStringProvider =  new ConnectionStringProvider ( ) ;
-            StorageConection         = CloudConfigurationManager.GetSetting   ( "app:PacsStorageConnection" ) ;
+            StorageConection         = CloudConfigurationManager.GetSetting ( "app:PacsStorageConnection" ) ;
 
             var supportSSUrl = CloudConfigurationManager.GetSetting("app:supportSelfSignedUrls");
 

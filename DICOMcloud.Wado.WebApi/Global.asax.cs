@@ -31,7 +31,7 @@ namespace DICOMcloud.Wado
                 x.AddRegistry<DICOMcloudBuilder>();
             });
         }
-        
+
         protected virtual void AddInsights ( )
         {
             if( WebConfigurationManager.AppSettings["APPINSIGHTS_INSTRUMENTATIONKEY"] != null )

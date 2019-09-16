@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Next Version
+
+### Added
+- Add support for enabling CORS by configuration. Issue #57
+
+### Changed
+- Increase default upload limit from 4 MB to 10MB. Issue #51
+
 ## v0.7.1-beta
 
 ### Added
