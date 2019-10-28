@@ -16,7 +16,7 @@ namespace DICOMcloud.Wado
                 
                 var theValue = bindingContext.ValueProvider.GetValue ( bindingContext.ModelName);
 
-                if ( new QidoRequestModelConverter ( ).TryParse ( actionContext.Request, out result) )
+                if ( new QidoRequestModelConverter ( ).TryParse ( actionContext.Request, bindingContext, out result) )
                 { 
                     bindingContext.Model = result;
                
