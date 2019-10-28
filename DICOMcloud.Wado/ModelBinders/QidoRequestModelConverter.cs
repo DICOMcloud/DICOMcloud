@@ -2,7 +2,9 @@
 using System;
 using System.Net.Http;
 using DICOMcloud.Wado.Models;
-
+using System.Web.Http.ModelBinding;
+using System.Web.Http.ValueProviders;
+using fo = Dicom;
 
 namespace DICOMcloud.Wado
 {
@@ -11,7 +13,7 @@ namespace DICOMcloud.Wado
         public QidoRequestModelConverter ( )
         { }
 
-        public virtual bool TryParse ( HttpRequestMessage request, out IQidoRequestModel result )
+        public virtual bool TryParse ( HttpRequestMessage request, ModelBindingContext bindingContext, out IQidoRequestModel result )
         {
             IQidoRequestModel wadoReq = CreateModel ( );
 
@@ -90,9 +92,57 @@ namespace DICOMcloud.Wado
                 }
             }
 
+            CheckAndFillUids(bindingContext.ValueProvider, wadoReq);
+            
             result = wadoReq;
 
             return true;
+        }
+        
+        /// <summary>
+        /// If access Qido interface with URL http://localhost:44301/qidors/studies/1.3.12.2.1107.5.3.4.2373.1.20171103124622/series
+        /// will get a 404 page, this method will check if the URL contains uid information.
+        /// </summary>
+        /// <param name="valueProvider"></param>
+        /// <param name="wadoReq"></param>
+        private void CheckAndFillUids(IValueProvider valueProvider, IQidoRequestModel wadoReq)
+        {
+            string strStudyInstanceUid = fo.DicomTag.StudyInstanceUID.DictionaryEntry.Keyword;
+            string strSeriesInstanceUid = fo.DicomTag.SeriesInstanceUID.DictionaryEntry.Keyword;
+            string strSopInstanceUid = fo.DicomTag.SOPInstanceUID.DictionaryEntry.Keyword;
+
+            if (!wadoReq.Query.MatchingElements.ContainsKey(strStudyInstanceUid))
+            {
+                ValueProviderResult valueResult = valueProvider.GetValue(strStudyInstanceUid);
+                if (valueResult != null)
+                {
+                    string studyInstanceUid = valueResult.RawValue as string;
+                    if (!string.IsNullOrEmpty(studyInstanceUid))
+                        wadoReq.Query.MatchingElements.Add(strStudyInstanceUid, studyInstanceUid);
+                }
+            }
+
+            if (!wadoReq.Query.MatchingElements.ContainsKey(strSeriesInstanceUid))
+            {
+                ValueProviderResult valueResult = valueProvider.GetValue(strSeriesInstanceUid);
+                if (valueResult != null)
+                {
+                    string seriesInstanceUid = valueResult.RawValue as string;
+                    if (!string.IsNullOrEmpty(seriesInstanceUid))
+                        wadoReq.Query.MatchingElements.Add(strSeriesInstanceUid, seriesInstanceUid);
+                }
+            }
+
+            if (!wadoReq.Query.MatchingElements.ContainsKey(strSopInstanceUid))
+            {
+                ValueProviderResult valueResult = valueProvider.GetValue(strSopInstanceUid);
+                if (valueResult != null)
+                {
+                    string sopInstanceUid = valueResult.RawValue as string;
+                    if (!string.IsNullOrEmpty(sopInstanceUid))
+                        wadoReq.Query.MatchingElements.Add(strSopInstanceUid, sopInstanceUid);
+                }
+            }
         }
 
         protected virtual IQidoRequestModel CreateModel ( )
