@@ -1,4 +1,4 @@
-﻿using fo = Dicom;
+﻿using Dicom;
 using DICOMcloud.IO;
 
 using DICOMcloud.Wado.Models;
@@ -31,9 +31,9 @@ namespace DICOMcloud.Wado
 
 
 
-    //    private static fo.DicomFile GetDicom(IStorageLocation storage)
+    //    private static DicomFile GetDicom(IStorageLocation storage)
     //    {
-    //        fo.DicomFile file = new fo.DicomFile(storage.GetName());
+    //        DicomFile file = new DicomFile(storage.GetName());
 
     //        file.Load(DicomReadOptions.Default); //TODO: change read options
     //        return file;

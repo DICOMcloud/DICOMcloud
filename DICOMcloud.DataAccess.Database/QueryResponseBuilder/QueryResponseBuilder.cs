@@ -95,7 +95,7 @@ namespace DICOMcloud.DataAccess.Database
             {
                 string keyString = value.ToString ( ) ;
                 
-                KeyToDataSetCollection resultSet = null ;
+                KeyToDataSetCollection resultSet;
                 
                 if ( ResultSets.TryGetValue ( column.Table.Parent, out resultSet ) )
                 {             
@@ -112,8 +112,8 @@ namespace DICOMcloud.DataAccess.Database
                         if ( column.Table.IsSequence )
                         { 
                             DicomSequence sq = (DicomSequence) CurrentData.ForeignDs.GetSequence (CurrentData.ForeignTagValue) ;
-                            DicomDataset item = new DicomDataset ( ) ;
-                            
+                            DicomDataset item = new DicomDataset ( ) { AutoValidate = false };
+
                             sq.Items.Add ( item ) ;
 
                             CurrentData.CurrentDs.Merge ( item ) ;

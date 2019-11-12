@@ -56,7 +56,7 @@ namespace DICOMcloud.Wado
 
         protected virtual IEnumerable<DicomDataset> QueryInstances (IStudyId studyId)
         {
-            Dicom.DicomDataset ds = new Dicom.DicomDataset();
+            DicomDataset ds = new DicomDataset() { AutoValidate = false };
 
             ds.Add(Dicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
             ds.Add(DicomTag.SeriesInstanceUID, "");

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DICOMcloud.IO;
-using fo = Dicom;
+using Dicom;
 using Dicom.Imaging ;
 using Dicom.Imaging.Codec;
 
@@ -39,7 +39,7 @@ namespace DICOMcloud.Media
             }
         }
 
-        protected override fo.DicomDataset GetMediaDataset ( fo.DicomDataset data, DicomMediaProperties mediaInfo  )
+        protected override DicomDataset GetMediaDataset ( DicomDataset data, DicomMediaProperties mediaInfo  )
         {
             if ( mediaInfo.MediaType != MediaType )
             {
@@ -49,7 +49,7 @@ namespace DICOMcloud.Media
 
             if ( !string.IsNullOrWhiteSpace ( mediaInfo.TransferSyntax ) && mediaInfo.TransferSyntax != "*" )
             {
-                var transfer = fo.DicomTransferSyntax.Parse(mediaInfo.TransferSyntax) ;
+                var transfer = DicomTransferSyntax.Parse(mediaInfo.TransferSyntax) ;
                 
                 if (transfer == data.InternalTransferSyntax)
                 {
@@ -58,7 +58,7 @@ namespace DICOMcloud.Media
 
                 var ds = data.Clone (transfer) ;
 
-                ds.AddOrUpdate ( fo.DicomTag.TransferSyntaxUID, transfer.UID.UID ) ;
+                ds.AddOrUpdate ( DicomTag.TransferSyntaxUID, transfer.UID.UID ) ;
 
                 return ds ;
             }
@@ -70,13 +70,13 @@ namespace DICOMcloud.Media
 
         protected override void Upload
         ( 
-            fo.DicomDataset dicomDataset, 
+            DicomDataset dicomDataset, 
             int frame, 
             IStorageLocation location, 
             DicomMediaProperties mediaProperties 
         )
         {
-            fo.DicomFile df = new fo.DicomFile ( dicomDataset ) ;
+            DicomFile df = new DicomFile ( dicomDataset ) ;
 
 
             using (Stream stream = new MemoryStream())

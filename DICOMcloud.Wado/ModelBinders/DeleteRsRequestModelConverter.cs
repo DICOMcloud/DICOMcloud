@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Web.Http.ModelBinding;
 using System.Web.Http.ValueProviders;
 using DICOMcloud.Pacs;
-using fo = Dicom;
+using Dicom;
 
 
 namespace DICOMcloud.Wado
@@ -39,27 +39,27 @@ namespace DICOMcloud.Wado
             {
                 result = new WebDeleteRequest ( ) 
                 { 
-                    Dataset     = new fo.DicomDataset ( ),
+                    Dataset     = new DicomDataset ( ) { AutoValidate = false },
                     DeleteLevel = ObjectQueryLevel.Unknown 
                 } ;
 
                 if ( null != studyParam ) 
                 { 
-                    result.Dataset.Add ( fo.DicomTag.StudyInstanceUID, studyParam.AttemptedValue ) ; 
+                    result.Dataset.Add ( DicomTag.StudyInstanceUID, studyParam.AttemptedValue ) ; 
                     
                     result.DeleteLevel = ObjectQueryLevel.Study ;
                 }
 
                 if ( null != seriesParam  ) 
                 { 
-                    result.Dataset.Add ( fo.DicomTag.StudyInstanceUID, seriesParam.AttemptedValue ) ;
+                    result.Dataset.Add ( DicomTag.StudyInstanceUID, seriesParam.AttemptedValue ) ;
 
                     result.DeleteLevel = ObjectQueryLevel.Series ;
                 }
                 
                 if ( null != instanceParam ) 
                 { 
-                    result.Dataset.Add ( fo.DicomTag.StudyInstanceUID, instanceParam.AttemptedValue ) ; 
+                    result.Dataset.Add ( DicomTag.StudyInstanceUID, instanceParam.AttemptedValue ) ; 
 
                     result.DeleteLevel = ObjectQueryLevel.Instance ;
                 }

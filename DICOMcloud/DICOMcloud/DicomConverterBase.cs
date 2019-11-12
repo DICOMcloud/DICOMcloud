@@ -3,29 +3,29 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Linq;
-using fo = Dicom;
+using Dicom;
 
 namespace DICOMcloud
 {
     public abstract partial class DicomConverterBase
     {
-        protected virtual fo.IO.Buffer.IByteBuffer GetItemBuffer ( fo.DicomItem item )
+        protected virtual Dicom.IO.Buffer.IByteBuffer GetItemBuffer ( DicomItem item )
         {
-            fo.IO.Buffer.IByteBuffer buffer;
+            Dicom.IO.Buffer.IByteBuffer buffer;
 
 
-            if ( item is fo.DicomFragmentSequence )
+            if ( item is DicomFragmentSequence )
             {
-                var dicomfragmentSq = (fo.DicomFragmentSequence) item;
+                var dicomfragmentSq = (DicomFragmentSequence) item;
                 var sb = new StringBuilder ( );
                 
                 
                 buffer = dicomfragmentSq.Fragments.Count == 1 ? dicomfragmentSq.Fragments[0] :
-                                                                new fo.IO.Buffer.CompositeByteBuffer ( dicomfragmentSq.Fragments.ToArray ( ) );
+                                                                new Dicom.IO.Buffer.CompositeByteBuffer ( dicomfragmentSq.Fragments.ToArray ( ) );
             }
             else
             {
-                var dicomElement = (fo.DicomElement) item;
+                var dicomElement = (DicomElement) item;
 
 
                 buffer = dicomElement.Buffer;
@@ -40,7 +40,7 @@ namespace DICOMcloud
             set;
         }
 
-        //protected virtual void WriteVR_Binary ( fo.DicomItem item )
+        //protected virtual void WriteVR_Binary ( DicomItem item )
         //{
         //    OnWriteBinary ( ) ;
 
@@ -49,6 +49,6 @@ namespace DICOMcloud
 
         //protected abstract void OnWriteBinary ( ) ;
 
-        //protected abstract void DoWriteVR_Binary ( fo.DicomItem item ) ;
+        //protected abstract void DoWriteVR_Binary ( DicomItem item ) ;
     }
 }

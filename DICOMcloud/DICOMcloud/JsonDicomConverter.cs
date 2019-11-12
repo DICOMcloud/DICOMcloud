@@ -5,7 +5,7 @@ using System.Text;
 using System.Linq;
 using Dicom.Imaging;
 using Newtonsoft.Json;
-using fo = Dicom;
+using Dicom;
 
 namespace DICOMcloud
 {
@@ -39,7 +39,7 @@ namespace DICOMcloud
             }
         }
 
-        public string Convert ( fo.DicomDataset ds )
+        public string Convert ( DicomDataset ds )
         {
             StringBuilder sb = new StringBuilder ( );
             StringWriter  sw = new StringWriter  ( sb );
@@ -60,13 +60,13 @@ namespace DICOMcloud
             return sb.ToString ( );
         }
 
-        //public fo.DicomDataset Convert ( string jsonDcm )
+        //public DicomDataset Convert ( string jsonDcm )
         //{
-        //    return JsonConvert.DeserializeObject<fo.DicomDataset> ( jsonDcm ) ;
+        //    return JsonConvert.DeserializeObject<DicomDataset> ( jsonDcm ) ;
         //}
-        public fo.DicomDataset Convert ( string jsonDcm )
+        public DicomDataset Convert ( string jsonDcm )
         {
-            fo.DicomDataset dataset = null ;
+            DicomDataset dataset = null ;
 
 
             using ( var strReader = new StringReader ( jsonDcm ) )
@@ -75,7 +75,7 @@ namespace DICOMcloud
                 {
                     if ( reader.Read ( ) )
                     { 
-                        dataset = new fo.DicomDataset ( );
+                        dataset = new DicomDataset ( ) { AutoValidate = false };
                     
                         if ( reader.TokenType == JsonToken.Null )
                             return null;
@@ -92,12 +92,12 @@ namespace DICOMcloud
 
         #region Write Methods
 
-        protected virtual void WriteHeaders ( fo.DicomDataset ds, JsonWriter writer)
+        protected virtual void WriteHeaders ( DicomDataset ds, JsonWriter writer)
         {
-            ds.AddOrUpdate(fo.DicomTag.TransferSyntaxUID, ds.InternalTransferSyntax) ;
+            ds.AddOrUpdate(DicomTag.TransferSyntaxUID, ds.InternalTransferSyntax) ;
         }
 
-        protected virtual void WriteChildren ( fo.DicomDataset ds, JsonWriter writer )
+        protected virtual void WriteChildren ( DicomDataset ds, JsonWriter writer )
         {
             //TODO: add orderby tag val
             foreach ( var element in ds )
@@ -108,8 +108,8 @@ namespace DICOMcloud
 
         protected virtual void WriteDicomItem
         (
-            fo.DicomDataset ds,
-            fo.DicomItem element,
+            DicomDataset ds,
+            DicomItem element,
             JsonWriter writer
         )
         {
@@ -119,7 +119,7 @@ namespace DICOMcloud
                 return;
             }
 
-            fo.DicomVR dicomVr = element.ValueRepresentation;
+            DicomVR dicomVr = element.ValueRepresentation;
 
             writer.WritePropertyName ( element.Tag.Group.ToString("X4") + element.Tag.Element.ToString("X4") ) ;
 
@@ -135,24 +135,24 @@ namespace DICOMcloud
 
             switch ( element.ValueRepresentation.Code ) 
             {
-                case fo.DicomVRCode.SQ:
+                case DicomVRCode.SQ:
                 {
-                    WriteVR_SQ ( (fo.DicomSequence) element, writer );                
+                    WriteVR_SQ ( (DicomSequence) element, writer );                
                 }
                 break;
 
-                case fo.DicomVRCode.PN:
+                case DicomVRCode.PN:
                 {
-                    WriteVR_PN ( (fo.DicomElement) element, writer );
+                    WriteVR_PN ( (DicomElement) element, writer );
                 }
                 break;
 
-                case fo.DicomVRCode.OB:
-                case fo.DicomVRCode.OD:
-                case fo.DicomVRCode.OF:
-                case fo.DicomVRCode.OW:
-                case fo.DicomVRCode.OL:
-                case fo.DicomVRCode.UN:
+                case DicomVRCode.OB:
+                case DicomVRCode.OD:
+                case DicomVRCode.OF:
+                case DicomVRCode.OW:
+                case DicomVRCode.OL:
+                case DicomVRCode.UN:
                 { 
                     WriteVR_Binary ( element, writer );                    
                 }
@@ -160,7 +160,7 @@ namespace DICOMcloud
 
                 default:
                 {
-                    WriteVR_Default ( ds, (fo.DicomElement) element, writer, dicomVr );                
+                    WriteVR_Default ( ds, (DicomElement) element, writer, dicomVr );                
                 }
                 break;
             }
@@ -168,7 +168,7 @@ namespace DICOMcloud
             writer.WriteEndObject ( );
         }
 
-        protected virtual void WriteVR_SQ ( fo.DicomSequence element, JsonWriter writer )
+        protected virtual void WriteVR_SQ ( DicomSequence element, JsonWriter writer )
         {
             for ( int index = 0; index < element.Items.Count; index++ )
             {
@@ -208,10 +208,10 @@ namespace DICOMcloud
 
         protected virtual void WriteVR_Default
         ( 
-            fo.DicomDataset ds, 
-            fo.DicomElement element, 
+            DicomDataset ds, 
+            DicomElement element, 
             JsonWriter writer, 
-            fo.DicomVR dicomVr 
+            DicomVR dicomVr 
         )
         {
             writer.WritePropertyName ( JsonConstants.ValueField );
@@ -243,14 +243,14 @@ namespace DICOMcloud
             writer.WriteEndArray ( );
         }
 
-        protected virtual void WriteVR_Binary ( fo.DicomItem item, JsonWriter writer )
+        protected virtual void WriteVR_Binary ( DicomItem item, JsonWriter writer )
         {
-            fo.IO.Buffer.IByteBuffer buffer = GetItemBuffer ( item );
+            Dicom.IO.Buffer.IByteBuffer buffer = GetItemBuffer ( item );
 
 
-            if ( buffer is fo.IO.Buffer.IBulkDataUriByteBuffer )
+            if ( buffer is Dicom.IO.Buffer.IBulkDataUriByteBuffer )
             {
-                WriteBinaryValue ( writer, ( (fo.IO.Buffer.IBulkDataUriByteBuffer) buffer ).BulkDataUri, 
+                WriteBinaryValue ( writer, ( (Dicom.IO.Buffer.IBulkDataUriByteBuffer) buffer ).BulkDataUri, 
                                    JsonConstants.ELEMENT_BULKDATA ) ;
             }
             else
@@ -264,7 +264,7 @@ namespace DICOMcloud
             }
         }
 
-        protected virtual void WriteVR_PN ( fo.DicomElement element, JsonWriter writer )
+        protected virtual void WriteVR_PN ( DicomElement element, JsonWriter writer )
         {
             writer.WritePropertyName ( JsonConstants.ValueField );
             writer.WriteStartArray   (                          );
@@ -302,11 +302,11 @@ namespace DICOMcloud
         #endregion
 
         #region Read Methods
-        protected virtual void ReadChildren ( JsonTextReader reader, fo.DicomDataset dataset, int level )
+        protected virtual void ReadChildren ( JsonTextReader reader, DicomDataset dataset, int level )
         {
             while ( reader.Read ( ) && reader.TokenType == JsonToken.PropertyName )
             {
-                var tag = fo.DicomTag.Parse ( (string) reader.Value );
+                var tag = DicomTag.Parse ( (string) reader.Value );
                 
                 if ( reader.Read ( ) && reader.TokenType == JsonToken.StartObject )
                 {
@@ -321,8 +321,8 @@ namespace DICOMcloud
         protected virtual void ReadDicomItem
         (
             JsonTextReader reader,
-            fo.DicomTag tag,
-            fo.DicomDataset dataset, 
+            DicomTag tag,
+            DicomDataset dataset, 
             int level
         )
         {
@@ -338,7 +338,7 @@ namespace DICOMcloud
                     {
                         reader.Read ( );
 
-                        vr = fo.DicomVR.Parse ( (string) reader.Value );
+                        vr = DicomVR.Parse ( (string) reader.Value );
                     }
                     break ;
 
@@ -371,14 +371,14 @@ namespace DICOMcloud
 
         private void ReadBulkData 
         ( 
-            fo.DicomTag tag, 
-            fo.DicomVR vr, 
+            DicomTag tag, 
+            DicomVR vr, 
             JsonTextReader reader, 
-            fo.DicomDataset dataset,
+            DicomDataset dataset,
             int level
         )
         {
-            fo.IO.Buffer.BulkDataUriByteBuffer data = null ;
+            Dicom.IO.Buffer.BulkDataUriByteBuffer data = null ;
 
             
             if ( reader.Read ( ) )
@@ -388,10 +388,10 @@ namespace DICOMcloud
                 
                 if ( !string.IsNullOrEmpty ( uri ) )
                 {
-                    data = new fo.IO.Buffer.BulkDataUriByteBuffer ( uri ) ;
+                    data = new Dicom.IO.Buffer.BulkDataUriByteBuffer ( uri ) ;
                 }
 
-                if ( tag == fo.DicomTag.PixelData && level == 0 )
+                if ( tag == DicomTag.PixelData && level == 0 )
                 {
                   var pixelData= DicomPixelData.Create(dataset, true);  //2nd parameter is true since we are adding new data here
                     pixelData.AddFrame(data);
@@ -399,32 +399,32 @@ namespace DICOMcloud
                 }
                 else
                 {
-                    dataset.AddOrUpdate<fo.IO.Buffer.IByteBuffer> ( vr, tag, data ) ;
+                    dataset.AddOrUpdate<Dicom.IO.Buffer.IByteBuffer> ( vr, tag, data ) ;
                 }
             }
         }
 
         private void ReadInlineBinary
         (
-            fo.DicomTag tag, 
-            fo.DicomVR vr, 
+            DicomTag tag, 
+            DicomVR vr, 
             JsonTextReader reader, 
-            fo.DicomDataset dataset,
+            DicomDataset dataset,
             int level
         )
         {
             if ( reader.Read ( ) )
             {
-                fo.IO.Buffer.MemoryByteBuffer buffer = null ;
+                Dicom.IO.Buffer.MemoryByteBuffer buffer = null ;
                 string base64 = (string) reader.Value ;
             
                 
                 if ( !string.IsNullOrEmpty ( base64 ) )
                 {
-                    buffer = new fo.IO.Buffer.MemoryByteBuffer ( System.Convert.FromBase64String ( base64 ) ) ;
+                    buffer = new Dicom.IO.Buffer.MemoryByteBuffer ( System.Convert.FromBase64String ( base64 ) ) ;
                 }
             
-                if ( tag == fo.DicomTag.PixelData && level == 0 )
+                if ( tag == DicomTag.PixelData && level == 0 )
                 {
                     
                     var pixelData= DicomPixelData.Create(dataset, true);  //2nd parameter is true since we are adding new data here
@@ -433,17 +433,17 @@ namespace DICOMcloud
                 }
                 else
                 {
-                    dataset.AddOrUpdate<fo.IO.Buffer.IByteBuffer> ( vr, tag, buffer ) ;
+                    dataset.AddOrUpdate<Dicom.IO.Buffer.IByteBuffer> ( vr, tag, buffer ) ;
                 }
             }
         }
 
         protected virtual void ReadDefaultVr
         ( 
-            fo.DicomTag tag,
-            fo.DicomVR vr, 
+            DicomTag tag,
+            DicomVR vr, 
             JsonTextReader reader, 
-            fo.DicomDataset dataset,
+            DicomDataset dataset,
             int level
         )
         {
@@ -451,13 +451,13 @@ namespace DICOMcloud
             //otherwise we'll got it from the dictionary. Could it be defined after the value?
             switch ( vr.Code )
             {
-                case fo.DicomVRCode.SQ:
+                case DicomVRCode.SQ:
                 {
                     ReadVr_SQ ( reader, tag, dataset, level );
                 }
                 break;
 
-                case fo.DicomVRCode.PN:
+                case DicomVRCode.PN:
                 {
                     ReadVr_PN ( reader, tag, dataset );
                 }
@@ -478,7 +478,7 @@ namespace DICOMcloud
                         break;
                     }
 
-                    if ( tag == fo.DicomTag.TransferSyntaxUID )
+                    if ( tag == DicomTag.TransferSyntaxUID )
                     {
                         TransferSyntaxUID = values.FirstOrDefault ( ) ; 
                     }
@@ -490,7 +490,7 @@ namespace DICOMcloud
 
         }
 
-        protected virtual void ReadVr_PN ( JsonTextReader reader, fo.DicomTag tag, fo.DicomDataset dataset )
+        protected virtual void ReadVr_PN ( JsonTextReader reader, DicomTag tag, DicomDataset dataset )
         {
             List<string> pnNames = new List<string> ( );
 
@@ -529,9 +529,9 @@ namespace DICOMcloud
             }
         }
 
-        protected virtual void ReadVr_SQ ( JsonTextReader reader, fo.DicomTag tag, fo.DicomDataset dataset, int level )
+        protected virtual void ReadVr_SQ ( JsonTextReader reader, DicomTag tag, DicomDataset dataset, int level )
         {
-            fo.DicomSequence seq = new fo.DicomSequence ( tag, new fo.DicomDataset[0] ) ;
+            DicomSequence seq = new DicomSequence ( tag, new DicomDataset[0] ) ;
 
 
             if ( reader.Value as string == JsonConstants.ValueField )
@@ -540,7 +540,7 @@ namespace DICOMcloud
                 {
                     while ( reader.Read ( ) && reader.TokenType != JsonToken.EndArray )
                     {
-                        fo.DicomDataset itemDs = new fo.DicomDataset ( ) ;
+                        DicomDataset itemDs = new DicomDataset ( ) { AutoValidate = false };
                         
                         ReadChildren ( reader, itemDs, ++level ) ;
                         
@@ -565,9 +565,9 @@ namespace DICOMcloud
 
         private static char[] PADDING = new char[] { '\0', ' ' };
 
-        private static string[] _decimalBasedVrs = new string[] { fo.DicomVRCode.DS, fo.DicomVRCode.FL, fo.DicomVRCode.FD} ;
-        private static string[] _numberBasedVrs = new string[] { fo.DicomVRCode.DS, fo.DicomVRCode.FL, fo.DicomVRCode.FD, fo.DicomVRCode.IS, 
-                                                                 fo.DicomVRCode.SL, fo.DicomVRCode.SS, fo.DicomVRCode.UL, fo.DicomVRCode.US  } ;
+        private static string[] _decimalBasedVrs = new string[] { DicomVRCode.DS, DicomVRCode.FL, DicomVRCode.FD} ;
+        private static string[] _numberBasedVrs = new string[] { DicomVRCode.DS, DicomVRCode.FL, DicomVRCode.FD, DicomVRCode.IS, 
+                                                                 DicomVRCode.SL, DicomVRCode.SS, DicomVRCode.UL, DicomVRCode.US  } ;
 
         private const string QuoutedStringFormat = "\"{0}\"";
         private const string QuoutedKeyValueStringFormat = "\"{0}\":\"{1}\"";
