@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## v0.7.1-beta
 
 ### Added
+- Update to fo-dicom v4.0.3 Fix Issue #33. Thanks @shelbypereira
 - Add support for returning the "NumberOfFrames" in the OHIF viewer endpoint. Issue #49
 
 ### Fixed
