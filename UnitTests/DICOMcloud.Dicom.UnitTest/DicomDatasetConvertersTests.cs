@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using fo = Dicom;
+using Dicom;
 using Dicom.Imaging.Codec;
 using System.IO;
 using System.Net.Http.Headers;
@@ -46,7 +46,7 @@ namespace DICOMcloud.UnitTest
         /// 1. Load a DICOM Dataset: sourceDS
         /// 2. Convert to XML: sourceXMLDicom
         /// 3. Write to desk 
-        /// 4. Convert sourceXmlDicom to fo.DicomDataset: targetDs
+        /// 4. Convert sourceXmlDicom to DicomDataset: targetDs
         /// 5. Save targetDs to desk
         /// 6. Convert targetDs to XML: destXmlDicom
         /// 7. write to desk
@@ -60,22 +60,22 @@ namespace DICOMcloud.UnitTest
             
 
             Directory.CreateDirectory ( testDir ) ;
-            //fo.DicomDataset sourceDS = Helper.GetDicomDataset ( 10 ).Clone ( fo.DicomTransferSyntax.ExplicitVRLittleEndian ) ;
+            //DicomDataset sourceDS = Helper.GetDicomDataset ( 10 ).Clone ( DicomTransferSyntax.ExplicitVRLittleEndian ) ;
             foreach ( string file in Directory.GetFiles (DicomHelpers.GetSampleImagesFolder ( ) ) )
             {
                 string          fullPath = Path.Combine ( testDir, Path.GetFileName ( file ) ) ; 
-                fo.DicomDataset sourceDS = fo.DicomFile.Open ( file ).Dataset ;
+                DicomDataset sourceDS = DicomFile.Open ( file ).Dataset ;
                 
 
                 var sourceXmlDicom = xmlConverter.Convert  (sourceDS) ;
             
                 System.IO.File.WriteAllText ( fullPath + ".xml", sourceXmlDicom ) ;
 
-                fo.DicomDataset targetDs = xmlConverter.Convert ( sourceXmlDicom ) ;
+                DicomDataset targetDs = xmlConverter.Convert ( sourceXmlDicom ) ;
             
-                var dsF = new fo.DicomFile ( targetDs ) ;
+                var dsF = new DicomFile ( targetDs ) ;
             
-                dsF.FileMetaInfo.TransferSyntax = fo.DicomTransferSyntax.Parse( targetDs.GetSingleValueOrDefault ( fo.DicomTag.TransferSyntaxUID, targetDs.InternalTransferSyntax.ToString ( ) ) ) ;
+                dsF.FileMetaInfo.TransferSyntax = DicomTransferSyntax.Parse( targetDs.GetSingleValueOrDefault ( DicomTag.TransferSyntaxUID, targetDs.InternalTransferSyntax.ToString ( ) ) ) ;
                 
                 dsF.Save ( fullPath + ".gen.dcm" ) ;
 
@@ -100,7 +100,7 @@ namespace DICOMcloud.UnitTest
             foreach ( string file in Directory.GetFiles (DicomHelpers.GetSampleImagesFolder ( )) )
             {
                 string          fullPath = Path.Combine ( testDir, Path.GetFileName ( file ) ) ; 
-                fo.DicomDataset sourceDS = fo.DicomFile.Open ( file ).Dataset ;
+                DicomDataset sourceDS = DicomFile.Open ( file ).Dataset ;
            
                 jsonConverter.WriteInlineBinary = true ;
 
@@ -109,9 +109,9 @@ namespace DICOMcloud.UnitTest
                 System.IO.File.WriteAllText (fullPath + ".jsn", sourceJsonDicom);
 
 
-                fo.DicomDataset targetDs = jsonConverter.Convert ( sourceJsonDicom ) ;
+                DicomDataset targetDs = jsonConverter.Convert ( sourceJsonDicom ) ;
             
-                var dsF = new fo.DicomFile ( targetDs ) ;
+                var dsF = new DicomFile ( targetDs ) ;
 
                 dsF.Save ( fullPath + ".jsn.dcm" ) ;
 

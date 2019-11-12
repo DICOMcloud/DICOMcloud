@@ -1,4 +1,4 @@
-﻿using fo = Dicom;
+﻿using Dicom;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,48 +9,48 @@ namespace DICOMcloud.Wado
 {
     public class DefaultDicomQueryElements
     {
-        static fo.DicomDataset _studyDs = new fo.DicomDataset ( ) ;
-        static fo.DicomDataset _seriesDs = new fo.DicomDataset ( ) ;
-        static fo.DicomDataset _instanceDs = new fo.DicomDataset ( ) ;
-            
-    
-        public virtual fo.DicomDataset GetStudyQuery ( ) 
+        static DicomDataset _studyDs = new DicomDataset ( ) { AutoValidate = false } ;
+        static DicomDataset _seriesDs = new DicomDataset ( ) { AutoValidate = false } ;
+        static DicomDataset _instanceDs = new DicomDataset ( ) { AutoValidate = false };
+
+        public virtual DicomDataset GetStudyQuery ( ) 
         {
             return GetDefaultStudyQuery ( ) ;
         }
 
-        public virtual fo.DicomDataset GetSeriesQuery ( ) 
+        public virtual DicomDataset GetSeriesQuery ( ) 
         {
             return GetDefaultSeriesQuery ( ) ;
         }
 
-        public virtual fo.DicomDataset GetInstanceQuery ( ) 
+        public virtual DicomDataset GetInstanceQuery ( ) 
         {
             return GetDefaultInstanceQuery ( ) ;
         }
 
 
-        public static fo.DicomDataset GetDefaultStudyQuery ( ) 
+        public static DicomDataset GetDefaultStudyQuery ( ) 
         {
-            fo.DicomDataset ds = new fo.DicomDataset ( ) ;
+            DicomDataset ds = new DicomDataset ( ) { AutoValidate = false };
+            
             _studyDs.CopyTo ( ds ) ; 
 
             return ds ;
         }
 
-        public static fo.DicomDataset GetDefaultSeriesQuery ( ) 
+        public static DicomDataset GetDefaultSeriesQuery ( ) 
         {
-            fo.DicomDataset ds = new fo.DicomDataset ( ) ;
+            DicomDataset ds = new DicomDataset ( ) { AutoValidate = false };
             
             _seriesDs.CopyTo ( ds ) ;
 
             return ds ;
         }
 
-        public static fo.DicomDataset GetDefaultInstanceQuery ( ) 
+        public static DicomDataset GetDefaultInstanceQuery ( ) 
         {
-            fo.DicomDataset ds = new fo.DicomDataset ( ) ;
-            
+            DicomDataset ds = new DicomDataset ( ) { AutoValidate = false };
+
             _instanceDs.CopyTo ( ds ) ;
 
             return ds ;
@@ -65,56 +65,53 @@ namespace DICOMcloud.Wado
 
         }
 
-        private static void FillStudyLevel(fo.DicomDataset studyDs)
+        private static void FillStudyLevel(DicomDataset studyDs)
         {
-            studyDs.Add<string>(fo.DicomTag.SpecificCharacterSet,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.StudyDate,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.StudyTime,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.StudyDescription,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.AccessionNumber,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.InstanceAvailability,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.ModalitiesInStudy,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.ReferringPhysicianName,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.TimezoneOffsetFromUTC,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.RetrieveURI,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.PatientName,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.PatientID,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.PatientBirthDate,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.PatientSex,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.StudyInstanceUID,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.StudyID,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.NumberOfStudyRelatedSeries,(string)null) ;
-            studyDs.Add<string>(fo.DicomTag.NumberOfStudyRelatedInstances,(string)null) ;
+            studyDs.Add<string>(DicomTag.SpecificCharacterSet) ;
+            studyDs.Add<DateTime>(DicomTag.StudyDate) ;
+            studyDs.Add<DateTime>(DicomTag.StudyTime) ;
+            studyDs.Add<string>(DicomTag.StudyDescription) ;
+            studyDs.Add<string>(DicomTag.AccessionNumber) ;
+            studyDs.Add<string>(DicomTag.InstanceAvailability) ;
+            studyDs.Add<string>(DicomTag.ModalitiesInStudy) ;
+            studyDs.Add<string>(DicomTag.ReferringPhysicianName) ;
+            studyDs.Add<string>(DicomTag.TimezoneOffsetFromUTC) ;
+            studyDs.Add<string>(DicomTag.RetrieveURI, string.Empty) ;
+            studyDs.Add<string>(DicomTag.PatientName) ;
+            studyDs.Add<string>(DicomTag.PatientID) ;
+            studyDs.Add<DateTime>(DicomTag.PatientBirthDate) ;
+            studyDs.Add<string>(DicomTag.PatientSex) ;
+            studyDs.Add<string>(DicomTag.StudyInstanceUID) ;
+            studyDs.Add<string>(DicomTag.StudyID) ;
+            studyDs.Add<string>(DicomTag.NumberOfStudyRelatedSeries) ;
+            studyDs.Add<string>(DicomTag.NumberOfStudyRelatedInstances) ;
         }
 
-        private static void FillSeriesLevel(fo.DicomDataset seriesDs)
+        private static void FillSeriesLevel(DicomDataset seriesDs)
         {
-            seriesDs.Add<string>(fo.DicomTag.SpecificCharacterSet,(string)null) ;
-            seriesDs.Add<string>(fo.DicomTag.Modality,(string)null) ;
-            seriesDs.Add<string>(fo.DicomTag.TimezoneOffsetFromUTC,(string)null) ;
-            seriesDs.Add<string>(fo.DicomTag.SeriesDescription,(string)null) ;
-            seriesDs.Add<string>(fo.DicomTag.RetrieveURI,(string)null) ;
-            seriesDs.Add<string>(fo.DicomTag.SeriesInstanceUID,(string)null) ;
-            seriesDs.Add<string>(fo.DicomTag.SeriesNumber,(string)null) ;
-            seriesDs.Add<string>(fo.DicomTag.NumberOfSeriesRelatedInstances,(string)null) ;
-            seriesDs.Add<string>(fo.DicomTag.PerformedProcedureStepStartDate,(string)null) ;
-            seriesDs.Add<string>(fo.DicomTag.PerformedProcedureStepStartTime,(string)null) ;
-            //seriesDs.Add<object>(fo.DicomTag.RequestAttributesSequence,null) ; //Not supported yet
-
-
+            seriesDs.Add<string>(DicomTag.SpecificCharacterSet) ;
+            seriesDs.Add<string>(DicomTag.Modality) ;
+            seriesDs.Add<string>(DicomTag.TimezoneOffsetFromUTC) ;
+            seriesDs.Add<string>(DicomTag.SeriesDescription) ;
+            seriesDs.Add<string>(DicomTag.SeriesInstanceUID) ;
+            seriesDs.Add<string>(DicomTag.SeriesNumber) ;
+            seriesDs.Add<string>(DicomTag.NumberOfSeriesRelatedInstances) ;
+            seriesDs.Add<string>(DicomTag.PerformedProcedureStepStartDate) ;
+            seriesDs.Add<string>(DicomTag.PerformedProcedureStepStartTime) ;
+            //seriesDs.Add<object>(DicomTag.RequestAttributesSequence,null) ; //Not supported yet
         }
 
-        private static void FillInstsanceLevel(fo.DicomDataset instanceDs)
+        private static void FillInstsanceLevel(DicomDataset instanceDs)
         {
-            instanceDs.Add<string>(fo.DicomTag.SpecificCharacterSet,(string)null) ;
-            instanceDs.Add<string>(fo.DicomTag.SOPClassUID,(string)null) ;
-            instanceDs.Add<string>(fo.DicomTag.SOPInstanceUID,(string)null) ;
-            instanceDs.Add<string>(fo.DicomTag.InstanceNumber,(string)null) ;
+            instanceDs.Add<string>(DicomTag.SpecificCharacterSet) ;
+            instanceDs.Add<string>(DicomTag.SOPClassUID) ;
+            instanceDs.Add<string>(DicomTag.SOPInstanceUID) ;
+            instanceDs.Add<string>(DicomTag.InstanceNumber) ;
 
-            instanceDs.Add<string>(fo.DicomTag.Rows, (string)null);
-            instanceDs.Add<string>(fo.DicomTag.Columns, (string)null);
-            instanceDs.Add<string>(fo.DicomTag.BitsAllocated, (string)null);
-            instanceDs.Add<string>(fo.DicomTag.NumberOfFrames, (string)null);
+            instanceDs.Add<ushort>(DicomTag.Rows);
+            instanceDs.Add<ushort>(DicomTag.Columns);
+            instanceDs.Add<ushort>(DicomTag.BitsAllocated);
+            instanceDs.Add<string>(DicomTag.NumberOfFrames);
         }
     }
 }

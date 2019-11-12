@@ -1,4 +1,4 @@
-﻿using fo = Dicom;
+﻿using Dicom;
 using DICOMcloud.IO;
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace DICOMcloud
         }
 
         //TODO: is this used? update with fo-dicom
-        public Stream Convert ( fo.DicomDataset ds )
+        public Stream Convert ( DicomDataset ds )
         {
             //fo.DicomDataset command = new fo.DicomDataset () ;
 
@@ -39,7 +39,7 @@ namespace DICOMcloud
             return null ;
         }
 
-        public fo.DicomDataset Convert ( Stream uncompressedData )
+        public DicomDataset Convert ( Stream uncompressedData )
         {
             throw new NotImplementedException ( "Converting image data to DICOM is not supported." ) ;
         }

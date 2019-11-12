@@ -356,8 +356,7 @@ namespace DICOMcloud.Wado
             dicomRequest.AddOrUpdate ( new DicomSequence ( dicEntry.Tag ) ) ;
             sequence = dicomRequest.GetSingleValue<DicomSequence>(dicEntry.Tag);
 
-
-            item = new DicomDataset ( ) ;
+            item = new DicomDataset ( ) { AutoValidate = false };
 
             sequence.Items.Add ( item ) ;
             

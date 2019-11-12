@@ -61,11 +61,12 @@
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Dicom.Core, Version=4.0.2.0, Culture=neutral, PublicKeyToken=3a13f649e28eb09a, processorArchitecture=MSIL">
-      <HintPath>..\packages\fo-dicom.Desktop.4.0.2\lib\net45\Dicom.Core.dll</HintPath>
+    <Reference Include="Dicom.Core, Version=4.0.3.0, Culture=neutral, PublicKeyToken=3a13f649e28eb09a, processorArchitecture=MSIL">
+      <HintPath>..\packages\fo-dicom.Desktop.4.0.3\lib\net45\Dicom.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Dicom.Native">
-      <HintPath>..\packages\fo-dicom.Desktop.3.0.2\build\net452\Dicom.Native.dll</HintPath>
+    <Reference Include="Dicom.Native, Version=4.0.2.0, Culture=neutral, PublicKeyToken=3a13f649e28eb09a, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\fo-dicom.Desktop.4.0.2\build\net45\Dicom.Native.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.4.0\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
@@ -462,12 +463,12 @@
     <PostBuildEvent>xcopy "$(ProjectDir)../Resources\Database\DICOMcloud.mdf" "$(ProjectDir)App_Data\DB\*" /d /y
 xcopy "$(ProjectDir)../Resources\Database\DICOMcloud.ldf" "$(ProjectDir)App_Data\DB\*" /d /y</PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\packages\fo-dicom.Desktop.4.0.2\build\net45\fo-dicom.Desktop.targets" Condition="Exists('..\packages\fo-dicom.Desktop.4.0.2\build\net45\fo-dicom.Desktop.targets')" />
+  <Import Project="..\packages\fo-dicom.Desktop.4.0.3\build\net45\fo-dicom.Desktop.targets" Condition="Exists('..\packages\fo-dicom.Desktop.4.0.3\build\net45\fo-dicom.Desktop.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\fo-dicom.Desktop.4.0.2\build\net45\fo-dicom.Desktop.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\fo-dicom.Desktop.4.0.2\build\net45\fo-dicom.Desktop.targets'))" />
+    <Error Condition="!Exists('..\packages\fo-dicom.Desktop.4.0.3\build\net45\fo-dicom.Desktop.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\fo-dicom.Desktop.4.0.3\build\net45\fo-dicom.Desktop.targets'))" />
   </Target>
   <!--<Import Project="..\..\..\..\packages\Microsoft.Web.WebJobs.Publish.1.0.9\tools\webjobs.targets" Condition="Exists('..\..\..\..\packages\Microsoft.Web.WebJobs.Publish.1.0.9\tools\webjobs.targets')" />-->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

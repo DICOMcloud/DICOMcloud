@@ -16,14 +16,14 @@ namespace DICOMcloud.Pacs.Commands
     {
         static StoreCommand ( ) 
         {
-            RequiredDsElements = new DicomDataset ( ) ;
+            RequiredDsElements = new DicomDataset ( ) { AutoValidate = false };
 
-            RequiredDsElements.Add<string> ( DicomTag.PatientID,(string) null) ;
-            RequiredDsElements.Add<string> ( DicomTag.StudyInstanceUID, (string)null) ;
-            RequiredDsElements.Add<string> ( DicomTag.SeriesInstanceUID, (string)null) ;
-            RequiredDsElements.Add<string> ( DicomTag.Modality, (string)null) ;
-            RequiredDsElements.Add<string> ( DicomTag.SOPClassUID, (string)null) ;
-            RequiredDsElements.Add<string> ( DicomTag.SOPInstanceUID, (string)null) ;
+            RequiredDsElements.Add<string> ( DicomTag.PatientID) ;
+            RequiredDsElements.Add<string> ( DicomTag.StudyInstanceUID) ;
+            RequiredDsElements.Add<string> ( DicomTag.SeriesInstanceUID) ;
+            RequiredDsElements.Add<string> ( DicomTag.Modality) ;
+            RequiredDsElements.Add<string> ( DicomTag.SOPClassUID) ;
+            RequiredDsElements.Add<string> ( DicomTag.SOPInstanceUID) ;
         }
 
         public StoreCommand ( ) : this ( null, null ) 

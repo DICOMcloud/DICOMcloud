@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using fo = Dicom;
+using Dicom;
 
 namespace DICOMcloud.DataAccess
 {
@@ -25,7 +25,7 @@ namespace DICOMcloud.DataAccess
             PopulateTemplate ( ParametersTemplate ) ;
         }
 
-        public IEnumerable<T> ProcessDataSet ( fo.DicomDataset dataset )
+        public IEnumerable<T> ProcessDataSet ( DicomDataset dataset )
         {
             BeginProcessingElements ( ) ;
             
@@ -43,7 +43,7 @@ namespace DICOMcloud.DataAccess
             ProcessingList = new List<IDicomDataParameter> ( ) ;
         }
 
-        public virtual void ProcessElement(fo.DicomItem element) 
+        public virtual void ProcessElement(DicomItem element) 
         {
             for ( int index = ProcessingList.Count -1; index >= 0; index-- )
             { 
@@ -101,11 +101,11 @@ namespace DICOMcloud.DataAccess
         protected override void PopulateTemplate(List<IDicomDataParameter> parametersTemplate)
         {
             List<uint> supportedDateTime = new List<uint> ( ) ;
-            supportedDateTime.Add ( (uint) fo.DicomTag.StudyDate ) ;
-            supportedDateTime.Add ( (uint) fo.DicomTag.StudyTime ) ;
+            supportedDateTime.Add ( (uint) DicomTag.StudyDate ) ;
+            supportedDateTime.Add ( (uint) DicomTag.StudyTime ) ;
 
             studyDateTime = new StoreParameter ( supportedDateTime ) ; 
-            studyDateTime.KeyTag = (uint) fo.DicomTag.StudyDate ;
+            studyDateTime.KeyTag = (uint) DicomTag.StudyDate ;
 
             parametersTemplate.Add ( studyDateTime ) ;
             parametersTemplate.Add ( new StoreParameter ( ) ) ;
