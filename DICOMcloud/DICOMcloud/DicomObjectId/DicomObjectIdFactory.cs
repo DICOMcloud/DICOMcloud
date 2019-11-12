@@ -27,9 +27,9 @@ namespace DICOMcloud
         public virtual IObjectId CreateObjectId ( DicomDataset dataset )
         {
             return new ObjectId ( ) {
-                StudyInstanceUID = dataset.Get<string>(DicomTag.StudyInstanceUID, 0, ""),
-                SeriesInstanceUID = dataset.Get<string>(DicomTag.SeriesInstanceUID, 0, ""),
-                SOPInstanceUID = dataset.Get<string>(DicomTag.SOPInstanceUID, 0, "")
+                StudyInstanceUID = dataset.GetValueOrDefault(DicomTag.StudyInstanceUID, 0, ""),
+                SeriesInstanceUID = dataset.GetValueOrDefault(DicomTag.SeriesInstanceUID, 0, ""),
+                SOPInstanceUID = dataset.GetValueOrDefault(DicomTag.SOPInstanceUID, 0, "")
             } ;
         }
     }

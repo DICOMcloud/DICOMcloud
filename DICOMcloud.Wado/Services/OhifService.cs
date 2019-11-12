@@ -56,7 +56,7 @@ namespace DICOMcloud.Wado
 
         protected virtual IEnumerable<DicomDataset> QueryInstances (IStudyId studyId)
         {
-            Dicom.DicomDataset ds = new Dicom.DicomDataset();
+            DicomDataset ds = new DicomDataset() { AutoValidate = false };
 
             ds.Add(Dicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
             ds.Add(DicomTag.SeriesInstanceUID, "");
@@ -81,9 +81,9 @@ namespace DICOMcloud.Wado
 
             foreach (var instance in instances)
             {
-                var currentStudyUid = instance.Get<string>(DicomTag.StudyInstanceUID);
-                var currentSeriesUid = instance.Get<string>(DicomTag.SeriesInstanceUID);
-                var currentInstanceUid = instance.Get<string>(DicomTag.SOPInstanceUID);
+                var currentStudyUid = instance.GetSingleValue<string>(DicomTag.StudyInstanceUID);
+                var currentSeriesUid = instance.GetSingleValue<string>(DicomTag.SeriesInstanceUID);
+                var currentInstanceUid = instance.GetSingleValue<string>(DicomTag.SOPInstanceUID);
                 OHIFInstance ohifInstance = new OHIFInstance() { SopInstanceUid = currentInstanceUid };
                 OHIFStudy ohifStudy;
                 OHIFSeries ohifSeries;
@@ -93,7 +93,7 @@ namespace DICOMcloud.Wado
                 {
                     ohifStudy = new OHIFStudy() { StudyInstanceUid = currentStudyUid };
 
-                    ohifStudy.PatientName = instance.Get<string>(DicomTag.PatientName, "");
+                    ohifStudy.PatientName = instance.GetSingleValueOrDefault<string>(DicomTag.PatientName, "");
 
                     result.Studies.Add(ohifStudy);
 
@@ -104,7 +104,7 @@ namespace DICOMcloud.Wado
                 {
                     ohifSeries = new OHIFSeries() { SeriesInstanceUid = currentSeriesUid };
 
-                    ohifSeries.SeriesDescription = instance.Get<string>(DicomTag.SeriesDescription, "");
+                    ohifSeries.SeriesDescription = instance.GetSingleValueOrDefault<string>(DicomTag.SeriesDescription, "");
 
                     ohifStudy.SeriesList.Add(ohifSeries);
 
@@ -113,7 +113,7 @@ namespace DICOMcloud.Wado
 
                 ohifInstance.Rows = 1;
                 ohifInstance.Url = CreateOHIFUrl (instance, studyId);
-                ohifInstance.NumberOfFrames = instance.Get<int?>(DicomTag.NumberOfFrames, null);
+                ohifInstance.NumberOfFrames = instance.GetSingleValueOrDefault<int?>(DicomTag.NumberOfFrames, null);
 
                 ohifSeries.Instances.Add(ohifInstance);
             }

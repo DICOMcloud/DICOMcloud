@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using fo = Dicom;
+using Dicom;
 
 namespace DICOMcloud.DataAccess
 {
@@ -8,10 +8,10 @@ namespace DICOMcloud.DataAccess
     {
         void BeginProcessingElements ( ) ;
 
-        void ProcessElement(fo.DicomItem element) ;
+        void ProcessElement(DicomItem element) ;
 
         IEnumerable<T> EndProcessingElements ( ) ;
 
-        IEnumerable<T> ProcessDataSet ( fo.DicomDataset dataset );
+        IEnumerable<T> ProcessDataSet ( DicomDataset dataset );
     }
 }

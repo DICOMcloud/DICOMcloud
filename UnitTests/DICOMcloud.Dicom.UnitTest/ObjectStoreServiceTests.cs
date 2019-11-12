@@ -75,15 +75,15 @@ namespace DICOMcloud.UnitTest
         
             foreach ( var ds in results)
             { 
-                var sopUid = ds.Get<string> (DicomTag.SOPInstanceUID);
+                var sopUid = ds.GetSingleValue<string> (DicomTag.SOPInstanceUID);
 
-                var stored = storedDs.Where ( n=> n.Get<string> (DicomTag.SOPInstanceUID) == sopUid).FirstOrDefault ( );
+                var stored = storedDs.FirstOrDefault (n => n.GetSingleValue<string> (DicomTag.SOPInstanceUID) == sopUid);
             
                 Assert.IsNotNull (stored);
 
                 foreach ( var element in stored)
                 { 
-                    Assert.AreEqual ( stored.Get<string> (element.Tag), ds.Get<string> (element.Tag));
+                    Assert.AreEqual ( stored.GetSingleValue<string> (element.Tag), ds.GetSingleValue<string> (element.Tag));
                 }
             }
         }
@@ -114,9 +114,9 @@ namespace DICOMcloud.UnitTest
                 //location include the UIDs, so make sure your storage
                 // folder is close to the root when keeping the original UIDs
                 dataset.AddOrUpdate ( fo.DicomTag.PatientID, "Patient_" + counter ) ;
-                dataset.AddOrUpdate ( fo.DicomTag.StudyInstanceUID, "Study_" + counter ) ;
-                dataset.AddOrUpdate ( fo.DicomTag.SeriesInstanceUID, "Series_" + counter ) ;
-                dataset.AddOrUpdate ( fo.DicomTag.SOPInstanceUID, "Instance_" + counter ) ;
+                dataset.AddOrUpdate ( fo.DicomTag.StudyInstanceUID, "1112." + counter ) ;
+                dataset.AddOrUpdate ( fo.DicomTag.SeriesInstanceUID, "1113." + counter ) ;
+                dataset.AddOrUpdate ( fo.DicomTag.SOPInstanceUID, "1114." + counter ) ;
                 
                 StoreService.StoreDicom ( dataset, new DataAccess.InstanceMetadata ( ) ) ;
 

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using fo = Dicom;
+using Dicom;
 
 
 namespace DICOMcloud.UnitTest
@@ -14,15 +14,21 @@ namespace DICOMcloud.UnitTest
     {
         public DicomHelpers ( ) 
         {
-            Study1UID    = "test.study.1" ;
-            Study2UID    = "test.study.2" ;
+            // the new fo-dicom 4.0.0 does not allow letters in UIDs  the standard allows only 0-9 and . separator
+          // leading zeros are also not allowed
+            Study1UID    = "9999.1111.1" ;
+            Study2UID    = "9999.1111.2" ;
             Study3UID    =  Study2UID ;
-            Series1UID   = "test.series.1" ;
-            Series2UID   = "test.series.2" ;
-            Series3UID   = "test.series.3" ;
-            Instance1UID = "test.instance.1" ;
-            Instance2UID = "test.instance.2" ;
-            Instance3UID = "test.instance.3" ;
+            
+            Series1UID   = "1111.1111.1" ;
+            Series2UID   = "1111.1111.2" ;
+            Series3UID   = "1111.1111.3" ;
+            
+            Instance1UID = "2222.1111.1" ;
+            Instance2UID = "2222.1111.2" ;
+            Instance3UID = "2222.1111.3" ;
+
+            SOPClass1UID = "3333.1111.1" ;
         }
         
         public static string GetBaseFolder ( ) 
@@ -51,10 +57,10 @@ namespace DICOMcloud.UnitTest
 
         public static string   TestFolderName = "Test_Data" ;
 
-        public fo.DicomDataset GetDicomDataset ( uint dsNumber) 
+        public DicomDataset GetDicomDataset ( uint dsNumber) 
         {
             uint testDsCase = dsNumber % 3 ;
-            fo.DicomDataset testDs = new fo.DicomDataset ( ) ;
+            DicomDataset testDs = new DicomDataset ( ) ;
 
 
             switch ( testDsCase )
@@ -69,9 +75,9 @@ namespace DICOMcloud.UnitTest
 
                     testDs = GetTemplateDataset().CopyTo ( testDs ) ;
 
-                    testDs .AddOrUpdate ( fo.DicomTag.StudyInstanceUID, Study2UID );
-                    testDs .AddOrUpdate ( fo.DicomTag.SeriesInstanceUID, Series2UID );
-                    testDs .AddOrUpdate ( fo.DicomTag.SOPInstanceUID, Instance2UID );
+                    testDs .AddOrUpdate ( DicomTag.StudyInstanceUID, Study2UID );
+                    testDs .AddOrUpdate ( DicomTag.SeriesInstanceUID, Series2UID );
+                    testDs .AddOrUpdate ( DicomTag.SOPInstanceUID, Instance2UID );
                 }
                 break ;
 
@@ -79,9 +85,9 @@ namespace DICOMcloud.UnitTest
                 {
                     testDs = GetTemplateDataset().CopyTo ( testDs ) ;
 
-                    testDs.AddOrUpdate ( fo.DicomTag.StudyInstanceUID, Study3UID );
-                    testDs.AddOrUpdate ( fo.DicomTag.SeriesInstanceUID, Series3UID );
-                    testDs.AddOrUpdate  ( fo.DicomTag.SOPInstanceUID, Instance3UID ) ;
+                    testDs.AddOrUpdate ( DicomTag.StudyInstanceUID, Study3UID );
+                    testDs.AddOrUpdate ( DicomTag.SeriesInstanceUID, Series3UID );
+                    testDs.AddOrUpdate  ( DicomTag.SOPInstanceUID, Instance3UID ) ;
                 }
                 break ;
 
@@ -138,58 +144,63 @@ namespace DICOMcloud.UnitTest
         {
             get; set;
         }
-
-
-        public fo.DicomDataset GetQueryDataset ( ) 
+        public string SOPClass1UID
         {
-            var ds = new fo.DicomDataset ( ) ;
+            get; set;
+        }
 
 
-            ds.Add<object> ( fo.DicomTag.PatientID, null) ;
-            ds.Add<object>( fo.DicomTag.PatientName, null);
-            ds.Add<object>( fo.DicomTag.StudyInstanceUID, null);
-            ds.Add<object>( fo.DicomTag.StudyID, null);
-            ds.Add<object>(fo.DicomTag.StudyDate, null);
-            ds.Add<object>( fo.DicomTag.AccessionNumber, null);
-            ds.Add<object>(fo.DicomTag.StudyDescription, null);
-            ds.Add<object>( fo.DicomTag.SeriesInstanceUID, null);
-            ds.Add<object>( fo.DicomTag.SeriesNumber, null);
-            ds.Add<object>( fo.DicomTag.Modality, null);
-            ds.Add<object>( fo.DicomTag.SOPInstanceUID, null);
-            ds.Add<object>( fo.DicomTag.SOPClassUID, null);
-            ds.Add<object>( fo.DicomTag.InstanceNumber, null);
+        public DicomDataset GetQueryDataset ( ) 
+        {
+            var ds = new DicomDataset ( ) ;
 
-            ds.Add<object>(fo.DicomTag.NumberOfFrames, null);
-            ds.Add<object>(fo.DicomTag.BitsAllocated, null);
-            ds.Add<object>(fo.DicomTag.Rows, null);
-            ds.Add<object>(fo.DicomTag.Columns, null);
+
+            ds.Add<string> ( DicomTag.PatientID,(string) null) ;
+            ds.Add<string>( DicomTag.PatientName, (string)null);
+            ds.Add<string>( DicomTag.StudyInstanceUID, (string)null);
+            ds.Add<string>( DicomTag.StudyID, (string)null);
+            ds.Add<string>(DicomTag.StudyDate, (string)null);
+            ds.Add<string>( DicomTag.AccessionNumber, (string)null);
+            ds.Add<string>(DicomTag.StudyDescription, (string)null);
+            ds.Add<string>( DicomTag.SeriesInstanceUID, (string)null);
+            ds.Add<string>( DicomTag.SeriesNumber, (string)null);
+            ds.Add<string>( DicomTag.Modality, (string)null);
+            ds.Add<string>( DicomTag.SOPInstanceUID, (string)null);
+            ds.Add<string>( DicomTag.SOPClassUID, (string)null);
+            ds.Add<string>( DicomTag.InstanceNumber, (string)null);
+
+            ds.Add<int>(DicomTag.NumberOfFrames);
+            ds.Add<ushort>(DicomTag.BitsAllocated);
+            ds.Add<ushort>(DicomTag.Rows);
+            ds.Add<ushort>(DicomTag.Columns);
 
             return ds ;
         }
 
-        private fo.DicomDataset GetTemplateDataset ( ) 
+        private DicomDataset GetTemplateDataset ( ) 
         {
-            var ds = new fo.DicomDataset ( ) ;
+            var ds = new DicomDataset ( ) ;
 
+            ds.AutoValidate = false;
 
-            ds.Add ( fo.DicomTag.PatientID, "test-pid") ;
-            ds.Add ( fo.DicomTag.PatientName, "test^patient name" );
-            ds.Add ( fo.DicomTag.StudyInstanceUID, Study1UID );
-            ds.Add ( fo.DicomTag.StudyID, "test-studyid" );
-            ds.Add (fo.DicomTag.StudyDate, "20181112");
-            ds.Add ( fo.DicomTag.AccessionNumber, "test-accession" );
-            ds.Add (fo.DicomTag.StudyDescription, "test-description");
-            ds.Add ( fo.DicomTag.SeriesInstanceUID, Series1UID );
-            ds.Add ( fo.DicomTag.SeriesNumber, 1 );
-            ds.Add ( fo.DicomTag.Modality, "XA" );
-            ds.Add ( fo.DicomTag.SOPInstanceUID, Instance1UID );
-            ds.Add ( fo.DicomTag.SOPClassUID, "test.instance.class.uid" );
-            ds.Add ( fo.DicomTag.InstanceNumber, 1 );
+            ds.Add ( DicomTag.PatientID, "test-pid") ;
+            ds.Add ( DicomTag.PatientName, "test^patient name" );
+            ds.Add ( DicomTag.StudyInstanceUID, Study1UID );
+            ds.Add ( DicomTag.StudyID, "test-studyid" );
+            ds.Add (DicomTag.StudyDate, "20181112");
+            ds.Add ( DicomTag.AccessionNumber, "test-accession" );
+            ds.Add (DicomTag.StudyDescription, "test-description");
+            ds.Add ( DicomTag.SeriesInstanceUID, Series1UID );
+            ds.Add ( DicomTag.SeriesNumber, 1 );
+            ds.Add ( DicomTag.Modality, "XA" );
+            ds.Add ( DicomTag.SOPInstanceUID, Instance1UID );
+            ds.Add ( DicomTag.SOPClassUID, SOPClass1UID);
+            ds.Add ( DicomTag.InstanceNumber, 1 );
 
-            ds.Add(fo.DicomTag.NumberOfFrames, 1);
-            ds.Add(fo.DicomTag.BitsAllocated, (ushort)16);
-            ds.Add(fo.DicomTag.Rows, (ushort)255);
-            ds.Add(fo.DicomTag.Columns, (ushort)512);
+            ds.Add(DicomTag.NumberOfFrames, 1);
+            ds.Add(DicomTag.BitsAllocated, (ushort)16);
+            ds.Add(DicomTag.Rows, (ushort)255);
+            ds.Add(DicomTag.Columns, (ushort)512);
 
             return ds ;
         }
