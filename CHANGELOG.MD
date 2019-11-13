@@ -8,17 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Add support for enabling CORS by configuration. Issue #57
+- Add support for returning the "NumberOfFrames" in the OHIF viewer endpoint. Issue #49
+- Update to fo-dicom v4.0.3 Fix Issue #33. Thanks @shelbypereira
 
 ### Changed
 - Increase default upload limit from 4 MB to 10MB. Issue #51
 
-## v0.7.1-beta
-
-### Added
-- Update to fo-dicom v4.0.3 Fix Issue #33. Thanks @shelbypereira
-- Add support for returning the "NumberOfFrames" in the OHIF viewer endpoint. Issue #49
-
 ### Fixed
+- Fix Wado-RS GetStudies not always working. Issue #55
 - Fix WADO-RS retrieve frame is not working. Issue #48
 
 ## v0.7.0-beta
