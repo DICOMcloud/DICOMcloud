@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Increase default upload limit from 4 MB to 10MB. Issue #51
 
 ### Fixed
+- Fix QIDO: UID list parsing is not according to standard. Issue #41
 - Fix Wado-RS GetStudies not always working. Issue #55
 - Fix WADO-RS retrieve frame is not working. Issue #48
 
