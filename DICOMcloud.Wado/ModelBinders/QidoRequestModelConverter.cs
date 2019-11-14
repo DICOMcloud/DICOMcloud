@@ -107,40 +107,40 @@ namespace DICOMcloud.Wado
         /// <param name="wadoReq"></param>
         private void CheckAndFillUids(IValueProvider valueProvider, IQidoRequestModel wadoReq)
         {
-            string strStudyInstanceUid = fo.DicomTag.StudyInstanceUID.DictionaryEntry.Keyword;
-            string strSeriesInstanceUid = fo.DicomTag.SeriesInstanceUID.DictionaryEntry.Keyword;
-            string strSopInstanceUid = fo.DicomTag.SOPInstanceUID.DictionaryEntry.Keyword;
+            string studyInstanceUidKey = fo.DicomTag.StudyInstanceUID.DictionaryEntry.Keyword.ToLower();
+            string seriesInstanceUidKey = fo.DicomTag.SeriesInstanceUID.DictionaryEntry.Keyword.ToLower();
+            string sopInstanceUidKey = fo.DicomTag.SOPInstanceUID.DictionaryEntry.Keyword.ToLower();
 
-            if (!wadoReq.Query.MatchingElements.ContainsKey(strStudyInstanceUid))
+            if (!wadoReq.Query.MatchingElements.ContainsKey(studyInstanceUidKey))
             {
-                ValueProviderResult valueResult = valueProvider.GetValue(strStudyInstanceUid);
+                ValueProviderResult valueResult = valueProvider.GetValue(studyInstanceUidKey);
                 if (valueResult != null)
                 {
                     string studyInstanceUid = valueResult.RawValue as string;
                     if (!string.IsNullOrEmpty(studyInstanceUid))
-                        wadoReq.Query.MatchingElements.Add(strStudyInstanceUid, studyInstanceUid);
+                        wadoReq.Query.MatchingElements.Add(studyInstanceUidKey, studyInstanceUid);
                 }
             }
 
-            if (!wadoReq.Query.MatchingElements.ContainsKey(strSeriesInstanceUid))
+            if (!wadoReq.Query.MatchingElements.ContainsKey(seriesInstanceUidKey))
             {
-                ValueProviderResult valueResult = valueProvider.GetValue(strSeriesInstanceUid);
+                ValueProviderResult valueResult = valueProvider.GetValue(seriesInstanceUidKey);
                 if (valueResult != null)
                 {
                     string seriesInstanceUid = valueResult.RawValue as string;
                     if (!string.IsNullOrEmpty(seriesInstanceUid))
-                        wadoReq.Query.MatchingElements.Add(strSeriesInstanceUid, seriesInstanceUid);
+                        wadoReq.Query.MatchingElements.Add(seriesInstanceUidKey, seriesInstanceUid);
                 }
             }
 
-            if (!wadoReq.Query.MatchingElements.ContainsKey(strSopInstanceUid))
+            if (!wadoReq.Query.MatchingElements.ContainsKey(sopInstanceUidKey))
             {
-                ValueProviderResult valueResult = valueProvider.GetValue(strSopInstanceUid);
+                ValueProviderResult valueResult = valueProvider.GetValue(sopInstanceUidKey);
                 if (valueResult != null)
                 {
                     string sopInstanceUid = valueResult.RawValue as string;
                     if (!string.IsNullOrEmpty(sopInstanceUid))
-                        wadoReq.Query.MatchingElements.Add(strSopInstanceUid, sopInstanceUid);
+                        wadoReq.Query.MatchingElements.Add(sopInstanceUidKey, sopInstanceUid);
                 }
             }
         }

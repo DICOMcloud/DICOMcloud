@@ -342,6 +342,13 @@ namespace DICOMcloud.Wado
 
             uint tag = GetTagValue (tagString);
 
+            var entry = DicomDictionary.Default[(DicomTag)tag];
+
+            if (entry.ValueRepresentations.Where( n => n.Name == DicomVR.UI.Name).FirstOrDefault ( ) != null)
+            {
+                value = value.Replace (",", "\\");
+            }
+
             dicomRequest.AddOrUpdate(tag, value);
         }
 

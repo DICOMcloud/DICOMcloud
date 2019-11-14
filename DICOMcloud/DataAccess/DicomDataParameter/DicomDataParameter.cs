@@ -34,9 +34,10 @@ namespace DICOMcloud.DataAccess
                     value = item.Get<string>().TrimEnd('\0');
                 }
 
-                if ( item.Tag.DictionaryEntry.ValueMultiplicity.Maximum > 1 ) //better way to find if has multi value
+                if ( item.Tag.DictionaryEntry.ValueMultiplicity.Maximum > 1 || 
+                     item.Tag.DictionaryEntry.ValueRepresentations.Contains(DicomVR.UI) )
                 {
-                    return value.Split ( '/' ) ;
+                    return value.Split ( '\\' ) ;
                 }
                 else
                 {
