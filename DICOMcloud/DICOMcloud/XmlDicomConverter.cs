@@ -230,11 +230,19 @@ namespace DICOMcloud
                     
                 if ( dicomVr.Equals(DicomVR.AT))
                 {
-                    var    atElement   = ds.GetSingleValueOrDefault<DicomElement>    ( element.Tag, null ) ;
-                    var    tagValue    = atElement.Get<DicomTag> ( ) ;
-                    string stringValue = tagValue.ToString          ( "J", null ) ;
+                    var atElement = ds.GetSingleValueOrDefault<DicomElement> ( element.Tag, null ) ;
+                    
+                    if ( null != atElement)
+                    {
+                        var tagValue = atElement.Get<DicomTag> ( ) ;
+                        string stringValue = tagValue.ToString ( "J", null ) ;
 
-                    writer.WriteString ( stringValue ) ;
+                        writer.WriteString ( stringValue ) ;
+                    }
+                    else
+                    {
+                        writer.WriteString(string.Empty);
+                    }
                 }
                 else
                 {
