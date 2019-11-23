@@ -17,6 +17,7 @@ namespace DICOMcloud.Wado.Controllers
         }
 
         [Route("wadouri")]
+        [Route("api/wadouri")]
         public HttpResponseMessage Get
         (
             [ModelBinder(typeof(UriRequestModelBinder))]

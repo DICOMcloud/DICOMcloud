@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Next Version
 
 ### Added
+- Add support for RESTful URLs with same URL base across QIDO-RS, WADO-RS and STOW-RS. Issue #59
 - Add support for enabling CORS by configuration. Issue #57
 - Add support for returning the "NumberOfFrames" in the OHIF viewer endpoint. Issue #49
 - Update to fo-dicom v4.0.3 Fix Issue #33. Thanks @shelbypereira

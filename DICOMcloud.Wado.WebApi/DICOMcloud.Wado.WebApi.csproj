@@ -239,13 +239,14 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\FramesController.cs" />
+    <Compile Include="Controllers\MetadataController.cs" />
     <Compile Include="Controllers\OhifViewerController.cs" />
-    <Compile Include="Controllers\QidoRSController.cs" />
-    <Compile Include="Controllers\DelowRSController.cs" />
-    <Compile Include="Controllers\StowRSController.cs" />
+    <Compile Include="Controllers\InstanceController.cs" />
+    <Compile Include="Controllers\SeriesController.cs" />
+    <Compile Include="Controllers\StudiesController.cs" />
     <Compile Include="Controllers\SwaggerController.cs" />
     <Compile Include="Controllers\WadoUriController.cs" />
-    <Compile Include="Controllers\WadoRSController.cs" />
     <Compile Include="Exceptions\DICOMcloudExceptionHandler.cs" />
     <Compile Include="Exceptions\DICOMcloudExceptionLogger.cs" />
     <Compile Include="Global.asax.cs">
@@ -338,6 +339,7 @@
     <Content Include="swagger\fonts\DroidSans-Bold.ttf" />
     <Content Include="swagger\fonts\DroidSans.ttf" />
     <Content Include="swagger\swagger.json" />
+    <Content Include="swagger\swagger-restful.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DICOMcloud.Azure\DICOMcloud.Azure.csproj">
