@@ -121,25 +121,24 @@
       <Link>Nuget\Content\App_Start\DICOMcloudBuilder.cs</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\Controllers\DelowRSController.cs">
-      <Link>Nuget\Content\Controllers\DelowRSController.cs</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\FramesController.cs">
+      <Link>Nuget\Content\Controllers\FramesController.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\InstanceController.cs">
+      <Link>Nuget\Content\Controllers\InstanceController.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\MetadataController.cs">
+      <Link>Nuget\Content\Controllers\MetadataController.cs</Link>
     </Compile>
     <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\OHIFViewerController.cs">
       <Link>Nuget\Content\Controllers\OHIFViewerController.cs</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\Controllers\QidoRSController.cs">
-      <Link>Nuget\Content\Controllers\QidoRSController.cs</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\SeriesController.cs">
+      <Link>Nuget\Content\Controllers\SeriesController.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\Controllers\StowRSController.cs">
-      <Link>Nuget\Content\Controllers\StowRSController.cs</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
-    <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\Controllers\WadoRSController.cs">
-      <Link>Nuget\Content\Controllers\WadoRSController.cs</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\StudiesController.cs">
+      <Link>Nuget\Content\Controllers\StudiesController.cs</Link>
     </Compile>
     <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\Controllers\WadoUriController.cs">
       <Link>Nuget\Content\Controllers\WadoUriController.cs</Link>
