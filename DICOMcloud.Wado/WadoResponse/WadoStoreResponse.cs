@@ -57,7 +57,7 @@ namespace DICOMcloud.Wado
         public void AddResult ( DicomDataset ds, Exception ex )
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
-            var failedSeq          = (_dataset.Contains (DicomTag.FailedSOPSequence)) ? _dataset.GetSingleValue<DicomSequence>(DicomTag.FailedSOPSequence) : new DicomSequence ( DicomTag.FailedSOPSequence ) ;
+            var failedSeq          = (_dataset.Contains (DicomTag.FailedSOPSequence)) ? _dataset.GetSequence(DicomTag.FailedSOPSequence) : new DicomSequence ( DicomTag.FailedSOPSequence ) ;
             var item               = new DicomDataset ( ) { AutoValidate = false };
 
             referencedInstance.Merge ( item ) ;
@@ -83,7 +83,7 @@ namespace DICOMcloud.Wado
         public void AddResult ( DicomDataset ds )
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
-            var referencedSeq      = (_dataset.Contains(DicomTag.ReferencedSOPSequence)) ? _dataset.GetSingleValue<DicomSequence>(DicomTag.ReferencedSOPSequence) : new DicomSequence ( DicomTag.ReferencedSOPSequence) ;
+            var referencedSeq      = (_dataset.Contains(DicomTag.ReferencedSOPSequence)) ? _dataset.GetSequence(DicomTag.ReferencedSOPSequence) : new DicomSequence ( DicomTag.ReferencedSOPSequence) ;
             var item               = new DicomDataset ( ) { AutoValidate = false };
 
             referencedInstance.Merge ( item ) ;
@@ -107,12 +107,12 @@ namespace DICOMcloud.Wado
         
         private DicomDataset GetReferencedInstsance ( DicomDataset ds )
         {
-            var classUID = ds.GetSingleValueOrDefault<DicomElement> ( DicomTag.SOPClassUID, null ) ;
-            var sopUID   = ds.GetSingleValueOrDefault<DicomElement> ( DicomTag.SOPInstanceUID, null ) ;
+            var classUID = ds.GetSingleValueOrDefault<string> ( DicomTag.SOPClassUID, null ) ;
+            var sopUID   = ds.GetSingleValueOrDefault<string> ( DicomTag.SOPInstanceUID, null ) ;
             var dataset  = new DicomDataset ( ) { AutoValidate = false };
 
-            dataset.AddOrUpdate ( classUID ) ;
-            dataset.AddOrUpdate ( sopUID ) ;
+            dataset.AddOrUpdate ( DicomTag.SOPClassUID, classUID ) ;
+            dataset.AddOrUpdate (DicomTag.SOPInstanceUID, sopUID ) ;
 
             return dataset ;
         }
