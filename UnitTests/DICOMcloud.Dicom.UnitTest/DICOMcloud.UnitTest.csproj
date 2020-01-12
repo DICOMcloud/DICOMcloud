@@ -46,7 +46,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\fo-dicom.Desktop.4.0.2\build\net45\Dicom.Native.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -62,6 +70,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ArchieveDataAccessTests.cs" />
+    <Compile Include="Helpers\MockRetrieveUrlProvider.cs" />
+    <Compile Include="DICOMwebServicesTests.cs" />
     <Compile Include="PaginationSearchTest.cs" />
     <Compile Include="Helpers\DataAccessHelpers.cs" />
     <Compile Include="DicomDatasetConvertersTests.cs" />
@@ -77,6 +87,10 @@
     <ProjectReference Include="..\..\DICOMcloud.DataAccess.Database\DICOMcloud.DataAccess.Database.csproj">
       <Project>{4dbfd788-2ce9-449e-885a-70e55d83b528}</Project>
       <Name>DICOMcloud.DataAccess.Database</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DICOMcloud.Wado\DICOMcloud.Wado.csproj">
+      <Project>{55007666-7177-49cb-8577-80a013046a28}</Project>
+      <Name>DICOMcloud.Wado</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\DICOMcloud\DICOMcloud.csproj">
       <Project>{c9278c3e-53cb-4cb3-adb6-fe64d2585e7a}</Project>
