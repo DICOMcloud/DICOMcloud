@@ -29,6 +29,12 @@ namespace DICOMcloud.DataAccess
                 var value = "" ;
 
 
+                // Sequence not supported here
+                if (item == null) 
+                { 
+                    return null;
+                }
+
                 if (item.Length > 0)
                 {
                     value = item.Get<string>().TrimEnd('\0');

@@ -349,7 +349,14 @@ namespace DICOMcloud.Wado
                 value = value.Replace (",", "\\");
             }
 
-            dicomRequest.AddOrUpdate(tag, value);
+            if (entry.ValueRepresentations.Contains(DicomVR.SQ))
+            {
+                dicomRequest.AddOrUpdate(new DicomSequence(tag));
+            }
+            else
+            {
+                dicomRequest.AddOrUpdate(tag, value);
+            }
         }
 
         private void CreateSequence(List<string> elements, int currentElementIndex, DicomDataset dicomRequest, string value)
@@ -360,7 +367,7 @@ namespace DICOMcloud.Wado
             DicomDataset  item ;
             
             dicomRequest.AddOrUpdate ( new DicomSequence ( dicEntry.Tag ) ) ;
-            sequence = dicomRequest.GetSingleValue<DicomSequence>(dicEntry.Tag);
+            sequence = dicomRequest.GetSequence(dicEntry.Tag);
 
             item = new DicomDataset ( ) { AutoValidate = false };
 
