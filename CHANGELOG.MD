@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Next Version
 
 ### Added
+- Add Possibility to load individual series or instances with ohif standalone viewer. Issue #75. Thanks @nutzlastfan
 - Add two unit tests for testing the DICOMweb services as if running from controller. Test for cases #67 and #70
 - Add support for RESTful URLs with same URL base across QIDO-RS, WADO-RS and STOW-RS. Issue #59
 - Add support for enabling CORS by configuration. Issue #57

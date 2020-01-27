@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -44,12 +44,56 @@ namespace DICOMcloud.Wado
             return response;
         }
 
+        public HttpResponseMessage GetSeries(IStudyId studyId, ISeriesId seriesId)
+
+        {
+            IEnumerable<DicomDataset> instances = QueryInstances(studyId, seriesId);
+
+            OHIFViewerModel result = GetOHIFModel(instances, studyId);
+
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+
+            response.Content = new StringContent(result.ToJson(true));
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            return response;
+        }
+
+        public HttpResponseMessage GetInstances(IStudyId studyId, ISeriesId seriesId, IObjectId sopUid)
+
+        {
+            IEnumerable<DicomDataset> instances = QueryInstances(studyId, seriesId, sopUid);
+
+            OHIFViewerModel result = GetOHIFModel(instances, studyId);
+
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+
+            response.Content = new StringContent(result.ToJson(true));
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            return response;
+        }
+
+  
+
+
         protected virtual IQueryOptions CreateNewQueryOptions()
         {
             return new QueryOptions();
         }
 
         protected virtual IQueryOptions GetQueryOptions (IStudyId studyId)
+        {
+            return CreateNewQueryOptions();
+        }
+
+
+        protected virtual IQueryOptions GetQueryOptions(IStudyId studyId, ISeriesId seriesId)
+        {
+            return CreateNewQueryOptions();
+        }
+
+        protected virtual IQueryOptions GetQueryOptions(IStudyId studyId, ISeriesId seriesId, IObjectId sopId)
         {
             return CreateNewQueryOptions();
         }
@@ -68,6 +112,38 @@ namespace DICOMcloud.Wado
 
             return QueryService.FindObjectInstances (ds, GetQueryOptions(studyId));
             
+        }
+
+        protected virtual IEnumerable<DicomDataset> QueryInstances(IStudyId studyId,ISeriesId seriesId)
+        {
+            DicomDataset ds = new DicomDataset() { AutoValidate = false };
+
+            ds.Add(Dicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
+            ds.Add(DicomTag.SeriesInstanceUID, seriesId.SeriesInstanceUID);
+            ds.Add(DicomTag.PatientID, "");
+            ds.Add(DicomTag.PatientName, "");
+            ds.Add(DicomTag.SeriesDescription, "");
+            ds.Add(DicomTag.SOPInstanceUID, "");
+            ds.Add(DicomTag.NumberOfFrames, "");
+
+            return QueryService.FindObjectInstances(ds, GetQueryOptions(studyId, seriesId));
+
+        }
+
+        protected virtual IEnumerable<DicomDataset> QueryInstances(IStudyId studyId, ISeriesId seriesId, IObjectId sopId)
+        {
+            DicomDataset ds = new DicomDataset() { AutoValidate = false };
+
+            ds.Add(Dicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
+            ds.Add(DicomTag.SeriesInstanceUID, seriesId.SeriesInstanceUID);
+            ds.Add(DicomTag.PatientID, "");
+            ds.Add(DicomTag.PatientName, "");
+            ds.Add(DicomTag.SeriesDescription, "");
+            ds.Add(DicomTag.SOPInstanceUID, sopId.SOPInstanceUID);
+            ds.Add(DicomTag.NumberOfFrames, "");
+
+            return QueryService.FindObjectInstances(ds, GetQueryOptions(studyId, seriesId, sopId));
+
         }
 
         protected virtual OHIFViewerModel GetOHIFModel(IEnumerable<DicomDataset> instances, IStudyId studyId)
