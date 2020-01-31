@@ -227,11 +227,11 @@ namespace DICOMcloud
                     //need to do that to remove the ' ' around the string
                     if ( _decimalBasedVrs.Contains ( element.ValueRepresentation.Code ) )
                     {
-                        writer.WriteValue ( double.Parse (stringValue, System.Globalization.NumberStyles.Any) );
+                       writer.WriteValue ( double.Parse (stringValue, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture) );
                     }
                     else
                     {
-                        writer.WriteValue ( long.Parse (stringValue, System.Globalization.NumberStyles.Number) );                     
+                        writer.WriteValue ( long.Parse (stringValue, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture) );                     
                     }
                 }
                 else
