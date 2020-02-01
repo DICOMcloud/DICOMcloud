@@ -20,7 +20,12 @@
 
       <add key="app:enableAnonymizer" value="true" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
       <add key="app:anonymizerOptions" value="BasicProfile,RetainUIDs,RetainLongFullDates,RetainPatientChars" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
-   
+
+      <add key="app:supportPreSignedUrls" value="true" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="cors:enabled" value="true" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="cors:origins" value="*" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="cors:headers" value="*" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="cors:methods" value="*" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
    </appSettings>
 
 </configuration>

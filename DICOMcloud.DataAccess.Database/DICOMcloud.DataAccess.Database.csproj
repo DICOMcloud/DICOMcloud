@@ -109,7 +109,7 @@
     <None Include="..\Resources\Version\AssemblyInfo.Version.tt">
       <Link>Properties\AssemblyInfo.Version.tt</Link>
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>AssemblyInfo.Version.cs</LastGenOutput>
+      <LastGenOutput>AssemblyInfo.Version1.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
