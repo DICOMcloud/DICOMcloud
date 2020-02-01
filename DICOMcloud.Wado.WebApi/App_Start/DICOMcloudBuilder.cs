@@ -58,11 +58,17 @@ namespace DICOMcloud.Wado
             ConnectionStringProvider =  new ConnectionStringProvider ( ) ;
             StorageConection         = CloudConfigurationManager.GetSetting ( "app:PacsStorageConnection" ) ;
 
-            var supportSSUrl = CloudConfigurationManager.GetSetting("app:supportSelfSignedUrls");
+            var supportPreSignedUrl = CloudConfigurationManager.GetSetting("app:supportPreSignedUrls");
 
-            if (!string.IsNullOrWhiteSpace(supportSSUrl))
+            // For backward compatability - Feb-1-2020
+            if (string.IsNullOrEmpty(supportPreSignedUrl))
+            {
+                supportPreSignedUrl = CloudConfigurationManager.GetSetting("app:supportSelfSignedUrls");
+            }
+
+            if (!string.IsNullOrWhiteSpace(supportPreSignedUrl))
             { 
-                DicomWebServerSettings.Instance.SupportSelfSignedUrls =  bool.Parse (supportSSUrl.Trim());
+                DicomWebServerSettings.Instance.SupportPreSignedUrls =  bool.Parse (supportPreSignedUrl.Trim());
             }
         }
 

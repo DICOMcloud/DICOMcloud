@@ -49,10 +49,10 @@ namespace DICOMcloud.Wado
 
                 if ( null != dcmLocation && dcmLocation.Exists ( ) )
                 {
-                    if (DicomWebServerSettings.Instance.SupportSelfSignedUrls && dcmLocation is ISelfSignedUrlStorageLocation)
+                    if (DicomWebServerSettings.Instance.SupportPreSignedUrls && dcmLocation is IPreSignedUrlStorageLocation)
                     {
-                        var expiry = DateTime.Now.AddHours(DicomWebServerSettings.Instance.SelfSignedUrlReadExpiryTimeInHours);
-                        Uri locationUrl = ((ISelfSignedUrlStorageLocation)dcmLocation).GetReadUrl (null, expiry);
+                        var expiry = DateTime.Now.AddHours(DicomWebServerSettings.Instance.PreSignedUrlReadExpiryTimeInHours);
+                        Uri locationUrl = ((IPreSignedUrlStorageLocation)dcmLocation).GetReadUrl (null, expiry);
                         HttpResponseMessage msg = new HttpResponseMessage(HttpStatusCode.Redirect);
 
                         msg.Headers.Location = locationUrl;

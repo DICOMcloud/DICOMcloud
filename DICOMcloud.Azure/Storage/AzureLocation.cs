@@ -6,7 +6,7 @@ using System.Net;
 
 namespace DICOMcloud.Azure.IO
 {
-    public class AzureLocation : ObservableStorageLocation, ISelfSignedUrlStorageLocation
+    public class AzureLocation : ObservableStorageLocation, IPreSignedUrlStorageLocation
     {
         private long? _size ;
         private IMediaId _mediaId;
