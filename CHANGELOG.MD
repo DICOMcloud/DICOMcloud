@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v0.7.1-beta
+
+### Added
+- Add Possibility to load individual series or instances with ohif standalone viewer. Issue #75. Thanks @nutzlastfan
+- Add two unit tests for testing the DICOMweb services as if running from controller. Test for cases #67 and #70
+- Add support for RESTful URLs with same URL base across QIDO-RS, WADO-RS and STOW-RS. Issue #59
+- Add support for enabling CORS by configuration. Issue #57
+- Add support for returning the "NumberOfFrames" in the OHIF viewer endpoint. Issue #49
+- Update to fo-dicom v4.0.3 Fix Issue #33. Thanks @shelbypereira
+
+### Changed
+- Increase default upload limit from 4 MB to 10MB. Issue #51
+
+### Fixed
+- Fix generating STOW-RS results "Referened Instance" Sequence. Fix #67
+- Fix parsing sequences in QIDO-RS include parameters. Fix Issue #70
+- Fix convert to XML when element of type AT has no value
+- Fix QIDO: UID list parsing is not according to standard. Issue #41
+- Fix Wado-RS GetStudies not always working. Issue #55
+- Fix WADO-RS retrieve frame is not working. Issue #48
+
 ## v0.7.0-beta
 
 ### Added

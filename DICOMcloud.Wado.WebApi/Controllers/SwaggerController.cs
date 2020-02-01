@@ -12,7 +12,7 @@ namespace DICOMcloud.Wado.Controllers
 
         public ActionResult Json()
         {
-            return File ( "~/swagger/swagger.json", "application/json") ;
+            return File ("~/swagger/swagger-restful.json", "application/json") ;
         }
     }
 }

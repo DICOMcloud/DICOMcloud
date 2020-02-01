@@ -47,8 +47,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dicom.Core, Version=3.0.2.0, Culture=neutral, PublicKeyToken=3a13f649e28eb09a, processorArchitecture=MSIL">
-      <HintPath>packages\fo-dicom.Desktop.3.0.2\lib\net452\Dicom.Core.dll</HintPath>
+    <Reference Include="Dicom.Core, Version=4.0.3.0, Culture=neutral, PublicKeyToken=3a13f649e28eb09a, processorArchitecture=MSIL">
+      <HintPath>packages\fo-dicom.Desktop.4.0.3\lib\net45\Dicom.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=2.8.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.ApplicationInsights.2.8.1\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
@@ -89,15 +89,15 @@
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Diagnostics.DiagnosticSource.4.5.0\lib\net45\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebApi.Client.5.2.6\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Spatial, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\System.Spatial.5.8.4\lib\net40\System.Spatial.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Http, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.AspNet.WebApi.Core.5.2.6\lib\net45\System.Web.Http.dll</HintPath>
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.WebHost, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebApi.WebHost.5.2.6\lib\net45\System.Web.Http.WebHost.dll</HintPath>
@@ -121,25 +121,24 @@
       <Link>Nuget\Content\App_Start\DICOMcloudBuilder.cs</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\Controllers\DelowRSController.cs">
-      <Link>Nuget\Content\Controllers\DelowRSController.cs</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\FramesController.cs">
+      <Link>Nuget\Content\Controllers\FramesController.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\InstanceController.cs">
+      <Link>Nuget\Content\Controllers\InstanceController.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\MetadataController.cs">
+      <Link>Nuget\Content\Controllers\MetadataController.cs</Link>
     </Compile>
     <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\OHIFViewerController.cs">
       <Link>Nuget\Content\Controllers\OHIFViewerController.cs</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\Controllers\QidoRSController.cs">
-      <Link>Nuget\Content\Controllers\QidoRSController.cs</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\SeriesController.cs">
+      <Link>Nuget\Content\Controllers\SeriesController.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\Controllers\StowRSController.cs">
-      <Link>Nuget\Content\Controllers\StowRSController.cs</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
-    <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\Controllers\WadoRSController.cs">
-      <Link>Nuget\Content\Controllers\WadoRSController.cs</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Compile Include="..\..\..\DICOMcloud.Wado.WebApi\Controllers\StudiesController.cs">
+      <Link>Nuget\Content\Controllers\StudiesController.cs</Link>
     </Compile>
     <Compile Include="..\..\..\DICOMcloud.Wado.WebAPI\Controllers\WadoUriController.cs">
       <Link>Nuget\Content\Controllers\WadoUriController.cs</Link>
@@ -223,12 +222,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="packages\fo-dicom.Desktop.3.0.2\build\net452\fo-dicom.Desktop.targets" Condition="Exists('packages\fo-dicom.Desktop.3.0.2\build\net452\fo-dicom.Desktop.targets')" />
+  <Import Project="packages\fo-dicom.Desktop.4.0.3\build\net45\fo-dicom.Desktop.targets" Condition="Exists('packages\fo-dicom.Desktop.4.0.3\build\net45\fo-dicom.Desktop.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\fo-dicom.Desktop.3.0.2\build\net452\fo-dicom.Desktop.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\fo-dicom.Desktop.3.0.2\build\net452\fo-dicom.Desktop.targets'))" />
+    <Error Condition="!Exists('packages\fo-dicom.Desktop.4.0.3\build\net45\fo-dicom.Desktop.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\fo-dicom.Desktop.4.0.3\build\net45\fo-dicom.Desktop.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

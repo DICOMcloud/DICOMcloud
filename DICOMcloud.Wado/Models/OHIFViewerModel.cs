@@ -52,6 +52,8 @@ namespace DICOMcloud.Wado.Models
 
         public int Rows { get; set; }
 
+        public int? NumberOfFrames { get; set;}
+
         public string Url { get; set; }
     }
 }

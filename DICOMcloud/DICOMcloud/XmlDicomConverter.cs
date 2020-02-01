@@ -1,4 +1,4 @@
-﻿using fo = Dicom;
+﻿using Dicom;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.IO;
+using Dicom.Imaging;
 
 namespace DICOMcloud
 {
@@ -29,12 +30,12 @@ namespace DICOMcloud
             private set ;
         }
 
-        public  fo.DicomTransferSyntax TransferSyntax
+        public  DicomTransferSyntax TransferSyntax
         {
             get; protected set;
         }
 
-        public string Convert ( fo.DicomDataset ds )
+        public string Convert ( DicomDataset ds )
         {
             string result ;
 
@@ -59,28 +60,28 @@ namespace DICOMcloud
             return result ;
         }
 
-        public fo.DicomDataset Convert ( string xmlDcm )
+        public DicomDataset Convert ( string xmlDcm )
         {
-            fo.DicomDataset ds       = new fo.DicomDataset( ) ;
-            XDocument       document = XDocument.Parse ( xmlDcm ) ;
+            DicomDataset ds       = new DicomDataset( ) { AutoValidate = false };
+            XDocument    document = XDocument.Parse ( xmlDcm ) ;
 
             ReadChildren(ds, document.Root, 0 );
 
-            fo.DicomFile df = new fo.DicomFile ( ds ) ;
+            DicomFile df = new DicomFile ( ds ) ;
 
             return ds ;
         }
 
         #region Write Methods
 
-        protected virtual void WriteHeaders ( fo.DicomDataset ds, XmlWriter writer)
+        protected virtual void WriteHeaders ( DicomDataset ds, XmlWriter writer)
         {
-            ds.AddOrUpdate(fo.DicomTag.TransferSyntaxUID, ds.InternalTransferSyntax) ;
-//            WriteDicomAttribute ( ds, ds.Get<fo.DicomElement> ( fo.DicomTag.TransferSyntaxUID, null ), writer );
+            ds.AddOrUpdate(DicomTag.TransferSyntaxUID, ds.InternalTransferSyntax) ;
+//            WriteDicomAttribute ( ds, ds.Get<DicomElement> ( DicomTag.TransferSyntaxUID, null ), writer );
             
         }
 
-        protected virtual void WriteChildren ( fo.DicomDataset ds, XmlWriter writer ) 
+        protected virtual void WriteChildren ( DicomDataset ds, XmlWriter writer ) 
         {
             foreach ( var element in ds )
             {
@@ -90,15 +91,15 @@ namespace DICOMcloud
         
         protected virtual void WriteDicomAttribute 
         ( 
-            fo.DicomDataset ds, 
-            fo.DicomItem element, 
+            DicomDataset ds, 
+            DicomItem element, 
             XmlWriter writer 
         )
         {
             //group length element must not be written
             if ( null == element || element.Tag.Element == 0x0000 ) { return ; }
 
-            fo.DicomVR dicomVr = element.ValueRepresentation ;
+            DicomVR dicomVr = element.ValueRepresentation ;
 
 
             writer.WriteStartElement ( Constants.ATTRIBUTE_NAME ) ;
@@ -114,24 +115,24 @@ namespace DICOMcloud
 
             switch ( element.ValueRepresentation.Code ) 
             {
-                case fo.DicomVRCode.SQ:
+                case DicomVRCode.SQ:
                 {
-                    WriteVR_SQ ( ( fo.DicomSequence ) element, writer ) ;
+                    WriteVR_SQ ( ( DicomSequence ) element, writer ) ;
                 }
                 break ;
 
-                case fo.DicomVRCode.PN:
+                case DicomVRCode.PN:
                 {
-                    WriteVR_PN ( (fo.DicomElement) element, writer );
+                    WriteVR_PN ( (DicomElement) element, writer );
                 }
                 break;
 
-                case fo.DicomVRCode.OB:
-                case fo.DicomVRCode.OD:
-                case fo.DicomVRCode.OF:
-                case fo.DicomVRCode.OW:
-                case fo.DicomVRCode.OL:
-                case fo.DicomVRCode.UN:
+                case DicomVRCode.OB:
+                case DicomVRCode.OD:
+                case DicomVRCode.OF:
+                case DicomVRCode.OW:
+                case DicomVRCode.OL:
+                case DicomVRCode.UN:
                 { 
                     WriteVR_Binary ( element, writer );                    
                 }
@@ -139,7 +140,7 @@ namespace DICOMcloud
 
                 default:
                 {
-                    WriteVR_Default ( ds, (fo.DicomElement) element, writer );                
+                    WriteVR_Default ( ds, (DicomElement) element, writer );                
                 }
                 break;            
             }
@@ -147,15 +148,15 @@ namespace DICOMcloud
             writer.WriteEndElement ( ) ;
         }
 
-        protected virtual void WriteVR_Binary ( fo.DicomItem item, XmlWriter writer )
+        protected virtual void WriteVR_Binary ( DicomItem item, XmlWriter writer )
         {
-            fo.IO.Buffer.IByteBuffer buffer = GetItemBuffer ( item );
+            Dicom.IO.Buffer.IByteBuffer buffer = GetItemBuffer ( item );
 
-            if ( buffer is fo.IO.Buffer.IBulkDataUriByteBuffer )
+            if ( buffer is Dicom.IO.Buffer.IBulkDataUriByteBuffer )
             {
                 writer.WriteStartElement ( Constants.ELEMENT_BULKDATA );
-                //TODO: what about uuid? how is this represented in foDicom? fo.IO.Buffer.IBulkDataUUIDByteBuffer                
-                writer.WriteAttributeString ( Constants.ATTRIBUTE_BULKDATAURI, ( (fo.IO.Buffer.IBulkDataUriByteBuffer) buffer ).BulkDataUri );
+                //TODO: what about uuid? how is this represented in foDicom? IO.Buffer.IBulkDataUUIDByteBuffer                
+                writer.WriteAttributeString ( Constants.ATTRIBUTE_BULKDATAURI, ( (Dicom.IO.Buffer.IBulkDataUriByteBuffer) buffer ).BulkDataUri );
                 writer.WriteEndElement ( );
             }
             else
@@ -174,7 +175,7 @@ namespace DICOMcloud
             writer.WriteBase64 ( buffer, 0, buffer.Length ) ;
         }
 
-        protected virtual void WriteVR_SQ (fo.DicomSequence element, XmlWriter writer )
+        protected virtual void WriteVR_SQ (DicomSequence element, XmlWriter writer )
         {
             for ( int index = 0; index < element.Items.Count; index++ )
             {
@@ -189,7 +190,7 @@ namespace DICOMcloud
             }
         }
 
-        protected virtual void WriteVR_PN ( fo.DicomElement element, XmlWriter writer )
+        protected virtual void WriteVR_PN ( DicomElement element, XmlWriter writer )
         {
             for (int index = 0; index < element.Count; index++)
             {
@@ -202,7 +203,7 @@ namespace DICOMcloud
                     {
                         writer.WriteStartElement ( Utilities.PersonNameComponents.PN_Components[compIndex] ) ;
 
-                            fo.DicomPersonName pn = new fo.DicomPersonName ( element.Tag, pnComponents[compIndex]  ) ; 
+                            DicomPersonName pn = new DicomPersonName ( element.Tag, pnComponents[compIndex]  ) ; 
                             
                             writer.WriteElementString ( Utilities.PersonNameParts.PN_Family, pn.Last ) ;
                             writer.WriteElementString ( Utilities.PersonNameParts.PN_Given, pn.First ) ;
@@ -216,9 +217,9 @@ namespace DICOMcloud
             }
         }
 
-        protected virtual void WriteVR_Default ( fo.DicomDataset ds, fo.DicomElement element, XmlWriter writer )
+        protected virtual void WriteVR_Default ( DicomDataset ds, DicomElement element, XmlWriter writer )
         {
-            fo.DicomVR dicomVr = element.ValueRepresentation ;
+            DicomVR dicomVr = element.ValueRepresentation ;
 
 
             for ( int index = 0; index < element.Count; index++ )
@@ -227,17 +228,25 @@ namespace DICOMcloud
 
                 WriteNumberAttrib ( writer, index ) ;
                     
-                if ( dicomVr.Equals(fo.DicomVR.AT))
+                if ( dicomVr.Equals(DicomVR.AT))
                 {
-                    var    atElement   = ds.Get<fo.DicomElement>    ( element.Tag, null ) ;
-                    var    tagValue    = atElement.Get<fo.DicomTag> ( ) ;
-                    string stringValue = tagValue.ToString          ( "J", null ) ;
+                    var atElement = ds.GetSingleValueOrDefault<DicomElement> ( element.Tag, null ) ;
+                    
+                    if ( null != atElement)
+                    {
+                        var tagValue = atElement.Get<DicomTag> ( ) ;
+                        string stringValue = tagValue.ToString ( "J", null ) ;
 
-                    writer.WriteString ( stringValue ) ;
+                        writer.WriteString ( stringValue ) ;
+                    }
+                    else
+                    {
+                        writer.WriteString(string.Empty);
+                    }
                 }
                 else
                 {
-                    writer.WriteString ( GetTrimmedString ( ds.Get<string> ( element.Tag, index, string.Empty ) ) ); 
+                    writer.WriteString ( GetTrimmedString ( ds.GetValueOrDefault( element.Tag, index, string.Empty ) ) ); 
                 }
 
                 writer.WriteEndElement ( );
@@ -253,7 +262,7 @@ namespace DICOMcloud
 
         #region Read Methods
         
-        private void ReadChildren ( fo.DicomDataset ds, XContainer document, int level = 0 ) 
+        private void ReadChildren ( DicomDataset ds, XContainer document, int level = 0 ) 
         {
             foreach ( var element in document.Elements (Constants.ATTRIBUTE_NAME) ) 
             {
@@ -261,16 +270,16 @@ namespace DICOMcloud
             }
         }
 
-        private void ReadDicomAttribute ( fo.DicomDataset ds, XElement element, int level )
+        private void ReadDicomAttribute ( DicomDataset ds, XElement element, int level )
         {
             XAttribute              vrNode  ;
-            fo.DicomTag             tag ;
-            fo.DicomDictionaryEntry dicEntry ;
-            fo.DicomVR              dicomVR  ;
+            DicomTag             tag ;
+            DicomDictionaryEntry dicEntry ;
+            DicomVR              dicomVR  ;
 
 
             vrNode  = element.Attribute( Constants.ATTRIBUTE_VR ) ;
-            tag     = fo.DicomTag.Parse ( element.Attribute(Constants.ATTRIBUTE_TAG).Value ) ;
+            tag     = DicomTag.Parse ( element.Attribute(Constants.ATTRIBUTE_TAG).Value ) ;
             dicomVR = null ;
             
 
@@ -281,7 +290,7 @@ namespace DICOMcloud
 
             if ( vrNode != null && !string.IsNullOrEmpty ( vrNode.Value ) )
             {
-                dicomVR = fo.DicomVR.Parse ( vrNode.Value ) ;
+                dicomVR = DicomVR.Parse ( vrNode.Value ) ;
             }
 
             if ( tag.IsPrivate ) 
@@ -290,17 +299,17 @@ namespace DICOMcloud
             
                 if ( null != vrNode )
                 {
-                    dicomVR = fo.DicomVR.Parse ( vrNode.Value ) ;
+                    dicomVR = DicomVR.Parse ( vrNode.Value ) ;
                 }
             }
             
             if ( null == dicomVR )
             {
-                dicEntry = fo.DicomDictionary.Default[tag];
+                dicEntry = DicomDictionary.Default[tag];
                 dicomVR  = dicEntry.ValueRepresentations.FirstOrDefault ( ) ;
             }
 
-            if ( dicomVR == fo.DicomVR.SQ )
+            if ( dicomVR == DicomVR.SQ )
             {
                 ReadSequence ( ds, element, tag, level ) ;
             }
@@ -313,18 +322,18 @@ namespace DICOMcloud
 
         private void ReadSequence 
         ( 
-            fo.DicomDataset ds,  
+            DicomDataset ds,  
             XElement element, 
-            fo.DicomTag tag, 
+            DicomTag tag, 
             int level 
         )
         {
-            fo.DicomSequence seq = new fo.DicomSequence ( tag, new fo.DicomDataset[0] ) ;
+            DicomSequence seq = new DicomSequence ( tag, new DicomDataset[0] ) ;
 
 
             foreach ( var item in  element.Elements ( Constants.ATTRIBUTE_ITEM_NAME ) )
             {
-                fo.DicomDataset itemDs = new fo.DicomDataset ( ) ;
+                DicomDataset itemDs = new DicomDataset ( ) { AutoValidate = false };
                 
                 level++ ;
 
@@ -340,14 +349,14 @@ namespace DICOMcloud
         
         private void ReadElement 
         ( 
-            fo.DicomDataset ds, 
+            DicomDataset ds, 
             XElement element, 
-            fo.DicomTag tag, 
-            fo.DicomVR dicomVr, 
+            DicomTag tag, 
+            DicomVR dicomVr, 
             int level
         )
         {
-            if ( dicomVr == fo.DicomVR.PN )
+            if ( dicomVr == DicomVR.PN )
             {
                 string personNameValue = "" ;
 
@@ -385,7 +394,7 @@ namespace DICOMcloud
 
                 if ( null != dataElement ) 
                 {
-                    fo.IO.Buffer.IByteBuffer data ;
+                    Dicom.IO.Buffer.IByteBuffer data ;
 
 
                     if ( dataElement.Name == Constants.ELEMENT_BULKDATA ) 
@@ -393,23 +402,25 @@ namespace DICOMcloud
                         string uri = dataElement.Attribute(Constants.ATTRIBUTE_BULKDATAURI).Value ;
                         
                         
-                        data = new fo.IO.Buffer.BulkDataUriByteBuffer ( uri ) ;
+                        data = new Dicom.IO.Buffer.BulkDataUriByteBuffer ( uri ) ;
                     }
                     else
                     {
                         var base64 = System.Convert.FromBase64String ( dataElement.Value ) ;
                         
                         
-                        data = new fo.IO.Buffer.MemoryByteBuffer ( base64 ) ;
+                        data = new Dicom.IO.Buffer.MemoryByteBuffer ( base64 ) ;
                     }
                     
-                    if ( tag == fo.DicomTag.PixelData && level == 0 ) 
+                    if ( tag == DicomTag.PixelData && level == 0 ) 
                     {
-                        ds.AddOrUpdatePixelData ( dicomVr, data, TransferSyntax ) ;
+                     
+                        var pixelData= DicomPixelData.Create(ds, true);  //2nd parameter is true since we are adding new data here
+                        pixelData.AddFrame(data);
                     }
                     else
                     {
-                        ds.AddOrUpdate<fo.IO.Buffer.IByteBuffer> ( dicomVr, tag, data ) ;
+                        ds.AddOrUpdate<Dicom.IO.Buffer.IByteBuffer> ( dicomVr, tag, data ) ;
                     }
                 }
             }
@@ -417,9 +428,9 @@ namespace DICOMcloud
             {
                 var values = ReadValue ( element );
                 
-                if ( tag == fo.DicomTag.TransferSyntaxUID )
+                if ( tag == DicomTag.TransferSyntaxUID )
                 {
-                    TransferSyntax = fo.DicomTransferSyntax.Parse ( values.FirstOrDefault ( ) ) ;
+                    TransferSyntax = DicomTransferSyntax.Parse ( values.FirstOrDefault ( ) ) ;
                 }
 
                 ds.AddOrUpdate<string> ( dicomVr, tag, values.ToArray ( ) );

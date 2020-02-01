@@ -10,7 +10,7 @@ namespace DICOMcloud.Wado.Models
     {
         private DicomWebServerSettings ()
         {
-            SelfSignedUrlReadExpiryTimeInHours = 1;
+            PreSignedUrlReadExpiryTimeInHours = 1;
         }
 
         public static DicomWebServerSettings Instance
@@ -21,11 +21,11 @@ namespace DICOMcloud.Wado.Models
             }
         }
 
-        public double SelfSignedUrlReadExpiryTimeInHours { get; set; }
-        public bool CanUserOverrideSelfSignedUrlReadExpiryTime { get; set; }
-        public bool SupportSelfSignedUrls { get; set;}
+        public double PreSignedUrlReadExpiryTimeInHours { get; set; }
+        public bool CanUserOverridePreSignedUrlReadExpiryTime { get; set; }
+        public bool SupportPreSignedUrls { get; set;}
 
-        private static DicomWebServerSettings _instance = DicomWebServerSettingsFactory.Create ( );
+        private static readonly DicomWebServerSettings _instance = DicomWebServerSettingsFactory.Create ( );
 
         internal abstract class DicomWebServerSettingsFactory
         {

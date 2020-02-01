@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DICOMcloud.IO
 {
-    public interface ISelfSignedUrlStorageLocation : IStorageLocation
+    public interface IPreSignedUrlStorageLocation : IStorageLocation
     {
         Uri GetReadUrl  ( DateTimeOffset? startTime, DateTimeOffset? expiryTime );
         Uri GetWriteUrl ( DateTimeOffset? startTime, DateTimeOffset? expiryTime );

@@ -76,7 +76,7 @@ namespace DICOMcloud.IO
             }
             else
             {
-                yield return null ;
+                yield break ;
             }
         }
 

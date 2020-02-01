@@ -1,6 +1,6 @@
 ﻿using System.Reflection ;
 
-[assembly: AssemblyCopyright("Copyright ©  2018" )]
+[assembly: AssemblyCopyright("Copyright ©  2020" )]
 [assembly: AssemblyProduct("DICOMcloud")]
 [assembly: AssemblyCompany("Zaid Al-Safadi")]
 // Version information for an assembly consists of the following four values:
@@ -11,4 +11,4 @@
 //      Revision
 //
 [assembly: AssemblyVersion("0.7.*")]
-[assembly: AssemblyInformationalVersion("0.7.0-beta")]
+[assembly: AssemblyInformationalVersion("0.7.1-beta")]

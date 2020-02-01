@@ -12,11 +12,17 @@ using DICOMcloud.Pacs;
 using Dicom;
 using DICOMcloud.DataAccess;
 using System.Collections.Generic;
+using DICOMcloud.Wado;
+using DICOMcloud.Wado.Models;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Web;
+using System.Threading.Tasks;
 
 namespace DICOMcloud.UnitTest
 {
     [TestClass]
-    public class ObjectStoreServiceTests
+    public class DICOMwebServicesTest
     {
         [TestInitialize]
         public void Initialize ( ) 
@@ -28,7 +34,8 @@ namespace DICOMcloud.UnitTest
 
 
             MediaStorageService storageService = new FileStorageService ( storagePath ) ;
-            
+            IObjectArchieveQueryService queryService = new ObjectArchieveQueryService(DataAccessHelper.DataAccess);
+
             var factory = new Pacs.Commands.DCloudCommandFactory( storageService,
                                                              DataAccessHelper.DataAccess,
                                                              new DicomMediaWriterFactory ( storageService, 
@@ -36,6 +43,10 @@ namespace DICOMcloud.UnitTest
                                                              mediaIdFactory ) ;
             
             StoreService = new ObjectStoreService ( factory ) ;
+
+            var urlProvider = new MockRetrieveUrlProvider();
+            WebStoreService = new WebObjectStoreService(StoreService,urlProvider);
+            WebQueryService = new QidoRsService(queryService, mediaIdFactory, storageService);
         }
 
         [TestCleanup]
@@ -45,7 +56,7 @@ namespace DICOMcloud.UnitTest
         }
 
         [TestMethod]
-        public void Pacs_Storage_Simple ( )
+        public async Task Web_Storage_Simple ( )
         {
             DicomDataset[] storeDs = new DicomDataset[] 
             { 
@@ -54,13 +65,77 @@ namespace DICOMcloud.UnitTest
                 DicomHelper.GetDicomDataset (2)
             };
 
-            StoreService.StoreDicom (storeDs[0], new DataAccess.InstanceMetadata ( ) ) ;
-            StoreService.StoreDicom (storeDs[1], new DataAccess.InstanceMetadata ( ) ) ;
-            StoreService.StoreDicom (storeDs[2], new DataAccess.InstanceMetadata ( ) ) ;
+            var request = new HttpRequestMessage();
+            WebStoreRequest webStoreRequest = new WebStoreRequest(request);
+
+            request.Headers.Accept.Add (new MediaTypeWithQualityHeaderValue(MimeMediaTypes.Json));
+            
+            webStoreRequest.MediaType = MimeMediaTypes.DICOM;
+
+            var mimeType = "application/dicom";
+            var multiContent = new MultipartContent("related", "DICOM DATA BOUNDARY");
+
+            multiContent.Headers.ContentType.Parameters.Add(new System.Net.Http.Headers.NameValueHeaderValue("type", "\"" + mimeType + "\""));
+
+            foreach (var ds in storeDs)
+            {
+                DicomFile dicomFile = new DicomFile(ds);
+                MemoryStream ms = new MemoryStream ();
+            
+                dicomFile.Save(ms);
+                ms.Position = 0;
+            
+                StreamContent sContent = new StreamContent(ms);
+
+                sContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(mimeType);
+
+                multiContent.Add(sContent);
+                webStoreRequest.Request.Content = multiContent;
+                webStoreRequest.Contents.Add(sContent);
+            }
+
+            var storeResult = await WebStoreService.Store(webStoreRequest);
+
+            Assert.IsNotNull(storeResult);
+            Assert.IsTrue(storeResult.IsSuccessStatusCode);
 
             ValidateStoredMatchQuery (storeDs);
 
             Pacs_Delete_Simple ( ) ;
+        }
+
+        [TestMethod]
+        public void Web_SearchForStudies_SequenceTest( )
+        {
+            QidoRequestModel requestModel = GetQueryRequest();
+
+
+            //Include a sequence on its own "PerformedProtocolCodeSequence"
+            requestModel.Query.IncludeElements.Add("00400260");
+                                             //RequestAttributeSequence
+            //Include a sequence with element "RequestAttributesSequence.ScheduledProcedureStepID"
+            requestModel.Query.IncludeElements.Add("00400275.00400009");
+            var result = WebQueryService.SearchForStudies(requestModel);
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.IsSuccessStatusCode);
+        }
+
+        private static QidoRequestModel GetQueryRequest()
+        {
+            HttpContext.Current = new HttpContext(
+                new HttpRequest("", "https://localhost:3000", ""),
+                new HttpResponse(new StringWriter())
+            );
+
+            QidoRequestModel requestModel = new QidoRequestModel();
+            var headers = new HttpClient().DefaultRequestHeaders;
+
+            headers.Accept.Add(new MediaTypeWithQualityHeaderValue(MimeMediaTypes.Json));
+            requestModel.AcceptHeader = headers.Accept;
+            requestModel.Headers = headers;
+            requestModel.Query = new QidoQuery();
+            return requestModel;
         }
 
         private void ValidateStoredMatchQuery(DicomDataset[] storedDs)
@@ -88,42 +163,6 @@ namespace DICOMcloud.UnitTest
             }
         }
 
-        protected virtual void EnsureCodecsLoaded ( ) 
-        {
-            var path = Environment.CurrentDirectory ; //System.IO.Path.Combine ( System.Web.Hosting.HostingEnvironment.MapPath ( "~/" ), "bin" );
-
-            System.Diagnostics.Trace.TraceInformation ( "Path: " + path );
-
-            fo.Imaging.Codec.TranscoderManager.LoadCodecs ( path ) ;
-        }
-
-        [TestMethod]
-        public void Pacs_Storage_Images ( )
-        {
-            EnsureCodecsLoaded ( ) ;
-
-            StoreService.StoreDicom ( DicomHelper.GetDicomDataset (2), new DataAccess.InstanceMetadata ( ) ) ;
-
-            int counter = 0 ;
-            
-            foreach ( string file in Directory.GetFiles (DicomHelpers.GetSampleImagesFolder ( ) ) )
-            {
-                var dataset = fo.DicomFile.Open ( file ).Dataset ;
-
-                //reason is to shorten the path where the DS is stored. 
-                //location include the UIDs, so make sure your storage
-                // folder is close to the root when keeping the original UIDs
-                dataset.AddOrUpdate ( fo.DicomTag.PatientID, "Patient_" + counter ) ;
-                dataset.AddOrUpdate ( fo.DicomTag.StudyInstanceUID, "1112." + counter ) ;
-                dataset.AddOrUpdate ( fo.DicomTag.SeriesInstanceUID, "1113." + counter ) ;
-                dataset.AddOrUpdate ( fo.DicomTag.SOPInstanceUID, "1114." + counter ) ;
-                
-                StoreService.StoreDicom ( dataset, new DataAccess.InstanceMetadata ( ) ) ;
-
-                counter++ ;    
-            }
-        }
-
         private void Pacs_Delete_Simple ()
         {
             var study1    = GetUidElement ( fo.DicomTag.StudyInstanceUID, DicomHelper.Study1UID) ;
@@ -147,5 +186,9 @@ namespace DICOMcloud.UnitTest
         private DicomHelpers        DicomHelper      { get; set; }
         private DataAccessHelpers   DataAccessHelper { get; set; }
         private IObjectStoreService StoreService     { get; set; } 
+
+        private IWebObjectStoreService WebStoreService;
+        private IQidoRsService  WebQueryService;
+
     }
 }

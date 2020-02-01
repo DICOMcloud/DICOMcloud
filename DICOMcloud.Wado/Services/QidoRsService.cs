@@ -284,8 +284,8 @@ namespace DICOMcloud.Wado
             foreach ( var result in results ) 
             {
                 var queryDs = DefaultDicomQueryElements.GetDefaultInstanceQuery();
-                string studyUid  = result.Get<string> ( DicomTag.StudyInstanceUID, "" ) ;
-                string seriesUid = result.Get<string> ( DicomTag.SeriesInstanceUID, "" ) ;
+                string studyUid  = result.GetSingleValueOrDefault<string> ( DicomTag.StudyInstanceUID, "" ) ;
+                string seriesUid = result.GetSingleValueOrDefault<string> ( DicomTag.SeriesInstanceUID, "" ) ;
                 var queryOptions = CreateNewQueryOptions ( ) ;
             
                 queryDs.AddOrUpdate ( DicomTag.StudyInstanceUID, studyUid );
@@ -298,9 +298,9 @@ namespace DICOMcloud.Wado
 
                 foreach  ( var instance in instances )
                 {
-                    queryStudyUid = instance.Get<string> ( DicomTag.StudyInstanceUID, "" ) ;
-                    querySeriesUid = instance.Get<string> ( DicomTag.SeriesInstanceUID, "" ) ;
-                    queryInstanceUid = instance.Get<string> ( DicomTag.SOPInstanceUID, "" ) ;
+                    queryStudyUid = instance.GetSingleValueOrDefault<string> ( DicomTag.StudyInstanceUID, "" ) ;
+                    querySeriesUid = instance.GetSingleValueOrDefault<string> ( DicomTag.SeriesInstanceUID, "" ) ;
+                    queryInstanceUid = instance.GetSingleValueOrDefault<string> ( DicomTag.SOPInstanceUID, "" ) ;
 
                     break ;
                 }
@@ -342,7 +342,21 @@ namespace DICOMcloud.Wado
 
             uint tag = GetTagValue (tagString);
 
-            dicomRequest.AddOrUpdate(tag, value);
+            var entry = DicomDictionary.Default[(DicomTag)tag];
+
+            if (entry.ValueRepresentations.Where( n => n.Name == DicomVR.UI.Name).FirstOrDefault ( ) != null)
+            {
+                value = value.Replace (",", "\\");
+            }
+
+            if (entry.ValueRepresentations.Contains(DicomVR.SQ))
+            {
+                dicomRequest.AddOrUpdate(new DicomSequence(tag));
+            }
+            else
+            {
+                dicomRequest.AddOrUpdate(tag, value);
+            }
         }
 
         private void CreateSequence(List<string> elements, int currentElementIndex, DicomDataset dicomRequest, string value)
@@ -353,10 +367,9 @@ namespace DICOMcloud.Wado
             DicomDataset  item ;
             
             dicomRequest.AddOrUpdate ( new DicomSequence ( dicEntry.Tag ) ) ;
-            sequence = dicomRequest.Get<DicomSequence>(dicEntry.Tag);
+            sequence = dicomRequest.GetSequence(dicEntry.Tag);
 
-
-            item = new DicomDataset ( ) ;
+            item = new DicomDataset ( ) { AutoValidate = false };
 
             sequence.Items.Add ( item ) ;
             

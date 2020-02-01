@@ -348,7 +348,7 @@ namespace DICOMcloud.DataAccess
 
                 foreach (var studyDs in studies)
                 {
-                    var studyUid = studyDs.Get (DicomTag.StudyInstanceUID, "");
+                    string studyUid = studyDs.GetSingleValueOrDefault (DicomTag.StudyInstanceUID, "");
                     
                     if (studyKeyValuePairs.ContainsKey (studyUid))
                     { 
@@ -371,7 +371,7 @@ namespace DICOMcloud.DataAccess
 
                 foreach (var seriesDs in series)
                 {
-                    var seriesUid = seriesDs.Get (DicomTag.SeriesInstanceUID, "");
+                    var seriesUid = seriesDs.GetSingleValueOrDefault (DicomTag.SeriesInstanceUID, "");
                     
                     if ( seriesKeyValuePairs.ContainsKey (seriesUid))
                     { 
@@ -406,9 +406,9 @@ namespace DICOMcloud.DataAccess
 
             foreach (var seriesDs in series)
             {
-                var studyKey  = seriesDs.Get (DicomTag.StudyInstanceUID, "");
-                var seriesKey = seriesDs.Get (DicomTag.SeriesInstanceUID, "");
-                var modality  = seriesDs.Get (DicomTag.Modality, "");
+                var studyKey  = seriesDs.GetSingleValueOrDefault (DicomTag.StudyInstanceUID, "");
+                var seriesKey = seriesDs.GetSingleValueOrDefault (DicomTag.SeriesInstanceUID, "");
+                var modality  = seriesDs.GetSingleValueOrDefault (DicomTag.Modality, "");
                 StudyAdditionalParams studyParams = null;
 
 
@@ -438,7 +438,7 @@ namespace DICOMcloud.DataAccess
 
             foreach (var instanceDs in instances)
             {
-                var studyKey  = instanceDs.Get (DicomTag.StudyInstanceUID, "");
+                var studyKey  = instanceDs.GetSingleValueOrDefault (DicomTag.StudyInstanceUID, "");
                 StudyAdditionalParams studyParams = null;
 
 
@@ -463,7 +463,7 @@ namespace DICOMcloud.DataAccess
 
             foreach (var instanceDs in instances)
             {
-                var seriesKey = instanceDs.Get(DicomTag.SeriesInstanceUID, "");
+                var seriesKey = instanceDs.GetSingleValueOrDefault(DicomTag.SeriesInstanceUID, "");
                 SeriesAdditionalParams seriesParams = null;
 
 

@@ -16,7 +16,7 @@ namespace DICOMcloud.Wado
 {
     public class WadoStoreResponse
     {
-        private fo.DicomDataset _dataset ;
+        private DicomDataset _dataset ;
         public IRetrieveUrlProvider UrlProvider { get; set; }
         public IStudyId StudyId                 { get; private set; }
         public HttpStatusCode HttpStatus        { get; private set ; }
@@ -33,14 +33,14 @@ namespace DICOMcloud.Wado
 
         public WadoStoreResponse ( IStudyId studyId, IRetrieveUrlProvider urlProvider = null)
         {
-            _dataset         = new fo.DicomDataset ( ) ;
+            _dataset         = new DicomDataset ( ) { AutoValidate = false };
             UrlProvider      = urlProvider?? new RetrieveUrlProvider( ) ;
             StudyId          = studyId;
             HttpStatus       = HttpStatusCode.Unused ;
             StatusMessage    = "" ;
         }
 
-        public fo.DicomDataset GetResponseContent ( )
+        public DicomDataset GetResponseContent ( )
         {   
             string studyUrl =  "";
 
@@ -49,7 +49,7 @@ namespace DICOMcloud.Wado
                 studyUrl = UrlProvider.GetStudyUrl(StudyId);
             }
 
-            _dataset.AddOrUpdate<string>(fo.DicomTag.RetrieveURI, studyUrl ) ;
+            _dataset.AddOrUpdate<string>(DicomTag.RetrieveURI, studyUrl ) ;
         
             return _dataset ;
         }
@@ -57,9 +57,8 @@ namespace DICOMcloud.Wado
         public void AddResult ( DicomDataset ds, Exception ex )
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
-            var failedSeq          = (_dataset.Contains (DicomTag.FailedSOPSequence)) ? _dataset.Get<DicomSequence>(DicomTag.FailedSOPSequence) : new DicomSequence ( DicomTag.FailedSOPSequence ) ;
-            var item               = new DicomDataset ( ) ;
-
+            var failedSeq          = (_dataset.Contains (DicomTag.FailedSOPSequence)) ? _dataset.GetSequence(DicomTag.FailedSOPSequence) : new DicomSequence ( DicomTag.FailedSOPSequence ) ;
+            var item               = new DicomDataset ( ) { AutoValidate = false };
 
             referencedInstance.Merge ( item ) ;
 
@@ -84,16 +83,15 @@ namespace DICOMcloud.Wado
         public void AddResult ( DicomDataset ds )
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
-            var referencedSeq      = (_dataset.Contains(DicomTag.ReferencedSOPSequence)) ? _dataset.Get<DicomSequence>(DicomTag.ReferencedSOPSequence) : new DicomSequence ( DicomTag.ReferencedSOPSequence) ;
-            var item               = new fo.DicomDataset ( ) ;
-
+            var referencedSeq      = (_dataset.Contains(DicomTag.ReferencedSOPSequence)) ? _dataset.GetSequence(DicomTag.ReferencedSOPSequence) : new DicomSequence ( DicomTag.ReferencedSOPSequence) ;
+            var item               = new DicomDataset ( ) { AutoValidate = false };
 
             referencedInstance.Merge ( item ) ;
 
             _dataset.AddOrUpdate ( referencedSeq ) ;
             referencedSeq.Items.Add ( item ) ;
             
-            item.AddOrUpdate<string> (fo.DicomTag.RetrieveURI, UrlProvider.GetInstanceUrl ( DicomObjectIdFactory.Instance.CreateObjectId ( ds ) ) ) ; 
+            item.AddOrUpdate<string> (DicomTag.RetrieveURI, UrlProvider.GetInstanceUrl ( DicomObjectIdFactory.Instance.CreateObjectId ( ds ) ) ) ; 
             
             if ( _failureAdded )
             {
@@ -107,15 +105,14 @@ namespace DICOMcloud.Wado
             _successAdded = true ;
         }
         
-        private fo.DicomDataset GetReferencedInstsance ( fo.DicomDataset ds )
+        private DicomDataset GetReferencedInstsance ( DicomDataset ds )
         {
-            var classUID = ds.Get<fo.DicomElement> ( fo.DicomTag.SOPClassUID, null ) ;
-            var sopUID   = ds.Get<fo.DicomElement> ( fo.DicomTag.SOPInstanceUID, null ) ;
-            var dataset  = new fo.DicomDataset ( ) ;
+            var classUID = ds.GetSingleValueOrDefault<string> ( DicomTag.SOPClassUID, null ) ;
+            var sopUID   = ds.GetSingleValueOrDefault<string> ( DicomTag.SOPInstanceUID, null ) ;
+            var dataset  = new DicomDataset ( ) { AutoValidate = false };
 
-
-            dataset.AddOrUpdate ( classUID ) ;
-            dataset.AddOrUpdate ( sopUID ) ;
+            dataset.AddOrUpdate ( DicomTag.SOPClassUID, classUID ) ;
+            dataset.AddOrUpdate (DicomTag.SOPInstanceUID, sopUID ) ;
 
             return dataset ;
         }
@@ -138,7 +135,7 @@ namespace DICOMcloud.Wado
             }
 
             ////0110 - Processing failure
-            responseDS.AddOrUpdate<UInt16> (fo.DicomTag.FailureReason, 272) ; 
+            responseDS.AddOrUpdate<UInt16> (DicomTag.FailureReason, 272) ; 
         }
     }
 }
