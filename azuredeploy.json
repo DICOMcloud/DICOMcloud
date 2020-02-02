@@ -237,10 +237,8 @@
           "properties": {
             "app:PacsDataArchieve": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseName'), ';User Id=', parameters('databaseAdministratorUserName'), '@', variables('sqlserverName'), ';Password=', parameters('databaseAdministratorUserPassword'), ';')]",
             "app:PacsStorageConnection": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('StorageName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]",
-            // "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('StorageName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]"
             "app:WadoRsUrl": "[concat('https://', parameters('webSiteName'), '.azurewebsites.net/api/')]",
             "app:WadoUriUrl": "[concat('https://', parameters('webSiteName'), '.azurewebsites.net/api/wadouri/')]",
-
             "app:enableAnonymizer": "[parameters('enableAnonymizer')]",
             "app:anonymizerOptions": "BasicProfile,RetainUIDs,RetainLongFullDates,RetainPatientChars",
             "app:supportPreSignedUrls": "[parameters('supportPreSignedUrls')]",

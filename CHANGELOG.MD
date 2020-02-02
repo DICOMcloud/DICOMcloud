@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Next Version
 
+### Added
+- Add support for "Deploy to Azure" Button from GitHub. Issue #80
+
 ### Fixed
 - Fix: The "api" route for the Store service (STOW-RS) doesn't work without a Study Instance UID. Issue #79
 
