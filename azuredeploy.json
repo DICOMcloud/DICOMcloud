@@ -2,6 +2,13 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "webSiteName": {
+      "type": "string",
+      "defaultValue": "[concat('DICOMcloud', uniqueString(resourceGroup().id))]",
+      "metadata": {
+        "description": "The website name. Must be unique"
+      }
+    },
     "databaseName": {
       "type": "string",
       "defaultValue": "DICOMcloud",
@@ -11,6 +18,7 @@
     },
     "databaseAdministratorUserName": {
       "type": "string",
+      "defaultValue": "dcloud",
       "metadata": {
         "description": "The user name of the SQL Server administrator account"
 
@@ -20,18 +28,41 @@
       "type": "securestring",
       "minLength": 8,
       "metadata": {
-        "description": "The Password of the SQL Server administrator account"
+        "description": "SQL Server administrator Password. Must be at least 8 characters long, contains 1 upper case, 1 lower case and digit or symbol"
       }
     },
 
     "collation": {
       "type": "string",
       "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
+    },
+
+    "enableAnonymizer": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "true to anonymize stored DICOM files. Otherwise, false."
+      }
+    },
+
+    "supportPreSignedUrls": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "true to enable Shared Access Signatures URLs and let Azure serve the request directly (recommended). Otherwise, false."
+      }
+    },
+
+    "enableCors": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "true to enable CORS. Otherwise, false."
+      }
     }
   },
   "variables": {
     "hostingPlanName": "[concat('hostingplan', uniqueString(resourceGroup().id))]",
-    "webSiteName": "[concat('DICOMcloud', uniqueString(resourceGroup().id))]",
     "StorageName": "[concat('storage', uniqueString(resourceGroup().id))]",
     "storageAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', variables('StorageName'))]",
     "sqlserverName": "[concat('sqlserver', uniqueString(resourceGroup().id))]",
@@ -40,19 +71,18 @@
     "bacpacStorageKey": "?",
     "bacpacStorageUri": "[concat(variables('_artifactsLocation'), '/', variables('WebPackageFolder'), '/', variables('bacpacPackageFileName')) ]",
 
-    "_artifactsLocation": "https://dicomwebpublic.blob.core.windows.net",
+    "_artifactsLocation": "https://dicomcloudpublic.blob.core.windows.net",
     "_artifactsLocationSasToken": "",
 
-    "WebPackageFolder": "packages",
-    "WebPackagePackageFileName": "DICOMcloud.Wado.WebApi.zip",
-    "bacpacPackageFileName": "DICOMcloud-2017-2-10-19-27.bacpac",
+    "WebPackageFolder": "webpackage",
+    "WebPackagePackageFileName": "dev/DICOMcloud.Wado.WebApi.zip",
+    "bacpacPackageFileName": "dicomcloud-template-2020-2-1-20-14.bacpac",
 
     "skuName": "F1",
     "skuCapacity": 1,
     "edition": "Basic",
     "maxSizeBytes": "1073741824",
-    "requestedServiceObjectiveName": "Basic",
-    "StorageType": "Standard_LRS"
+    "requestedServiceObjectiveName": "Basic"
   },
   "resources": [
     {
@@ -140,7 +170,7 @@
     },
     {
       "apiVersion": "2015-08-01",
-      "name": "[variables('webSiteName')]",
+      "name": "[parameters('webSiteName')]",
       "type": "Microsoft.Web/sites",
       "location": "[resourceGroup().location]",
       "dependsOn": [
@@ -152,7 +182,7 @@
         "displayName": "Website"
       },
       "properties": {
-        "name": "[variables('webSiteName')]",
+        "name": "[parameters('webSiteName')]",
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]"
       },
       "resources": [
@@ -162,8 +192,8 @@
           "name": "connectionstrings",
           "dependsOn": [
             "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]",
-            "[resourceId('Microsoft.Web/Sites/', variables('webSiteName'))]",
-            "[concat('Microsoft.Web/Sites/', variables('webSiteName'), '/Extensions/MSDeploy')]"
+            "[resourceId('Microsoft.Web/Sites/', parameters('webSiteName'))]",
+            "[concat('Microsoft.Web/Sites/', parameters('webSiteName'), '/Extensions/MSDeploy')]"
           ],
           "properties": {
             "DefaultConnection": {
@@ -178,7 +208,7 @@
           "location": "[resourceGroup().location]",
           "apiVersion": "2015-08-01",
           "dependsOn": [
-            "[resourceId('Microsoft.Web/sites', variables('webSiteName'))]"
+            "[resourceId('Microsoft.Web/sites', parameters('webSiteName'))]"
           ],
           "tags": {
             "displayName": "WebPackage"
@@ -188,7 +218,7 @@
             "dbType": "None",
             "connectionString": "",
             "setParameters": {
-              "IIS Web Application Name": "[variables('webSiteName')]"
+              "IIS Web Application Name": "[parameters('webSiteName')]"
             }
           }
         },
@@ -198,16 +228,26 @@
           "apiVersion": "2015-08-01",
           "dependsOn": [
             "[resourceId('Microsoft.Sql/servers', variables('sqlserverName'))]",
-            "[resourceId('Microsoft.Web/Sites/', variables('webSiteName'))]",
-            "[concat('Microsoft.Web/Sites/', variables('webSiteName'), '/Extensions/MSDeploy')]"
+            "[resourceId('Microsoft.Web/Sites/', parameters('webSiteName'))]",
+            "[concat('Microsoft.Web/Sites/', parameters('webSiteName'), '/Extensions/MSDeploy')]"
           ],
           "tags": {
             "displayName": "appsettings"
           },
           "properties": {
             "app:PacsDataArchieve": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseName'), ';User Id=', parameters('databaseAdministratorUserName'), '@', variables('sqlserverName'), ';Password=', parameters('databaseAdministratorUserPassword'), ';')]",
-            "app:PacsStorageConnection": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('StorageName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]"
+            "app:PacsStorageConnection": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('StorageName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]",
+            // "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('StorageName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]"
+            "app:WadoRsUrl": "[concat('https://', parameters('webSiteName'), '.azurewebsites.net/api/')]",
+            "app:WadoUriUrl": "[concat('https://', parameters('webSiteName'), '.azurewebsites.net/api/wadouri/')]",
 
+            "app:enableAnonymizer": "[parameters('enableAnonymizer')]",
+            "app:anonymizerOptions": "BasicProfile,RetainUIDs,RetainLongFullDates,RetainPatientChars",
+            "app:supportPreSignedUrls": "[parameters('supportPreSignedUrls')]",
+            "cors:enabled": "[parameters('enableCors')]",
+            "cors:origins": "*",
+            "cors:headers": "*",
+            "cors:methods": "*"
           }
         }
       ]
@@ -216,20 +256,55 @@
       "name": "[variables('StorageName')]",
       "type": "Microsoft.Storage/storageAccounts",
       "location": "[resourceGroup().location]",
-      "apiVersion": "2015-06-15",
-      "dependsOn": [],
-      "tags": {
-        "displayName": "Storage"
+      "apiVersion": "2018-02-01",
+      "kind": "StorageV2",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
       },
+      "tags": {},
+      "dependsOn": [],
       "properties": {
-        "accountType": "[variables('StorageType')]"
-      }
+        "accessTier": "Hot"
+      },
+      "resources": [
+        {
+          "name": "default",
+          "type": "blobServices",
+          "apiVersion": "2018-11-01",
+          "dependsOn": [
+            "[variables('StorageName')]"
+          ],
+          "properties": {
+            "cors": {
+              "corsRules": [
+                {
+                  "allowedOrigins": [
+                    "*"
+                  ],
+                  "allowedMethods": [
+                    "GET"
+                  ],
+                  "maxAgeInSeconds": 0,
+                  "exposedHeaders": [
+                    "*"
+                  ],
+                  "allowedHeaders": [
+                    "*"
+                  ]
+                }
+              ]
+            }
+          },
+          "resources": []
+        }
+      ]
     }
   ],
   "outputs": {
     "siteUri": {
       "type": "string",
-      "value": "[concat('http://',reference(resourceId('Microsoft.Web/sites', variables('webSiteName'))).hostNames[0])]"
+      "value": "[concat('http://',reference(resourceId('Microsoft.Web/sites', parameters('webSiteName'))).hostNames[0])]"
     }
   }
 }
