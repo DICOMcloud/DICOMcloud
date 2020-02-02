@@ -62,6 +62,7 @@ namespace DICOMcloud.Wado.WebApi.Controllers
         [Route("stowrs/studies/{studyInstanceUID}")]
         [Route("stowrs")]
         [Route("api/studies/{studyInstanceUID}")]
+        [Route("api/studies/")]
         public async Task<HttpResponseMessage> Post(string studyInstanceUID = null)
         {
             WebStoreRequest webStoreRequest = new WebStoreRequest(Request);
