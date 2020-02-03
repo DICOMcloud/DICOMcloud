@@ -9,14 +9,35 @@
         "description": "The website name. Must be unique"
       }
     },
+    "appSkuName": {
+      "type": "string",
+      "defaultValue": "F1",
+      "allowedValues": [
+        "F1",
+        "D1",
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "metadata": {
+        "description": "F1 is Free. Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+      }
+    },
     "databaseName": {
       "type": "string",
-      "defaultValue": "DICOMcloud",
+      "defaultValue": "DICOMcloud-db",
       "metadata": {
         "description": "The name of the DICOMcloud database"
       }
     },
-    "databaseAdministratorUserName": {
+    "dbAdministratorLogin": {
       "type": "string",
       "defaultValue": "dcloud",
       "metadata": {
@@ -24,19 +45,39 @@
 
       }
     },
-    "databaseAdministratorUserPassword": {
+    "dbAdministratorLoginPassword": {
       "type": "securestring",
       "minLength": 8,
       "metadata": {
         "description": "SQL Server administrator Password. Must be at least 8 characters long, contains 1 upper case, 1 lower case and digit or symbol"
       }
     },
-
+    "databaseEdition": {
+      "type": "string",
+      "defaultValue": "Basic",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "Premium"
+      ]
+    },
     "collation": {
       "type": "string",
       "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
     },
-
+    "storageAccountType": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Standard_ZRS"
+      ],
+      "defaultValue": "Standard_LRS",
+      "metadata": {
+        "description": "Storage Account Type : Standard-LRS, Standard-GRS,Standard-RAGRS,Standard-ZRS"
+      }
+    },
     "enableAnonymizer": {
       "type": "bool",
       "defaultValue": true,
@@ -78,9 +119,7 @@
     "WebPackagePackageFileName": "dev/DICOMcloud.Wado.WebApi.zip",
     "bacpacPackageFileName": "dicomcloud-template-2020-2-1-20-14.bacpac",
 
-    "skuName": "F1",
     "skuCapacity": 1,
-    "edition": "Basic",
     "maxSizeBytes": "1073741824",
     "requestedServiceObjectiveName": "Basic"
   },
@@ -94,8 +133,8 @@
       },
       "apiVersion": "2014-04-01-preview",
       "properties": {
-        "administratorLogin": "[parameters('databaseAdministratorUserName')]",
-        "administratorLoginPassword": "[parameters('databaseAdministratorUserPassword')]"
+        "administratorLogin": "[parameters('dbAdministratorLogin')]",
+        "administratorLoginPassword": "[parameters('dbAdministratorLoginPassword')]"
       },
       "resources": [
         {
@@ -110,7 +149,7 @@
             "[resourceId('Microsoft.Sql/servers/', variables('sqlserverName'))]"
           ],
           "properties": {
-            "edition": "[variables('edition')]",
+            "edition": "[parameters('databaseEdition')]",
             "collation": "[parameters('collation')]",
             "maxSizeBytes": "[variables('maxSizeBytes')]",
             "requestedServiceObjectiveName": "[variables('requestedServiceObjectiveName')]"
@@ -130,8 +169,8 @@
                 "storageKeyType": "[variables('bacpacStorageKeyType')]",
                 "storageKey": "[variables('bacpacStorageKey')]",
                 "storageUri": "[variables('bacpacStorageUri')]",
-                "administratorLogin": "[parameters('databaseAdministratorUserName')]",
-                "administratorLoginPassword": "[parameters('databaseAdministratorUserPassword')]",
+                "administratorLogin": "[parameters('dbAdministratorLogin')]",
+                "administratorLoginPassword": "[parameters('dbAdministratorLoginPassword')]",
                 "operationMode": "Import"
               }
             }
@@ -161,7 +200,7 @@
         "displayName": "HostingPlan"
       },
       "sku": {
-        "name": "[variables('skuName')]",
+        "name": "[parameters('appSkuName')]",
         "capacity": "[variables('skuCapacity')]"
       },
       "properties": {
@@ -197,7 +236,7 @@
           ],
           "properties": {
             "DefaultConnection": {
-              "value": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseName'), ';User Id=', parameters('databaseAdministratorUserName'), '@', variables('sqlserverName'), ';Password=', parameters('databaseAdministratorUserPassword'), ';')]",
+              "value": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseName'), ';User Id=', parameters('dbAdministratorLogin'), '@', variables('sqlserverName'), ';Password=', parameters('dbAdministratorLoginPassword'), ';')]",
               "type": "SQLServer"
             }
           }
@@ -235,7 +274,7 @@
             "displayName": "appsettings"
           },
           "properties": {
-            "app:PacsDataArchieve": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseName'), ';User Id=', parameters('databaseAdministratorUserName'), '@', variables('sqlserverName'), ';Password=', parameters('databaseAdministratorUserPassword'), ';')]",
+            "app:PacsDataArchieve": "[concat('Data Source=tcp:', reference(resourceId('Microsoft.Sql/servers/', variables('sqlserverName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('databaseName'), ';User Id=', parameters('dbAdministratorLogin'), '@', variables('sqlserverName'), ';Password=', parameters('dbAdministratorLoginPassword'), ';')]",
             "app:PacsStorageConnection": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('StorageName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]",
             "app:WadoRsUrl": "[concat('https://', parameters('webSiteName'), '.azurewebsites.net/api/')]",
             "app:WadoUriUrl": "[concat('https://', parameters('webSiteName'), '.azurewebsites.net/api/wadouri/')]",
@@ -257,7 +296,7 @@
       "apiVersion": "2018-02-01",
       "kind": "StorageV2",
       "sku": {
-        "name": "Standard_LRS",
+        "name": "[parameters('storageAccountType')]",
         "tier": "Standard"
       },
       "tags": {},
