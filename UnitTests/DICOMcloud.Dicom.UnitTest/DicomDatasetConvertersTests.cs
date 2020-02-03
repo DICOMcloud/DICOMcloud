@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Dicom;
 using Dicom.Imaging.Codec;
@@ -88,8 +88,11 @@ namespace DICOMcloud.UnitTest
         }
 
         [TestMethod]
-        public void ConvertToJson()
+        public void ConvertToJson(Boolean SkipLargeTags = false)
         {
+            FileReadOption filereadoption = FileReadOption.Default;
+            if (SkipLargeTags) filereadoption = FileReadOption.SkipLargeTags;
+
             var testDir = Path.Combine ( TestDirPath, "convertToJson" ) ;
             JsonDicomConverter jsonConverter = new JsonDicomConverter ( ) ;
 
@@ -98,14 +101,13 @@ namespace DICOMcloud.UnitTest
             foreach ( string file in Directory.GetFiles (DicomHelpers.GetSampleImagesFolder ( )) )
             {
                 string          fullPath = Path.Combine ( testDir, Path.GetFileName ( file ) ) ; 
-                DicomDataset sourceDS = DicomFile.Open ( file ).Dataset ;
+                DicomDataset sourceDS = DicomFile.Open ( file, filereadoption).Dataset ;
            
                 jsonConverter.WriteInlineBinary = true ;
 
                 string sourceJsonDicom = jsonConverter.Convert (sourceDS) ;
 
                 System.IO.File.WriteAllText (fullPath + ".jsn", sourceJsonDicom);
-
 
                 DicomDataset targetDs = jsonConverter.Convert ( sourceJsonDicom ) ;
             
