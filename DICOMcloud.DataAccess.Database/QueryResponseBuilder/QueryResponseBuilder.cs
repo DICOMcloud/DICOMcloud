@@ -179,7 +179,7 @@ namespace DICOMcloud.DataAccess.Database
                     
                 if (valueType == typeof(String)) //shortcut
                 {
-                    CurrentData.CurrentDs.AddOrUpdate<string>(dicomTag, (string) value);
+                    CurrentData.CurrentDs.AddOrUpdate<string>(dicomTag, System.Text.Encoding.Default , (string) value);
                 }
                 else if (valueType == typeof(DateTime))
                 {
@@ -242,7 +242,7 @@ namespace DICOMcloud.DataAccess.Database
             {
                 foreach (var personName in CurrentData.CurrentPersonNames)
                 {
-                    CurrentData.CurrentDs.AddOrUpdate( personName.Key, personName.Value.ToString());
+                   CurrentData.CurrentDs.AddOrUpdate( personName.Key,System.Text.Encoding.Default , personName.Value.ToString());
                 }
             }
 
