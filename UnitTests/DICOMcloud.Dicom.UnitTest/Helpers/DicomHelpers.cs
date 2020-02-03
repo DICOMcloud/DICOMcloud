@@ -1,10 +1,12 @@
-﻿using Dicom;
+using Dicom;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dicom;
+
 
 namespace DICOMcloud.UnitTest
 {
@@ -31,9 +33,14 @@ namespace DICOMcloud.UnitTest
         
         public static string GetBaseFolder ( ) 
         {
-            string baseFolder = System.AppDomain.CurrentDomain.BaseDirectory ;        
+            string baseFolder = System.AppDomain.CurrentDomain.BaseDirectory ;
 
-            return new DirectoryInfo ( baseFolder ).Parent.Parent.Parent.Parent.FullName ;
+
+            var pathRegex = new System.Text.RegularExpressions.Regex(@"\\bin(\\x86|\\x64)?\\(Debug|Release)$", System.Text.RegularExpressions.RegexOptions.Compiled);
+            var directory = pathRegex.Replace(baseFolder, String.Empty);
+
+
+            return new DirectoryInfo (directory).Parent.Parent.Parent.FullName ;
         }
 
         public static string GetTestDataFolder (string testDataFolder, bool create = false )
