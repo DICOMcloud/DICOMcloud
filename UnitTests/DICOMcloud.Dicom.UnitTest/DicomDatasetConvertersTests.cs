@@ -88,11 +88,8 @@ namespace DICOMcloud.UnitTest
         }
 
         [TestMethod]
-        public void ConvertToJson(Boolean SkipLargeTags = false)
-        {
-            FileReadOption filereadoption = FileReadOption.Default;
-            if (SkipLargeTags) filereadoption = FileReadOption.SkipLargeTags;
-
+        public void ConvertToJson()
+        {  
             var testDir = Path.Combine ( TestDirPath, "convertToJson" ) ;
             JsonDicomConverter jsonConverter = new JsonDicomConverter ( ) ;
 
@@ -101,7 +98,7 @@ namespace DICOMcloud.UnitTest
             foreach ( string file in Directory.GetFiles (DicomHelpers.GetSampleImagesFolder ( )) )
             {
                 string          fullPath = Path.Combine ( testDir, Path.GetFileName ( file ) ) ; 
-                DicomDataset sourceDS = DicomFile.Open ( file, filereadoption).Dataset ;
+                DicomDataset sourceDS = DicomFile.Open ( file, FileReadOption.Default).Dataset ;
            
                 jsonConverter.WriteInlineBinary = true ;
 
