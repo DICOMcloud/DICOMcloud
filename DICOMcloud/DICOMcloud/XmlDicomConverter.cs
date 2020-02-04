@@ -1,4 +1,4 @@
-﻿using Dicom;
+using Dicom;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,121 +11,121 @@ using Dicom.Imaging;
 
 namespace DICOMcloud
 {
-    
+
     public interface IXmlDicomConverter : IDicomConverter<string>
-    {}
+    { }
 
     public class XmlDicomConverter : DicomConverterBase, IXmlDicomConverter
     {
         public XmlDicomConverter()
         {
-            XmlSettings = new XmlWriterSettings ( ) ;
-            XmlSettings.Encoding = new UTF8Encoding ( false ) ; //force utf-8! http://www.timvw.be/2007/01/08/generating-utf-8-with-systemxmlxmlwriter/
-            XmlSettings.Indent = true ;
+            XmlSettings = new XmlWriterSettings();
+            XmlSettings.Encoding = new UTF8Encoding(false); //force utf-8! http://www.timvw.be/2007/01/08/generating-utf-8-with-systemxmlxmlwriter/
+            XmlSettings.Indent = true;
         }
 
         public XmlWriterSettings XmlSettings
         {
             get;
-            private set ;
+            private set;
         }
 
-        public  DicomTransferSyntax TransferSyntax
+        public DicomTransferSyntax TransferSyntax
         {
             get; protected set;
         }
 
-        public string Convert ( DicomDataset ds )
+        public string Convert(DicomDataset ds)
         {
-            string result ;
+            string result;
 
             using (var ms = new MemoryStream())
             {
                 using (XmlWriter writer = XmlTextWriter.Create(ms, XmlSettings))
                 {
-                    writer.WriteStartDocument ( ) ;
-                    writer.WriteStartElement  ( Constants.ROOT_ELEMENT_NAME ) ;
-                    
-                    WriteHeaders  ( ds, writer ) ;
-                    WriteChildren ( ds, writer ) ;
-                    
-                    writer.WriteEndElement ( ) ;
+                    writer.WriteStartDocument();
+                    writer.WriteStartElement(Constants.ROOT_ELEMENT_NAME);
 
-                    writer.Close ( ) ;
+                    WriteHeaders(ds, writer);
+                    WriteChildren(ds, writer);
+
+                    writer.WriteEndElement();
+
+                    writer.Close();
                 }
 
-                result = Encoding.UTF8.GetString ( ms.ToArray ( ) ) ;
+                result = Encoding.UTF8.GetString(ms.ToArray());
             }
 
-            return result ;
+            return result;
         }
 
-        public DicomDataset Convert ( string xmlDcm )
+        public DicomDataset Convert(string xmlDcm)
         {
-            DicomDataset ds       = new DicomDataset( ) { AutoValidate = false };
-            XDocument    document = XDocument.Parse ( xmlDcm ) ;
+            DicomDataset ds = new DicomDataset() { AutoValidate = false };
+            XDocument document = XDocument.Parse(xmlDcm);
 
-            ReadChildren(ds, document.Root, 0 );
+            ReadChildren(ds, document.Root, 0);
 
-            DicomFile df = new DicomFile ( ds ) ;
+            DicomFile df = new DicomFile(ds);
 
-            return ds ;
+            return ds;
         }
 
         #region Write Methods
 
-        protected virtual void WriteHeaders ( DicomDataset ds, XmlWriter writer)
+        protected virtual void WriteHeaders(DicomDataset ds, XmlWriter writer)
         {
-              Update(DicomTag.TransferSyntaxUID, ds.InternalTransferSyntax) ;
-//            WriteDicomAttribute ( ds, ds.Get<DicomElement> ( DicomTag.TransferSyntaxUID, null ), writer );
-            
+            ds.AddOrUpdate(DicomTag.TransferSyntaxUID, ds.InternalTransferSyntax);
+            //            WriteDicomAttribute ( ds, ds.Get<DicomElement> ( DicomTag.TransferSyntaxUID, null ), writer );
+
         }
 
-        protected virtual void WriteChildren ( DicomDataset ds, XmlWriter writer ) 
+        protected virtual void WriteChildren(DicomDataset ds, XmlWriter writer)
         {
-            foreach ( var element in ds )
+            foreach (var element in ds)
             {
-                WriteDicomAttribute ( ds, element, writer ) ;
+                WriteDicomAttribute(ds, element, writer);
             }
         }
-        
-        protected virtual void WriteDicomAttribute 
-        ( 
-            DicomDataset ds, 
-            DicomItem element, 
-            XmlWriter writer 
+
+        protected virtual void WriteDicomAttribute
+        (
+            DicomDataset ds,
+            DicomItem element,
+            XmlWriter writer
         )
         {
             //group length element must not be written
-            if ( null == element || element.Tag.Element == 0x0000 ) { return ; }
+            if (null == element || element.Tag.Element == 0x0000) { return; }
 
-            DicomVR dicomVr = element.ValueRepresentation ;
+            DicomVR dicomVr = element.ValueRepresentation;
 
 
-            writer.WriteStartElement ( Constants.ATTRIBUTE_NAME ) ;
+            writer.WriteStartElement(Constants.ATTRIBUTE_NAME);
 
-            writer.WriteAttributeString ( Constants.ATTRIBUTE_KEYWORD, element.Tag.DictionaryEntry.Keyword ) ;
-            writer.WriteAttributeString ( Constants.ATTRIBUTE_TAG, element.Tag.ToString("J", null) ) ;
-            writer.WriteAttributeString ( Constants.ATTRIBUTE_VR, element.ValueRepresentation.Code.ToUpper ( ) ) ;
+            writer.WriteAttributeString(Constants.ATTRIBUTE_KEYWORD, element.Tag.DictionaryEntry.Keyword);
+            writer.WriteAttributeString(Constants.ATTRIBUTE_TAG, element.Tag.ToString("J", null));
+            writer.WriteAttributeString(Constants.ATTRIBUTE_VR, element.ValueRepresentation.Code.ToUpper());
 
-            if ( element.Tag.IsPrivate && null != element.Tag.PrivateCreator ) 
+            if (element.Tag.IsPrivate && null != element.Tag.PrivateCreator)
             {
-                writer.WriteAttributeString ( Constants.ATTRIBUTE_PRIVATE_CREATOR, element.Tag.PrivateCreator.Creator ) ;
+                writer.WriteAttributeString(Constants.ATTRIBUTE_PRIVATE_CREATOR, element.Tag.PrivateCreator.Creator);
             }
 
-            switch ( element.ValueRepresentation.Code ) 
+            switch (element.ValueRepresentation.Code)
             {
                 case DicomVRCode.SQ:
-                {
-                    WriteVR_SQ ( ( DicomSequence ) element, writer ) ;
-                }
-                break ;
+                    {
+                        WriteVR_SQ((DicomSequence)element, writer);
+                    }
+                    break;
 
                 case DicomVRCode.PN:
-                {
-                    WriteVR_PN ( (DicomElement) element, writer );
-                }
-                break;
+                    {
+                        WriteVR_PN((DicomElement)element, writer);
+                    }
+                    break;
 
                 case DicomVRCode.OB:
                 case DicomVRCode.OD:
@@ -133,111 +133,111 @@ namespace DICOMcloud
                 case DicomVRCode.OW:
                 case DicomVRCode.OL:
                 case DicomVRCode.UN:
-                { 
-                    WriteVR_Binary ( element, writer );                    
-                }
-                break;
+                    {
+                        WriteVR_Binary(element, writer);
+                    }
+                    break;
 
                 default:
-                {
-                    WriteVR_Default ( ds, (DicomElement) element, writer );                
-                }
-                break;            
+                    {
+                        WriteVR_Default(ds, (DicomElement)element, writer);
+                    }
+                    break;
             }
 
-            writer.WriteEndElement ( ) ;
+            writer.WriteEndElement();
         }
 
-        protected virtual void WriteVR_Binary ( DicomItem item, XmlWriter writer )
+        protected virtual void WriteVR_Binary(DicomItem item, XmlWriter writer)
         {
-            Dicom.IO.Buffer.IByteBuffer buffer = GetItemBuffer ( item );
+            Dicom.IO.Buffer.IByteBuffer buffer = GetItemBuffer(item);
 
-            if ( buffer is Dicom.IO.Buffer.IBulkDataUriByteBuffer )
+            if (buffer is Dicom.IO.Buffer.IBulkDataUriByteBuffer)
             {
-                writer.WriteStartElement ( Constants.ELEMENT_BULKDATA );
+                writer.WriteStartElement(Constants.ELEMENT_BULKDATA);
                 //TODO: what about uuid? how is this represented in foDicom? IO.Buffer.IBulkDataUUIDByteBuffer                
-                writer.WriteAttributeString ( Constants.ATTRIBUTE_BULKDATAURI, ( (Dicom.IO.Buffer.IBulkDataUriByteBuffer) buffer ).BulkDataUri );
-                writer.WriteEndElement ( );
+                writer.WriteAttributeString(Constants.ATTRIBUTE_BULKDATAURI, ((Dicom.IO.Buffer.IBulkDataUriByteBuffer)buffer).BulkDataUri);
+                writer.WriteEndElement();
             }
             else
             {
-                if ( this.WriteInlineBinary )
+                if (this.WriteInlineBinary)
                 {
-                    writer.WriteStartElement ( Constants.ELEMENT_INLINEBINARY );
-                    WriteStringValue ( writer, buffer.Data );
-                    writer.WriteEndElement ( );
+                    writer.WriteStartElement(Constants.ELEMENT_INLINEBINARY);
+                    WriteStringValue(writer, buffer.Data);
+                    writer.WriteEndElement();
                 }
             }
         }
 
-        protected virtual void WriteStringValue ( XmlWriter writer, byte[] buffer )
+        protected virtual void WriteStringValue(XmlWriter writer, byte[] buffer)
         {
-            writer.WriteBase64 ( buffer, 0, buffer.Length ) ;
+            writer.WriteBase64(buffer, 0, buffer.Length);
         }
 
-        protected virtual void WriteVR_SQ (DicomSequence element, XmlWriter writer )
+        protected virtual void WriteVR_SQ(DicomSequence element, XmlWriter writer)
         {
-            for ( int index = 0; index < element.Items.Count; index++ )
+            for (int index = 0; index < element.Items.Count; index++)
             {
-                var item = element.Items [ index ] ;
+                var item = element.Items[index];
 
-                writer.WriteStartElement ( Constants.ATTRIBUTE_ITEM_NAME ) ;
+                writer.WriteStartElement(Constants.ATTRIBUTE_ITEM_NAME);
                 WriteNumberAttrib(writer, index);
-                
+
                 WriteChildren(item, writer);
 
-                writer.WriteEndElement ( ) ;
+                writer.WriteEndElement();
             }
         }
 
-        protected virtual void WriteVR_PN ( DicomElement element, XmlWriter writer )
+        protected virtual void WriteVR_PN(DicomElement element, XmlWriter writer)
         {
             for (int index = 0; index < element.Count; index++)
             {
-                writer.WriteStartElement ( Constants.PN_PERSON_NAME );
-                    WriteNumberAttrib(writer, index) ;
+                writer.WriteStartElement(Constants.PN_PERSON_NAME);
+                WriteNumberAttrib(writer, index);
 
-                    var pnComponents = GetTrimmedString ( element.Get<string> ( ) ).Split ( '=') ;
+                var pnComponents = GetTrimmedString(element.Get<string>()).Split('=');
 
-                    for ( int compIndex = 0; (compIndex < pnComponents.Length) && (compIndex < 3); compIndex++ )
-                    {
-                        writer.WriteStartElement ( Utilities.PersonNameComponents.PN_Components[compIndex] ) ;
+                for (int compIndex = 0; (compIndex < pnComponents.Length) && (compIndex < 3); compIndex++)
+                {
+                    writer.WriteStartElement(Utilities.PersonNameComponents.PN_Components[compIndex]);
 
-                            DicomPersonName pn = new DicomPersonName ( element.Tag, pnComponents[compIndex]  ) ; 
-                            
-                            writer.WriteElementString ( Utilities.PersonNameParts.PN_Family, pn.Last ) ;
-                            writer.WriteElementString ( Utilities.PersonNameParts.PN_Given, pn.First ) ;
-                            writer.WriteElementString ( Utilities.PersonNameParts.PN_Midlle, pn.Middle ) ;
-                            writer.WriteElementString ( Utilities.PersonNameParts.PN_Prefix, pn.Prefix ) ;
-                            writer.WriteElementString ( Utilities.PersonNameParts.PN_Suffix, pn.Suffix ) ;
+                    DicomPersonName pn = new DicomPersonName(element.Tag, pnComponents[compIndex]);
 
-                        writer.WriteEndElement ( ) ;
-                    }
-                writer.WriteEndElement ( ) ;
+                    writer.WriteElementString(Utilities.PersonNameParts.PN_Family, pn.Last);
+                    writer.WriteElementString(Utilities.PersonNameParts.PN_Given, pn.First);
+                    writer.WriteElementString(Utilities.PersonNameParts.PN_Midlle, pn.Middle);
+                    writer.WriteElementString(Utilities.PersonNameParts.PN_Prefix, pn.Prefix);
+                    writer.WriteElementString(Utilities.PersonNameParts.PN_Suffix, pn.Suffix);
+
+                    writer.WriteEndElement();
+                }
+                writer.WriteEndElement();
             }
         }
 
-        protected virtual void WriteVR_Default ( DicomDataset ds, DicomElement element, XmlWriter writer )
+        protected virtual void WriteVR_Default(DicomDataset ds, DicomElement element, XmlWriter writer)
         {
-            DicomVR dicomVr = element.ValueRepresentation ;
+            DicomVR dicomVr = element.ValueRepresentation;
 
 
-            for ( int index = 0; index < element.Count; index++ )
+            for (int index = 0; index < element.Count; index++)
             {
-                writer.WriteStartElement ( Constants.ATTRIBUTE_VALUE_NAME ) ;
+                writer.WriteStartElement(Constants.ATTRIBUTE_VALUE_NAME);
 
-                WriteNumberAttrib ( writer, index ) ;
-                    
-                if ( dicomVr.Equals(DicomVR.AT))
+                WriteNumberAttrib(writer, index);
+
+                if (dicomVr.Equals(DicomVR.AT))
                 {
-                    var atElement = ds.GetSingleValueOrDefault<DicomElement> ( element.Tag, null ) ;
-                    
-                    if ( null != atElement)
-                    {
-                        var tagValue = atElement.Get<DicomTag> ( ) ;
-                        string stringValue = tagValue.ToString ( "J", null ) ;
+                    var atElement = ds.GetSingleValueOrDefault<DicomElement>(element.Tag, null);
 
-                        writer.WriteString ( stringValue ) ;
+                    if (null != atElement)
+                    {
+                        var tagValue = atElement.Get<DicomTag>();
+                        string stringValue = tagValue.ToString("J", null);
+
+                        writer.WriteString(stringValue);
                     }
                     else
                     {
@@ -246,13 +246,13 @@ namespace DICOMcloud
                 }
                 else
                 {
-                    writer.WriteString ( GetTrimmedString ( ds.GetValueOrDefault( element.Tag, index, string.Empty ) ) ); 
+                    writer.WriteString(GetTrimmedString(ds.GetValueOrDefault(element.Tag, index, string.Empty)));
                 }
 
-                writer.WriteEndElement ( );
+                writer.WriteEndElement();
             }
         }
-        
+
         protected virtual void WriteNumberAttrib(XmlWriter writer, int index)
         {
             writer.WriteAttributeString("number", (index + 1).ToString());
@@ -261,254 +261,254 @@ namespace DICOMcloud
         #endregion
 
         #region Read Methods
-        
-        private void ReadChildren ( DicomDataset ds, XContainer document, int level = 0 ) 
+
+        private void ReadChildren(DicomDataset ds, XContainer document, int level = 0)
         {
-            foreach ( var element in document.Elements (Constants.ATTRIBUTE_NAME) ) 
+            foreach (var element in document.Elements(Constants.ATTRIBUTE_NAME))
             {
                 ReadDicomAttribute(ds, element, level);
             }
         }
 
-        private void ReadDicomAttribute ( DicomDataset ds, XElement element, int level )
+        private void ReadDicomAttribute(DicomDataset ds, XElement element, int level)
         {
-            XAttribute              vrNode  ;
-            DicomTag             tag ;
-            DicomDictionaryEntry dicEntry ;
-            DicomVR              dicomVR  ;
+            XAttribute vrNode;
+            DicomTag tag;
+            DicomDictionaryEntry dicEntry;
+            DicomVR dicomVR;
 
 
-            vrNode  = element.Attribute( Constants.ATTRIBUTE_VR ) ;
-            tag     = DicomTag.Parse ( element.Attribute(Constants.ATTRIBUTE_TAG).Value ) ;
-            dicomVR = null ;
-            
+            vrNode = element.Attribute(Constants.ATTRIBUTE_VR);
+            tag = DicomTag.Parse(element.Attribute(Constants.ATTRIBUTE_TAG).Value);
+            dicomVR = null;
+
 
             //if ( tag.ToString ("J") == "00020010" )
             //{
             //    ds.InternalTransferSyntax = ReadValue ( element ).FirstOrDefault ( ) ;
             //}
 
-            if ( vrNode != null && !string.IsNullOrEmpty ( vrNode.Value ) )
+            if (vrNode != null && !string.IsNullOrEmpty(vrNode.Value))
             {
-                dicomVR = DicomVR.Parse ( vrNode.Value ) ;
+                dicomVR = DicomVR.Parse(vrNode.Value);
             }
 
-            if ( tag.IsPrivate ) 
+            if (tag.IsPrivate)
             {
-                tag = ds.GetPrivateTag ( tag ) ;
-            
-                if ( null != vrNode )
+                tag = ds.GetPrivateTag(tag);
+
+                if (null != vrNode)
                 {
-                    dicomVR = DicomVR.Parse ( vrNode.Value ) ;
+                    dicomVR = DicomVR.Parse(vrNode.Value);
                 }
             }
-            
-            if ( null == dicomVR )
+
+            if (null == dicomVR)
             {
                 dicEntry = DicomDictionary.Default[tag];
-                dicomVR  = dicEntry.ValueRepresentations.FirstOrDefault ( ) ;
+                dicomVR = dicEntry.ValueRepresentations.FirstOrDefault();
             }
 
-            if ( dicomVR == DicomVR.SQ )
+            if (dicomVR == DicomVR.SQ)
             {
-                ReadSequence ( ds, element, tag, level ) ;
+                ReadSequence(ds, element, tag, level);
             }
             else
             {
-                ReadElement ( ds, element, tag, dicomVR, level ) ;
+                ReadElement(ds, element, tag, dicomVR, level);
             }
 
         }
 
-        private void ReadSequence 
-        ( 
-            DicomDataset ds,  
-            XElement element, 
-            DicomTag tag, 
-            int level 
-        )
-        {
-            DicomSequence seq = new DicomSequence ( tag, new DicomDataset[0] ) ;
-
-
-            foreach ( var item in  element.Elements ( Constants.ATTRIBUTE_ITEM_NAME ) )
-            {
-                DicomDataset itemDs = new DicomDataset ( ) { AutoValidate = false };
-                
-                level++ ;
-
-                ReadChildren ( itemDs, item, level ) ;
-
-                level--;
-
-                seq.Items.Add ( itemDs ) ;
-            }
-
-            ds.AddOrUpdate ( seq ) ;
-        }
-        
-        private void ReadElement 
-        ( 
-            DicomDataset ds, 
-            XElement element, 
-            DicomTag tag, 
-            DicomVR dicomVr, 
+        private void ReadSequence
+        (
+            DicomDataset ds,
+            XElement element,
+            DicomTag tag,
             int level
         )
         {
-            if ( dicomVr == DicomVR.PN )
+            DicomSequence seq = new DicomSequence(tag, new DicomDataset[0]);
+
+
+            foreach (var item in element.Elements(Constants.ATTRIBUTE_ITEM_NAME))
             {
-                string personNameValue = "" ;
+                DicomDataset itemDs = new DicomDataset() { AutoValidate = false };
 
-                foreach ( var personNameElementValue in element.Elements ( ).OrderBy ( n=>n.Attribute (Constants.ATTRIBUTE_NUMBER)))
+                level++;
+
+                ReadChildren(itemDs, item, level);
+
+                level--;
+
+                seq.Items.Add(itemDs);
+            }
+
+            ds.AddOrUpdate(seq);
+        }
+
+        private void ReadElement
+        (
+            DicomDataset ds,
+            XElement element,
+            DicomTag tag,
+            DicomVR dicomVr,
+            int level
+        )
+        {
+            if (dicomVr == DicomVR.PN)
+            {
+                string personNameValue = "";
+
+                foreach (var personNameElementValue in element.Elements().OrderBy(n => n.Attribute(Constants.ATTRIBUTE_NUMBER)))
                 {
-                    foreach ( var personNameComponent in personNameElementValue.Elements ( ) )
+                    foreach (var personNameComponent in personNameElementValue.Elements())
                     {
-                        if ( personNameComponent.Name == Utilities.PersonNameComponents.PN_COMP_ALPHABETIC || 
-                             personNameComponent.Name == Utilities.PersonNameComponents.PN_COMP_IDEOGRAPHIC || 
-                             personNameComponent.Name == Utilities.PersonNameComponents.PN_COMP_PHONETIC )
+                        if (personNameComponent.Name == Utilities.PersonNameComponents.PN_COMP_ALPHABETIC ||
+                             personNameComponent.Name == Utilities.PersonNameComponents.PN_COMP_IDEOGRAPHIC ||
+                             personNameComponent.Name == Utilities.PersonNameComponents.PN_COMP_PHONETIC)
                         {
-                            personNameValue = UpdatePersonName ( personNameValue, personNameComponent, Utilities.PersonNameParts.PN_Family );
-                            personNameValue = UpdatePersonName ( personNameValue, personNameComponent, Utilities.PersonNameParts.PN_Given );
-                            personNameValue = UpdatePersonName ( personNameValue, personNameComponent, Utilities.PersonNameParts.PN_Midlle );
-                            personNameValue = UpdatePersonName ( personNameValue, personNameComponent, Utilities.PersonNameParts.PN_Prefix );
-                            personNameValue = UpdatePersonName ( personNameValue, personNameComponent, Utilities.PersonNameParts.PN_Suffix, true );
+                            personNameValue = UpdatePersonName(personNameValue, personNameComponent, Utilities.PersonNameParts.PN_Family);
+                            personNameValue = UpdatePersonName(personNameValue, personNameComponent, Utilities.PersonNameParts.PN_Given);
+                            personNameValue = UpdatePersonName(personNameValue, personNameComponent, Utilities.PersonNameParts.PN_Midlle);
+                            personNameValue = UpdatePersonName(personNameValue, personNameComponent, Utilities.PersonNameParts.PN_Prefix);
+                            personNameValue = UpdatePersonName(personNameValue, personNameComponent, Utilities.PersonNameParts.PN_Suffix, true);
 
-                            personNameValue = personNameValue.TrimEnd ( '^') ; // extra cleanup 
+                            personNameValue = personNameValue.TrimEnd('^'); // extra cleanup 
 
                             personNameValue += "=";
                         }
                     }
 
-                    personNameValue = personNameValue.TrimEnd ( '=') ;
-                    
-                    personNameValue += "\\" ;
+                    personNameValue = personNameValue.TrimEnd('=');
+
+                    personNameValue += "\\";
                 }
 
-                personNameValue = personNameValue.TrimEnd ( '\\' ) ;
-                ds.AddOrUpdate<string> ( dicomVr, tag, System.Text.Encoding.Default,personNameValue) ;
+                personNameValue = personNameValue.TrimEnd('\\');
+                ds.AddOrUpdate<string>(dicomVr, tag, System.Text.Encoding.Default, personNameValue);
             }
-            else if ( Utilities.IsBinaryVR ( dicomVr ) )
+            else if (Utilities.IsBinaryVR(dicomVr))
             {
-                var dataElement = element.Elements ( ).OfType<XElement> ( ).FirstOrDefault ( ) ;
+                var dataElement = element.Elements().OfType<XElement>().FirstOrDefault();
 
-                if ( null != dataElement ) 
+                if (null != dataElement)
                 {
-                    Dicom.IO.Buffer.IByteBuffer data ;
+                    Dicom.IO.Buffer.IByteBuffer data;
 
 
-                    if ( dataElement.Name == Constants.ELEMENT_BULKDATA ) 
+                    if (dataElement.Name == Constants.ELEMENT_BULKDATA)
                     {
-                        string uri = dataElement.Attribute(Constants.ATTRIBUTE_BULKDATAURI).Value ;
-                        
-                        
-                        data = new Dicom.IO.Buffer.BulkDataUriByteBuffer ( uri ) ;
+                        string uri = dataElement.Attribute(Constants.ATTRIBUTE_BULKDATAURI).Value;
+
+
+                        data = new Dicom.IO.Buffer.BulkDataUriByteBuffer(uri);
                     }
                     else
                     {
-                        var base64 = System.Convert.FromBase64String ( dataElement.Value ) ;
-                        
-                        
-                        data = new Dicom.IO.Buffer.MemoryByteBuffer ( base64 ) ;
+                        var base64 = System.Convert.FromBase64String(dataElement.Value);
+
+
+                        data = new Dicom.IO.Buffer.MemoryByteBuffer(base64);
                     }
-                    
-                    if ( tag == DicomTag.PixelData && level == 0 ) 
+
+                    if (tag == DicomTag.PixelData && level == 0)
                     {
-                     
-                        var pixelData= DicomPixelData.Create(ds, true);  //2nd parameter is true since we are adding new data here
+
+                        var pixelData = DicomPixelData.Create(ds, true);  //2nd parameter is true since we are adding new data here
                         pixelData.AddFrame(data);
                     }
                     else
                     {
-                        ds.AddOrUpdate<Dicom.IO.Buffer.IByteBuffer> ( dicomVr, tag, data ) ;
+                        ds.AddOrUpdate<Dicom.IO.Buffer.IByteBuffer>(dicomVr, tag, data);
                     }
                 }
             }
-            else 
+            else
             {
-                var values = ReadValue ( element );
-                
-                if ( tag == DicomTag.TransferSyntaxUID )
+                var values = ReadValue(element);
+
+                if (tag == DicomTag.TransferSyntaxUID)
                 {
-                    TransferSyntax = DicomTransferSyntax.Parse ( values.FirstOrDefault ( ) ) ;
+                    TransferSyntax = DicomTransferSyntax.Parse(values.FirstOrDefault());
                 }
 
-                 ds.AddOrUpdate<string> ( dicomVr, tag, System.Text.Encoding.Default  ,values.ToArray ( ) );
-            }            
+                ds.AddOrUpdate<string>(dicomVr, tag, System.Text.Encoding.Default, values.ToArray());
+            }
         }
 
         private static string UpdatePersonName
-        ( 
-            string personNameValue, 
-            XElement personNameComponent, 
+        (
+            string personNameValue,
+            XElement personNameComponent,
             string partName,
             bool isLastPart = false
         )
         {
-            XElement partElement = personNameComponent.Element ( partName ) ;
+            XElement partElement = personNameComponent.Element(partName);
 
 
-            if ( null == partElement )
+            if (null == partElement)
             {
-                personNameValue += "" ;
+                personNameValue += "";
             }
             else
             {
-                personNameValue += partElement.Value ?? "" ;
+                personNameValue += partElement.Value ?? "";
             }
 
-            if ( !isLastPart )
+            if (!isLastPart)
             {
-                personNameValue += "^" ;
+                personNameValue += "^";
             }
 
-            return personNameValue ;
+            return personNameValue;
         }
 
-        private static IList<string> ReadValue ( XElement element )
+        private static IList<string> ReadValue(XElement element)
         {
-            SortedList<int,string> values = new SortedList<int, string> ( ) ;
-            
-            
-            foreach ( var valueElement in element.Elements (Constants.ATTRIBUTE_VALUE_NAME) )
+            SortedList<int, string> values = new SortedList<int, string>();
+
+
+            foreach (var valueElement in element.Elements(Constants.ATTRIBUTE_VALUE_NAME))
             {
-                values.Add ( int.Parse ( valueElement.Attribute ( Constants.ATTRIBUTE_NUMBER ).Value ), 
-                             valueElement.Value ) ;
+                values.Add(int.Parse(valueElement.Attribute(Constants.ATTRIBUTE_NUMBER).Value),
+                             valueElement.Value);
             }
 
-            return values.Values ;
+            return values.Values;
         }
 
         #endregion
 
         //trimming the padding the only allowed raw value transformation in XML
         //part 19 A.1.1
-        private static string GetTrimmedString ( string value )
+        private static string GetTrimmedString(string value)
         {
-            return value.TrimEnd (PADDING) ;
+            return value.TrimEnd(PADDING);
         }
-         
+
         //TODO: fo dicom VR has property to read padding char
-        private static char[] PADDING = new char[] {'\0',' '};
-        
+        private static char[] PADDING = new char[] { '\0', ' ' };
+
         private static class Constants
         {
-            public const string ROOT_ELEMENT_NAME = "NativeDicomModel" ;
-            public const string ATTRIBUTE_NAME = "DicomAttribute" ;
-            public const string ATTRIBUTE_VALUE_NAME = "Value" ;
-            public const string ATTRIBUTE_ITEM_NAME = "Item" ;
-            public const string ELEMENT_BULKDATA = "BulkData" ;
-            public const string ELEMENT_INLINEBINARY = "InlineBinary" ;
+            public const string ROOT_ELEMENT_NAME = "NativeDicomModel";
+            public const string ATTRIBUTE_NAME = "DicomAttribute";
+            public const string ATTRIBUTE_VALUE_NAME = "Value";
+            public const string ATTRIBUTE_ITEM_NAME = "Item";
+            public const string ELEMENT_BULKDATA = "BulkData";
+            public const string ELEMENT_INLINEBINARY = "InlineBinary";
 
-            public const string ATTRIBUTE_TAG = "tag" ;
-            public const string ATTRIBUTE_VR = "vr" ;
-            public const string ATTRIBUTE_NUMBER = "number" ;
-            public const string ATTRIBUTE_KEYWORD = "keyword" ;
-            public const string ATTRIBUTE_PRIVATE_CREATOR = "privateCreator" ;
-            public const string ATTRIBUTE_BULKDATAURI = "uri" ;
+            public const string ATTRIBUTE_TAG = "tag";
+            public const string ATTRIBUTE_VR = "vr";
+            public const string ATTRIBUTE_NUMBER = "number";
+            public const string ATTRIBUTE_KEYWORD = "keyword";
+            public const string ATTRIBUTE_PRIVATE_CREATOR = "privateCreator";
+            public const string ATTRIBUTE_BULKDATAURI = "uri";
 
-            public const string PN_PERSON_NAME = "PersonName" ;
-            
+            public const string PN_PERSON_NAME = "PersonName";
+
         }
     }
 }
