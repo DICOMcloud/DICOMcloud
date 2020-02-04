@@ -54,7 +54,7 @@ namespace DICOMcloud
                     writer.Close ( ) ;
                 }
 
-                result = Encoding.Default.GetString ( ms.ToArray ( ) ) ;
+                result = Encoding.UTF8.GetString ( ms.ToArray ( ) ) ;
             }
 
             return result ;
