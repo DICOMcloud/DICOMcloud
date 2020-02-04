@@ -76,7 +76,7 @@ namespace DICOMcloud
 
         protected virtual void WriteHeaders ( DicomDataset ds, XmlWriter writer)
         {
-            ds.AddOrUpdate(DicomTag.TransferSyntaxUID, ds.InternalTransferSyntax) ;
+              Update(DicomTag.TransferSyntaxUID, ds.InternalTransferSyntax) ;
 //            WriteDicomAttribute ( ds, ds.Get<DicomElement> ( DicomTag.TransferSyntaxUID, null ), writer );
             
         }
@@ -386,7 +386,7 @@ namespace DICOMcloud
                 }
 
                 personNameValue = personNameValue.TrimEnd ( '\\' ) ;
-                ds.AddOrUpdate<string> ( dicomVr, tag, personNameValue ) ;
+                ds.AddOrUpdate<string> ( dicomVr, tag, System.Text.Encoding.Default,personNameValue) ;
             }
             else if ( Utilities.IsBinaryVR ( dicomVr ) )
             {
@@ -433,7 +433,7 @@ namespace DICOMcloud
                     TransferSyntax = DicomTransferSyntax.Parse ( values.FirstOrDefault ( ) ) ;
                 }
 
-                ds.AddOrUpdate<string> ( dicomVr, tag, values.ToArray ( ) );
+                 ds.AddOrUpdate<string> ( dicomVr, tag, System.Text.Encoding.Default  ,values.ToArray ( ) );
             }            
         }
 
