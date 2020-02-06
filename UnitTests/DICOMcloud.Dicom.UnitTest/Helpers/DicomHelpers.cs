@@ -1,10 +1,12 @@
-﻿using Dicom;
+using Dicom;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dicom;
+
 
 namespace DICOMcloud.UnitTest
 {

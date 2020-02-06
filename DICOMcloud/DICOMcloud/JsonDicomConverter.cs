@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -221,17 +221,18 @@ namespace DICOMcloud
             {
                 string stringValue = GetTrimmedString ( element.Get<string> ( index ) ) ;
 
+
                 if ( _numberBasedVrs.Contains ( element.ValueRepresentation.Code ) )
                 {
                     //parse with the greatest type that can handle
                     //need to do that to remove the ' ' around the string
                     if ( _decimalBasedVrs.Contains ( element.ValueRepresentation.Code ) )
                     {
-                        writer.WriteValue ( double.Parse (stringValue, System.Globalization.NumberStyles.Any) );
+                        writer.WriteValue ( double.Parse (stringValue, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture) );
                     }
                     else
                     {
-                        writer.WriteValue ( long.Parse (stringValue, System.Globalization.NumberStyles.Number) );                     
+                        writer.WriteValue ( long.Parse (stringValue, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture) );                     
                     }
                 }
                 else
@@ -449,6 +450,8 @@ namespace DICOMcloud
         {
             //if VR was the first property we already read the right thing above, 
             //otherwise we'll got it from the dictionary. Could it be defined after the value?
+
+
             switch ( vr.Code )
             {
                 case DicomVRCode.SQ:
@@ -463,6 +466,12 @@ namespace DICOMcloud
                 }
                 break;
 
+                case DicomVRCode.DS:
+                {
+                    ReadVr_DS(reader, tag, dataset);
+                }
+                break;
+
                 default:
                 {
                     List<string> values = new List<string> ( );
@@ -472,7 +481,7 @@ namespace DICOMcloud
                     {
                         while ( reader.Read ( ) && reader.TokenType != JsonToken.EndArray )
                         {
-                            values.Add ( System.Convert.ToString ( reader.Value ) );
+                            values.Add ( System.Convert.ToString ( reader.Value ));
                         }
 
                         break;
@@ -483,11 +492,30 @@ namespace DICOMcloud
                         TransferSyntaxUID = values.FirstOrDefault ( ) ; 
                     }
 
-                    dataset.AddOrUpdate<string> ( vr, tag, values.ToArray ( ) );                
+                    dataset.AddOrUpdate<string> ( vr, tag, System.Text.Encoding.Default ,values.ToArray ( ) );                
                 }
                 break ;
             }
 
+        }
+
+
+        protected virtual void ReadVr_DS(JsonTextReader reader, DicomTag tag, DicomDataset dataset)
+        {
+
+            List<string> values = new List<string>();
+
+            while (reader.Read() && reader.TokenType == JsonToken.StartArray)
+            {
+                while (reader.Read() && reader.TokenType != JsonToken.EndArray)
+                {
+                    values.Add(System.Convert.ToString(reader.Value, System.Globalization.CultureInfo.InvariantCulture));
+                }
+
+                break;
+            }
+
+            dataset.AddOrUpdate<string>(DicomVR.DS, tag, values.ToArray());
         }
 
         protected virtual void ReadVr_PN ( JsonTextReader reader, DicomTag tag, DicomDataset dataset )
@@ -523,7 +551,7 @@ namespace DICOMcloud
                     personName.Add ( pnReader );
                 }
 
-                dataset.AddOrUpdate<string> ( tag, personName.ToString ( ) );
+                dataset.AddOrUpdate<string> ( tag, System.Text.Encoding.Default, personName.ToString ( ) );
 
                 break;
             }
