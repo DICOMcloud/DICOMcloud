@@ -179,7 +179,7 @@ namespace DICOMcloud.DataAccess.Database
                     
                 if (valueType == typeof(String)) //shortcut
                 {
-                    CurrentData.CurrentDs.AddOrUpdate<string>(dicomTag, System.Text.Encoding.Default , (string) value);
+                    CurrentData.CurrentDs.AddOrUpdate<string>(dicomTag, System.Text.Encoding.Default, (string) value);
                 }
                 else if (valueType == typeof(DateTime))
                 {
