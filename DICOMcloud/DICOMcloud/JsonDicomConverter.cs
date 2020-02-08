@@ -481,7 +481,7 @@ namespace DICOMcloud
                     {
                         while ( reader.Read ( ) && reader.TokenType != JsonToken.EndArray )
                         {
-                            values.Add ( System.Convert.ToString ( reader.Value ));
+                            values.Add ( System.Convert.ToString ( reader.Value ) );
                         }
 
                         break;
