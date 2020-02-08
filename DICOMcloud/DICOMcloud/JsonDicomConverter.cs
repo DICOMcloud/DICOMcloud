@@ -551,7 +551,7 @@ namespace DICOMcloud
                     personName.Add ( pnReader );
                 }
 
-                dataset.AddOrUpdate<string> ( tag, personName.ToString ( ) );
+                dataset.AddOrUpdate<string> ( tag,System.Text.Encoding.Default , personName.ToString ( ) );
 
                 break;
             }

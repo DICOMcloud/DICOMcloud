@@ -11,7 +11,7 @@ using Dicom.Imaging;
 
 namespace DICOMcloud
 {
-    
+
     public interface IXmlDicomConverter : IDicomConverter<string>
     {}
 
@@ -19,9 +19,40 @@ namespace DICOMcloud
     {
         public XmlDicomConverter()
         {
-            XmlSettings = new XmlWriterSettings ( ) ;
-            XmlSettings.Encoding = new UTF8Encoding ( false ) ; //force utf-8! http://www.timvw.be/2007/01/08/generating-utf-8-with-systemxmlxmlwriter/
-            XmlSettings.Indent = true ;
+            XmlSettings = new XmlWriterSettings();
+            XmlSettings.Indent = true;
+
+            // https://support.dcmtk.org/docs/dcm2xml.html
+            //ASCII
+            _DicomCharacterSetToEncoding.Add("ISO_IR 6", "UTF-8");
+            // UTF - 8
+            _DicomCharacterSetToEncoding.Add("ISO_IR 192", "UTF-8");
+            //ISO Latin 1   
+            _DicomCharacterSetToEncoding.Add("ISO_IR 100", "ISO-8859-1");
+
+            //ISO Latin 2   
+            _DicomCharacterSetToEncoding.Add("ISO_IR 101", "ISO-8859-2");
+
+            //ISO Latin 3   
+            _DicomCharacterSetToEncoding.Add("ISO_IR 109", "ISO-8859-3");
+
+            //ISO Latin 4   
+            _DicomCharacterSetToEncoding.Add("ISO_IR 110", "ISO-8859-4");
+
+            //ISO Latin 5   
+            _DicomCharacterSetToEncoding.Add("ISO_IR 148", "ISO-8859-9");
+
+            //Cyrillic      
+            _DicomCharacterSetToEncoding.Add("ISO_IR 144", "ISO-8859-5");
+
+            //Arabic        
+            _DicomCharacterSetToEncoding.Add("ISO_IR 127", "ISO-8859-6");
+
+            //Greek         
+            _DicomCharacterSetToEncoding.Add("ISO_IR 126", "ISO-8859-7");
+
+            //Hebrew        
+            _DicomCharacterSetToEncoding.Add("ISO_IR 138", "ISO-8859-8");
         }
 
         public XmlWriterSettings XmlSettings
@@ -39,16 +70,28 @@ namespace DICOMcloud
         {
             string result ;
 
+
+            var characterSet = ds.GetValueOrDefault(DicomTag.SpecificCharacterSet, 0, string.Empty);
+            //force utf-8! http://www.timvw.be/2007/01/08/generating-utf-8-with-systemxmlxmlwriter/
+            Encoding encoding = new UTF8Encoding(false);
+
+            if (!string.IsNullOrEmpty(characterSet) && _DicomCharacterSetToEncoding.ContainsKey(characterSet))
+            {
+                encoding = Encoding.GetEncoding(_DicomCharacterSetToEncoding[characterSet]);
+            }
+
+            XmlSettings.Encoding = encoding;
+
             using (var ms = new MemoryStream())
             {
                 using (XmlWriter writer = XmlTextWriter.Create(ms, XmlSettings))
                 {
                     writer.WriteStartDocument ( ) ;
                     writer.WriteStartElement  ( Constants.ROOT_ELEMENT_NAME ) ;
-                    
+
                     WriteHeaders  ( ds, writer ) ;
                     WriteChildren ( ds, writer ) ;
-                    
+
                     writer.WriteEndElement ( ) ;
 
                     writer.Close ( ) ;
@@ -77,23 +120,23 @@ namespace DICOMcloud
         protected virtual void WriteHeaders ( DicomDataset ds, XmlWriter writer)
         {
             ds.AddOrUpdate(DicomTag.TransferSyntaxUID, ds.InternalTransferSyntax) ;
-//            WriteDicomAttribute ( ds, ds.Get<DicomElement> ( DicomTag.TransferSyntaxUID, null ), writer );
-            
+            //            WriteDicomAttribute ( ds, ds.Get<DicomElement> ( DicomTag.TransferSyntaxUID, null ), writer );
+
         }
 
-        protected virtual void WriteChildren ( DicomDataset ds, XmlWriter writer ) 
+        protected virtual void WriteChildren ( DicomDataset ds, XmlWriter writer )
         {
             foreach ( var element in ds )
             {
                 WriteDicomAttribute ( ds, element, writer ) ;
             }
         }
-        
-        protected virtual void WriteDicomAttribute 
-        ( 
-            DicomDataset ds, 
-            DicomItem element, 
-            XmlWriter writer 
+
+        protected virtual void WriteDicomAttribute
+        (
+            DicomDataset ds,
+            DicomItem element,
+            XmlWriter writer
         )
         {
             //group length element must not be written
@@ -108,24 +151,24 @@ namespace DICOMcloud
             writer.WriteAttributeString ( Constants.ATTRIBUTE_TAG, element.Tag.ToString("J", null) ) ;
             writer.WriteAttributeString ( Constants.ATTRIBUTE_VR, element.ValueRepresentation.Code.ToUpper ( ) ) ;
 
-            if ( element.Tag.IsPrivate && null != element.Tag.PrivateCreator ) 
+            if ( element.Tag.IsPrivate && null != element.Tag.PrivateCreator )
             {
                 writer.WriteAttributeString ( Constants.ATTRIBUTE_PRIVATE_CREATOR, element.Tag.PrivateCreator.Creator ) ;
             }
 
-            switch ( element.ValueRepresentation.Code ) 
+            switch ( element.ValueRepresentation.Code )
             {
                 case DicomVRCode.SQ:
-                {
-                    WriteVR_SQ ( ( DicomSequence ) element, writer ) ;
-                }
-                break ;
+                    {
+                        WriteVR_SQ ( ( DicomSequence ) element, writer ) ;
+                    }
+                    break ;
 
                 case DicomVRCode.PN:
-                {
-                    WriteVR_PN ( (DicomElement) element, writer );
-                }
-                break;
+                    {
+                        WriteVR_PN ( (DicomElement) element, writer );
+                    }
+                    break;
 
                 case DicomVRCode.OB:
                 case DicomVRCode.OD:
@@ -133,16 +176,16 @@ namespace DICOMcloud
                 case DicomVRCode.OW:
                 case DicomVRCode.OL:
                 case DicomVRCode.UN:
-                { 
-                    WriteVR_Binary ( element, writer );                    
-                }
-                break;
+                    {
+                        WriteVR_Binary ( element, writer );
+                    }
+                    break;
 
                 default:
-                {
-                    WriteVR_Default ( ds, (DicomElement) element, writer );                
-                }
-                break;            
+                    {
+                        WriteVR_Default ( ds, (DicomElement) element, writer );
+                    }
+                    break;
             }
 
             writer.WriteEndElement ( ) ;
@@ -183,7 +226,7 @@ namespace DICOMcloud
 
                 writer.WriteStartElement ( Constants.ATTRIBUTE_ITEM_NAME ) ;
                 WriteNumberAttrib(writer, index);
-                
+
                 WriteChildren(item, writer);
 
                 writer.WriteEndElement ( ) ;
@@ -195,24 +238,24 @@ namespace DICOMcloud
             for (int index = 0; index < element.Count; index++)
             {
                 writer.WriteStartElement ( Constants.PN_PERSON_NAME );
-                    WriteNumberAttrib(writer, index) ;
+                WriteNumberAttrib(writer, index) ;
 
-                    var pnComponents = GetTrimmedString ( element.Get<string> ( ) ).Split ( '=') ;
+                var pnComponents = GetTrimmedString ( element.Get<string> ( ) ).Split ( '=') ;
 
-                    for ( int compIndex = 0; (compIndex < pnComponents.Length) && (compIndex < 3); compIndex++ )
-                    {
-                        writer.WriteStartElement ( Utilities.PersonNameComponents.PN_Components[compIndex] ) ;
+                for ( int compIndex = 0; (compIndex < pnComponents.Length) && (compIndex < 3); compIndex++ )
+                {
+                    writer.WriteStartElement ( Utilities.PersonNameComponents.PN_Components[compIndex] ) ;
 
-                            DicomPersonName pn = new DicomPersonName ( element.Tag, pnComponents[compIndex]  ) ; 
-                            
-                            writer.WriteElementString ( Utilities.PersonNameParts.PN_Family, pn.Last ) ;
-                            writer.WriteElementString ( Utilities.PersonNameParts.PN_Given, pn.First ) ;
-                            writer.WriteElementString ( Utilities.PersonNameParts.PN_Midlle, pn.Middle ) ;
-                            writer.WriteElementString ( Utilities.PersonNameParts.PN_Prefix, pn.Prefix ) ;
-                            writer.WriteElementString ( Utilities.PersonNameParts.PN_Suffix, pn.Suffix ) ;
+                    DicomPersonName pn = new DicomPersonName ( element.Tag, writer.Settings.Encoding, pnComponents[compIndex]  ) ;
 
-                        writer.WriteEndElement ( ) ;
-                    }
+                    writer.WriteElementString ( Utilities.PersonNameParts.PN_Family, pn.Last ) ;
+                    writer.WriteElementString ( Utilities.PersonNameParts.PN_Given, pn.First ) ;
+                    writer.WriteElementString ( Utilities.PersonNameParts.PN_Midlle, pn.Middle ) ;
+                    writer.WriteElementString ( Utilities.PersonNameParts.PN_Prefix, pn.Prefix ) ;
+                    writer.WriteElementString ( Utilities.PersonNameParts.PN_Suffix, pn.Suffix ) ;
+
+                    writer.WriteEndElement ( ) ;
+                }
                 writer.WriteEndElement ( ) ;
             }
         }
@@ -227,11 +270,11 @@ namespace DICOMcloud
                 writer.WriteStartElement ( Constants.ATTRIBUTE_VALUE_NAME ) ;
 
                 WriteNumberAttrib ( writer, index ) ;
-                    
+
                 if ( dicomVr.Equals(DicomVR.AT))
                 {
                     var atElement = ds.GetSingleValueOrDefault<DicomElement> ( element.Tag, null ) ;
-                    
+
                     if ( null != atElement)
                     {
                         var tagValue = atElement.Get<DicomTag> ( ) ;
@@ -246,13 +289,13 @@ namespace DICOMcloud
                 }
                 else
                 {
-                    writer.WriteString ( GetTrimmedString ( ds.GetValueOrDefault( element.Tag, index, string.Empty ) ) ); 
+                    writer.WriteString ( GetTrimmedString ( ds.GetValueOrDefault( element.Tag, index, string.Empty ) ) );
                 }
 
                 writer.WriteEndElement ( );
             }
         }
-        
+
         protected virtual void WriteNumberAttrib(XmlWriter writer, int index)
         {
             writer.WriteAttributeString("number", (index + 1).ToString());
@@ -261,10 +304,10 @@ namespace DICOMcloud
         #endregion
 
         #region Read Methods
-        
-        private void ReadChildren ( DicomDataset ds, XContainer document, int level = 0 ) 
+
+        private void ReadChildren ( DicomDataset ds, XContainer document, int level = 0 )
         {
-            foreach ( var element in document.Elements (Constants.ATTRIBUTE_NAME) ) 
+            foreach ( var element in document.Elements (Constants.ATTRIBUTE_NAME) )
             {
                 ReadDicomAttribute(ds, element, level);
             }
@@ -272,7 +315,7 @@ namespace DICOMcloud
 
         private void ReadDicomAttribute ( DicomDataset ds, XElement element, int level )
         {
-            XAttribute              vrNode  ;
+            XAttribute           vrNode ;
             DicomTag             tag ;
             DicomDictionaryEntry dicEntry ;
             DicomVR              dicomVR  ;
@@ -281,7 +324,7 @@ namespace DICOMcloud
             vrNode  = element.Attribute( Constants.ATTRIBUTE_VR ) ;
             tag     = DicomTag.Parse ( element.Attribute(Constants.ATTRIBUTE_TAG).Value ) ;
             dicomVR = null ;
-            
+
 
             //if ( tag.ToString ("J") == "00020010" )
             //{
@@ -293,16 +336,16 @@ namespace DICOMcloud
                 dicomVR = DicomVR.Parse ( vrNode.Value ) ;
             }
 
-            if ( tag.IsPrivate ) 
+            if ( tag.IsPrivate )
             {
                 tag = ds.GetPrivateTag ( tag ) ;
-            
+
                 if ( null != vrNode )
                 {
                     dicomVR = DicomVR.Parse ( vrNode.Value ) ;
                 }
             }
-            
+
             if ( null == dicomVR )
             {
                 dicEntry = DicomDictionary.Default[tag];
@@ -320,12 +363,12 @@ namespace DICOMcloud
 
         }
 
-        private void ReadSequence 
-        ( 
-            DicomDataset ds,  
-            XElement element, 
-            DicomTag tag, 
-            int level 
+        private void ReadSequence
+        (
+            DicomDataset ds,
+            XElement element,
+            DicomTag tag,
+            int level
         )
         {
             DicomSequence seq = new DicomSequence ( tag, new DicomDataset[0] ) ;
@@ -334,7 +377,7 @@ namespace DICOMcloud
             foreach ( var item in  element.Elements ( Constants.ATTRIBUTE_ITEM_NAME ) )
             {
                 DicomDataset itemDs = new DicomDataset ( ) { AutoValidate = false };
-                
+
                 level++ ;
 
                 ReadChildren ( itemDs, item, level ) ;
@@ -346,13 +389,13 @@ namespace DICOMcloud
 
             ds.AddOrUpdate ( seq ) ;
         }
-        
-        private void ReadElement 
-        ( 
-            DicomDataset ds, 
-            XElement element, 
-            DicomTag tag, 
-            DicomVR dicomVr, 
+
+        private void ReadElement
+        (
+            DicomDataset ds,
+            XElement element,
+            DicomTag tag,
+            DicomVR dicomVr,
             int level
         )
         {
@@ -364,8 +407,8 @@ namespace DICOMcloud
                 {
                     foreach ( var personNameComponent in personNameElementValue.Elements ( ) )
                     {
-                        if ( personNameComponent.Name == Utilities.PersonNameComponents.PN_COMP_ALPHABETIC || 
-                             personNameComponent.Name == Utilities.PersonNameComponents.PN_COMP_IDEOGRAPHIC || 
+                        if ( personNameComponent.Name == Utilities.PersonNameComponents.PN_COMP_ALPHABETIC ||
+                             personNameComponent.Name == Utilities.PersonNameComponents.PN_COMP_IDEOGRAPHIC ||
                              personNameComponent.Name == Utilities.PersonNameComponents.PN_COMP_PHONETIC )
                         {
                             personNameValue = UpdatePersonName ( personNameValue, personNameComponent, Utilities.PersonNameParts.PN_Family );
@@ -381,40 +424,40 @@ namespace DICOMcloud
                     }
 
                     personNameValue = personNameValue.TrimEnd ( '=') ;
-                    
+
                     personNameValue += "\\" ;
                 }
 
                 personNameValue = personNameValue.TrimEnd ( '\\' ) ;
-                ds.AddOrUpdate<string> ( dicomVr, tag, personNameValue ) ;
+                ds.AddOrUpdate<string> ( dicomVr, tag, Encoding.Default, personNameValue ) ;
             }
             else if ( Utilities.IsBinaryVR ( dicomVr ) )
             {
                 var dataElement = element.Elements ( ).OfType<XElement> ( ).FirstOrDefault ( ) ;
 
-                if ( null != dataElement ) 
+                if ( null != dataElement )
                 {
                     Dicom.IO.Buffer.IByteBuffer data ;
 
 
-                    if ( dataElement.Name == Constants.ELEMENT_BULKDATA ) 
+                    if ( dataElement.Name == Constants.ELEMENT_BULKDATA )
                     {
                         string uri = dataElement.Attribute(Constants.ATTRIBUTE_BULKDATAURI).Value ;
-                        
-                        
+
+
                         data = new Dicom.IO.Buffer.BulkDataUriByteBuffer ( uri ) ;
                     }
                     else
                     {
                         var base64 = System.Convert.FromBase64String ( dataElement.Value ) ;
-                        
-                        
+
+
                         data = new Dicom.IO.Buffer.MemoryByteBuffer ( base64 ) ;
                     }
-                    
-                    if ( tag == DicomTag.PixelData && level == 0 ) 
+
+                    if ( tag == DicomTag.PixelData && level == 0 )
                     {
-                     
+
                         var pixelData= DicomPixelData.Create(ds, true);  //2nd parameter is true since we are adding new data here
                         pixelData.AddFrame(data);
                     }
@@ -424,23 +467,23 @@ namespace DICOMcloud
                     }
                 }
             }
-            else 
+            else
             {
                 var values = ReadValue ( element );
-                
+
                 if ( tag == DicomTag.TransferSyntaxUID )
                 {
                     TransferSyntax = DicomTransferSyntax.Parse ( values.FirstOrDefault ( ) ) ;
                 }
 
-                ds.AddOrUpdate<string> ( dicomVr, tag, values.ToArray ( ) );
-            }            
+                ds.AddOrUpdate<string> ( dicomVr, tag, Encoding.Default, values.ToArray ( ) );
+            }
         }
 
         private static string UpdatePersonName
-        ( 
-            string personNameValue, 
-            XElement personNameComponent, 
+        (
+            string personNameValue,
+            XElement personNameComponent,
             string partName,
             bool isLastPart = false
         )
@@ -468,11 +511,11 @@ namespace DICOMcloud
         private static IList<string> ReadValue ( XElement element )
         {
             SortedList<int,string> values = new SortedList<int, string> ( ) ;
-            
-            
+
+
             foreach ( var valueElement in element.Elements (Constants.ATTRIBUTE_VALUE_NAME) )
             {
-                values.Add ( int.Parse ( valueElement.Attribute ( Constants.ATTRIBUTE_NUMBER ).Value ), 
+                values.Add ( int.Parse ( valueElement.Attribute ( Constants.ATTRIBUTE_NUMBER ).Value ),
                              valueElement.Value ) ;
             }
 
@@ -487,10 +530,10 @@ namespace DICOMcloud
         {
             return value.TrimEnd (PADDING) ;
         }
-         
+
         //TODO: fo dicom VR has property to read padding char
         private static char[] PADDING = new char[] {'\0',' '};
-        
+
         private static class Constants
         {
             public const string ROOT_ELEMENT_NAME = "NativeDicomModel" ;
@@ -508,7 +551,9 @@ namespace DICOMcloud
             public const string ATTRIBUTE_BULKDATAURI = "uri" ;
 
             public const string PN_PERSON_NAME = "PersonName" ;
-            
+
         }
+
+        Dictionary<string, string> _DicomCharacterSetToEncoding = new Dictionary<string, string>();
     }
 }
