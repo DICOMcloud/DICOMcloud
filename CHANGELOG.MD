@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for "Deploy to Azure" Button from GitHub. Issue #80
 
 ### Fixed
+- Fix: Problem when handling dicomdata with non english characters. Issue #84 Thanks @nutzlastfan
+- Fix: Problem with decimal conversion on non different culture settings (german) Issue #81 Thanks @nutzlastfan
 - Fix: The "api" route for the Store service (STOW-RS) doesn't work without a Study Instance UID. Issue #79
 
 ## v0.7.1-beta
