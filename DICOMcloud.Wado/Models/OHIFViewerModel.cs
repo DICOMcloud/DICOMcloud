@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,50 +10,111 @@ namespace DICOMcloud.Wado.Models
     {
         public OHIFViewerModel ( ) 
         {
-            Studies = new List<OHIFStudy> ( ) ;
+            studies = new List<OHIFStudy> ( ) ;
         }
 
         public string TransactionId { get; set; }
 
-        public List<OHIFStudy> Studies { get; set; }
+        public List<OHIFStudy> studies { get; set; }
     }
 
     public class OHIFStudy
     {
         public OHIFStudy ( ) 
         {
-            SeriesList = new List<OHIFSeries> ( ) ;
+            series = new List<OHIFSeries> ( ) ;
         }
 
-        public string StudyInstanceUid { get; set; }
+
+        public string StudyInstanceUID { get; set; }
+
+        public string StudyDescription { get; set; }
+
+        public string StudyDate { get; set; }
+
+        public string StudyTime { get; set; }
 
         public string PatientName { get; set; }
 
-        public List<OHIFSeries> SeriesList { get; set; }
+        public string PatientId { get; set; }
+
+        public List<OHIFSeries> series { get; set; }
+
     }
 
     public class OHIFSeries
     {
         public OHIFSeries ( ) 
         {
-            Instances = new List<OHIFInstance> ( ) ;
+            instances = new List<OHIFInstance> ( ) ;
         }
 
-        public string SeriesInstanceUid { get; set; }
 
         public string SeriesDescription { get; set; }
 
-        public List<OHIFInstance> Instances { get; set; }
+        public string SeriesInstanceUID { get; set; }
+
+        public int SeriesNumber { get; set; }
+
+        public string SeriesDate { get; set; }
+
+        public string SeriesTime { get; set; }
+
+        public string Modality { get; set; }
+
+        public List<OHIFInstance> instances { get; set; }
     }
 
-    public class OHIFInstance
+
+
+    public class OHIFMetadata
     {
-        public string SopInstanceUid { get; set; }
+        public int Columns { get; set; }
 
         public int Rows { get; set; }
 
-        public int? NumberOfFrames { get; set;}
+        public int InstanceNumber { get; set; }
 
-        public string Url { get; set; }
+        public int AcquisitionNumber { get; set; }
+
+        public string PhotometricInterpretation { get; set; }
+
+        public int BitsAllocated { get; set; }
+
+        public int BitsStored { get; set; }
+
+        public int PixelRepresentation { get; set; }
+
+        public int SamplesPerPixel { get; set; }
+
+        public List<double> PixelSpacing { get; set; }
+
+        public int HighBit { get; set; }
+
+        public List<int> ImageOrientationPatient { get; set; }
+
+        public List<double> ImagePositionPatient { get; set; }
+
+        public string FrameOfReferenceUID { get; set; }
+
+        public List<string> ImageType { get; set; }
+
+        public string Modality { get; set; }
+
+        public string SOPInstanceUID { get; set; }
+
+        public string SeriesInstanceUID { get; set; }
+
+        public string StudyInstanceUID { get; set; }
     }
+
+
+    public class OHIFInstance
+    {
+        public OHIFMetadata metadata { get; set; }
+
+        public string url { get; set; }
+
+    }
+
 }
