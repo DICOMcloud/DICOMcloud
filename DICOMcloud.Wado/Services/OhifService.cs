@@ -109,6 +109,8 @@ namespace DICOMcloud.Wado
             ds.Add(DicomTag.SeriesDescription, "");
             ds.Add(DicomTag.SOPInstanceUID, "");
             ds.Add(DicomTag.NumberOfFrames, "");
+            ds.Add(DicomTag.Rows, "");
+            ds.Add(DicomTag.Columns, "");
 
             return QueryService.FindObjectInstances (ds, GetQueryOptions(studyId));
             
@@ -125,6 +127,8 @@ namespace DICOMcloud.Wado
             ds.Add(DicomTag.SeriesDescription, "");
             ds.Add(DicomTag.SOPInstanceUID, "");
             ds.Add(DicomTag.NumberOfFrames, "");
+            ds.Add(DicomTag.Rows , "");
+            ds.Add(DicomTag.Columns, "");
 
             return QueryService.FindObjectInstances(ds, GetQueryOptions(studyId, seriesId));
 
@@ -141,6 +145,8 @@ namespace DICOMcloud.Wado
             ds.Add(DicomTag.SeriesDescription, "");
             ds.Add(DicomTag.SOPInstanceUID, sopId.SOPInstanceUID);
             ds.Add(DicomTag.NumberOfFrames, "");
+            ds.Add(DicomTag.Rows, "");
+            ds.Add(DicomTag.Columns, "");
 
             return QueryService.FindObjectInstances(ds, GetQueryOptions(studyId, seriesId, sopId));
 
@@ -160,38 +166,71 @@ namespace DICOMcloud.Wado
                 var currentStudyUid = instance.GetSingleValue<string>(DicomTag.StudyInstanceUID);
                 var currentSeriesUid = instance.GetSingleValue<string>(DicomTag.SeriesInstanceUID);
                 var currentInstanceUid = instance.GetSingleValue<string>(DicomTag.SOPInstanceUID);
-                OHIFInstance ohifInstance = new OHIFInstance() { SopInstanceUid = currentInstanceUid };
+                OHIFMetadata ohifMetadata = new OHIFMetadata() { SOPInstanceUID = currentInstanceUid , SeriesInstanceUID = currentSeriesUid, StudyInstanceUID = currentStudyUid };
+                OHIFInstance ohifInstance = new OHIFInstance();
                 OHIFStudy ohifStudy;
                 OHIFSeries ohifSeries;
 
 
                 if (!studies.TryGetValue(currentStudyUid, out ohifStudy))
                 {
-                    ohifStudy = new OHIFStudy() { StudyInstanceUid = currentStudyUid };
+                    ohifStudy = new OHIFStudy() { StudyInstanceUID = currentStudyUid };
 
                     ohifStudy.PatientName = instance.GetSingleValueOrDefault<string>(DicomTag.PatientName, "");
+                    ohifStudy.PatientId = instance.GetSingleValueOrDefault<string>(DicomTag.PatientID, "");
+                    ohifStudy.StudyDescription = instance.GetSingleValueOrDefault<string>(DicomTag.StudyDescription, "");
+                    ohifStudy.StudyDate  = instance.GetSingleValueOrDefault<string>(DicomTag.StudyDate, "");
+                    ohifStudy.StudyTime = instance.GetSingleValueOrDefault<string>(DicomTag.StudyTime, "");
 
-                    result.Studies.Add(ohifStudy);
+
+                    result.studies.Add(ohifStudy);
 
                     studies.Add ( currentStudyUid, ohifStudy) ;
                 }
 
                 if (!series.TryGetValue(currentSeriesUid, out ohifSeries))
                 {
-                    ohifSeries = new OHIFSeries() { SeriesInstanceUid = currentSeriesUid };
-
+                    ohifSeries = new OHIFSeries() { SeriesInstanceUID = currentSeriesUid };
+                  //  ohifSeries.Modality = instance.GetSingleValueOrDefault<string>(DicomTag.Modality, "CT");
                     ohifSeries.SeriesDescription = instance.GetSingleValueOrDefault<string>(DicomTag.SeriesDescription, "");
+                    ohifSeries.SeriesNumber = instance.GetSingleValueOrDefault<int>(DicomTag.SeriesNumber , 0);
+                    ohifSeries.SeriesDate = instance.GetSingleValueOrDefault<string>(DicomTag.SeriesDate, "");
+                    ohifSeries.SeriesTime = instance.GetSingleValueOrDefault<string>(DicomTag.SeriesTime , "");
+                    ohifSeries.Modality = instance.GetSingleValueOrDefault<string>(DicomTag.Modality , "");
 
-                    ohifStudy.SeriesList.Add(ohifSeries);
+                    ohifStudy.series.Add(ohifSeries);
 
                     series.Add(currentSeriesUid, ohifSeries);
                 }
 
-                ohifInstance.Rows = 1;
-                ohifInstance.Url = CreateOHIFUrl (instance, studyId);
-                ohifInstance.NumberOfFrames = instance.GetSingleValueOrDefault<int?>(DicomTag.NumberOfFrames, null);
 
-                ohifSeries.Instances.Add(ohifInstance);
+
+                ohifMetadata.Columns  = instance.GetSingleValueOrDefault<int>(DicomTag.Columns , 1);
+                ohifMetadata.Rows = instance.GetSingleValueOrDefault<int>(DicomTag.Rows  , 1);
+                ohifMetadata.InstanceNumber = instance.GetSingleValueOrDefault<int>(DicomTag.InstanceNumber, 1);
+                ohifMetadata.AcquisitionNumber = instance.GetSingleValueOrDefault<int>(DicomTag.AcquisitionNumber, 1);
+                ohifMetadata.PhotometricInterpretation = instance.GetSingleValueOrDefault<string>(DicomTag.PhotometricInterpretation, "");
+                ohifMetadata.BitsAllocated = instance.GetSingleValueOrDefault<int>(DicomTag.AcquisitionNumber, 16);
+                ohifMetadata.BitsStored = instance.GetSingleValueOrDefault<int>(DicomTag.AcquisitionNumber, 16);
+                ohifMetadata.PixelRepresentation = instance.GetSingleValueOrDefault<int>(DicomTag.AcquisitionNumber, 1);
+                ohifMetadata.SamplesPerPixel = instance.GetSingleValueOrDefault<int>(DicomTag.AcquisitionNumber, 1);
+                ohifMetadata.PixelSpacing = instance.GetSingleValueOrDefault<List<double>> (DicomTag.PixelSpacing ,new List<double>());
+                ohifMetadata.HighBit = instance.GetSingleValueOrDefault<int>(DicomTag.HighBit, 1);
+                ohifMetadata.ImageOrientationPatient = instance.GetSingleValueOrDefault<List<int>> (DicomTag.ImageOrientationPatient, new List<int>());
+                ohifMetadata.ImagePositionPatient = instance.GetSingleValueOrDefault<List<double>>(DicomTag.ImageOrientationPatient, new List<double>());
+                ohifMetadata.FrameOfReferenceUID  = instance.GetSingleValueOrDefault<string>(DicomTag.FrameOfReferenceUID, "");
+                ohifMetadata.ImageType = instance.GetSingleValueOrDefault<List<string>>(DicomTag.ImageType, new List<string>());
+                ohifMetadata.Modality  = instance.GetSingleValueOrDefault<string>(DicomTag.Modality, "");
+
+                //add to instance
+                ohifInstance.url  = CreateOHIFUrl (instance, studyId);
+                ohifInstance.metadata = ohifMetadata; 
+
+
+                //add to series
+                ohifSeries.instances.Add(ohifInstance);
+
+
             }
 
             return result;
