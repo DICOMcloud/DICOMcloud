@@ -355,7 +355,7 @@ namespace DICOMcloud.Wado
             }
             else
             {
-                dicomRequest.AddOrUpdate(tag, value);
+                   dicomRequest.AddOrUpdate(tag, System.Text.Encoding.Default, value);
             }
         }
 
