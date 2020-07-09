@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for "Deploy to Azure" Button from GitHub. Issue #80
 
 ### Fixed
+- Fix: maximum request size exceeded for STOWRS (Increase max request size to 100MB). Issue #95
 - Fix: Storing a DICOM instance fails if a cached version (XML, JSON, other transfer syntax) fails to be stored. Issue #86
 - Fix: Problem when handling dicomdata with non english characters. Issue #84 Thanks @nutzlastfan
 - Fix: Problem with decimal conversion on non different culture settings (german) Issue #81 Thanks @nutzlastfan
