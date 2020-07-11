@@ -16,7 +16,7 @@ namespace DICOMcloud.Pacs.Commands
     {
         static StoreCommand ( ) 
         {
-            RequiredDsElements = new DicomDataset ( ) { AutoValidate = false };
+            RequiredDsElements = new DicomDataset ( ).NotValidated();
 
             RequiredDsElements.Add<string> ( DicomTag.PatientID) ;
             RequiredDsElements.Add<string> ( DicomTag.StudyInstanceUID) ;
@@ -113,16 +113,16 @@ namespace DICOMcloud.Pacs.Commands
         )
         {
             List<DicomMediaLocations> mediaLocations = new List<DicomMediaLocations> ( ) ;
-            DicomDataset storageDataset = dicomObject.Clone ( DicomTransferSyntax.ExplicitVRLittleEndian ) ;
+            DicomDataset storageDataset = dicomObject.Clone(DicomTransferSyntax.ExplicitVRLittleEndian).NotValidated();
             List<DicomMediaProperties> storedMedia = new List<DicomMediaProperties> ();
             DicomMediaProperties defaultMedia = new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID);
 
-            CreateMedia(mediaLocations, 
+            CreateMedia(mediaLocations,
                         storageDataset,
                         defaultMedia);
-            
+
             storedMedia.Add(defaultMedia);
-            
+
             if (Settings.StoreOriginal)
             {
                 var originalMedia = new DicomMediaProperties(MimeMediaTypes.DICOM, dicomObject.InternalTransferSyntax.UID.UID);
@@ -222,13 +222,13 @@ namespace DICOMcloud.Pacs.Commands
         
             MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID ) ) ;
             MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Json ) ) ;
-            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.UncompressedData, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID ) ) ;
-            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.xmlDicom ) ) ;
-            MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossless.UID.UID));
-            MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossy.UID.UID));
+            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.UncompressedData, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID ) ) ;
+            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.xmlDicom ) ) ;
+            //MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossless.UID.UID));
+            //MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossy.UID.UID));
             //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.JPEGProcess14SV1.UID.UID ) ) ;
             //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.JPEGProcess1.UID.UID ) ) ;
-            MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.Jpeg));
+            //MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.Jpeg));
         }
 
         public IList<DicomMediaProperties> MediaTypes { get; private set ;}

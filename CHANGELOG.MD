@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add support for "Deploy to Azure" Button from GitHub. Issue #80
 
 ### Fixed
+- Fix: Improve storage performance by disabling pre-generated J2K DICOM files and JPG images by default. Issue #98
+- Fix: Server fails to store when a DICOM file is invalid (valu doesn't confirm to VR) Issue #99
 - Fix: maximum request size exceeded for STOWRS (Increase max request size to 100MB). Issue #95
 - Fix: Storing a DICOM instance fails if a cached version (XML, JSON, other transfer syntax) fails to be stored. Issue #86
 - Fix: Problem when handling dicomdata with non english characters. Issue #84 Thanks @nutzlastfan
