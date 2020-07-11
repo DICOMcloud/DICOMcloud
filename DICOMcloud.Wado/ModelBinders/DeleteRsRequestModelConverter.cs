@@ -39,7 +39,7 @@ namespace DICOMcloud.Wado
             {
                 result = new WebDeleteRequest ( ) 
                 { 
-                    Dataset     = new DicomDataset ( ) { AutoValidate = false },
+                    Dataset     = new DicomDataset ( ).NotValidated(),
                     DeleteLevel = ObjectQueryLevel.Unknown 
                 } ;
 

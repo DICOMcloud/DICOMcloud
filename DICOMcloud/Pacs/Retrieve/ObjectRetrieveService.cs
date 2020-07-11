@@ -100,7 +100,7 @@ namespace DICOMcloud.Pacs
 
         private IMediaId GetFromMediaId (IObjectId query, string fromMediaType, string fromTransferSyntax)
         {
-            DicomDataset ds = new DicomDataset () { AutoValidate = false };
+            DicomDataset ds = new DicomDataset ().NotValidated();
 
             ds.Add (DicomTag.StudyInstanceUID, query.StudyInstanceUID);
             ds.Add (DicomTag.SeriesInstanceUID, query.SeriesInstanceUID);

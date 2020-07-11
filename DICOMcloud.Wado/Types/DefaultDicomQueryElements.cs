@@ -9,9 +9,9 @@ namespace DICOMcloud.Wado
 {
     public class DefaultDicomQueryElements
     {
-        static DicomDataset _studyDs = new DicomDataset ( ) { AutoValidate = false } ;
-        static DicomDataset _seriesDs = new DicomDataset ( ) { AutoValidate = false } ;
-        static DicomDataset _instanceDs = new DicomDataset ( ) { AutoValidate = false };
+        static DicomDataset _studyDs = new DicomDataset ( ).NotValidated();
+        static DicomDataset _seriesDs = new DicomDataset ( ).NotValidated();
+        static DicomDataset _instanceDs = new DicomDataset ( ).NotValidated();
 
         public virtual DicomDataset GetStudyQuery ( ) 
         {
@@ -31,7 +31,7 @@ namespace DICOMcloud.Wado
 
         public static DicomDataset GetDefaultStudyQuery ( ) 
         {
-            DicomDataset ds = new DicomDataset ( ) { AutoValidate = false };
+            DicomDataset ds = new DicomDataset ( ).NotValidated();
             
             _studyDs.CopyTo ( ds ) ; 
 
@@ -40,7 +40,7 @@ namespace DICOMcloud.Wado
 
         public static DicomDataset GetDefaultSeriesQuery ( ) 
         {
-            DicomDataset ds = new DicomDataset ( ) { AutoValidate = false };
+            DicomDataset ds = new DicomDataset ( ).NotValidated();
             
             _seriesDs.CopyTo ( ds ) ;
 
@@ -49,7 +49,7 @@ namespace DICOMcloud.Wado
 
         public static DicomDataset GetDefaultInstanceQuery ( ) 
         {
-            DicomDataset ds = new DicomDataset ( ) { AutoValidate = false };
+            DicomDataset ds = new DicomDataset ( ).NotValidated();
 
             _instanceDs.CopyTo ( ds ) ;
 

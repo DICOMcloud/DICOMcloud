@@ -33,7 +33,7 @@ namespace DICOMcloud.Wado
 
         public WadoStoreResponse ( IStudyId studyId, IRetrieveUrlProvider urlProvider = null)
         {
-            _dataset         = new DicomDataset ( ) { AutoValidate = false };
+            _dataset         = new DicomDataset ( ).NotValidated();
             UrlProvider      = urlProvider?? new RetrieveUrlProvider( ) ;
             StudyId          = studyId;
             HttpStatus       = HttpStatusCode.Unused ;
@@ -58,7 +58,7 @@ namespace DICOMcloud.Wado
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
             var failedSeq          = (_dataset.Contains (DicomTag.FailedSOPSequence)) ? _dataset.GetSequence(DicomTag.FailedSOPSequence) : new DicomSequence ( DicomTag.FailedSOPSequence ) ;
-            var item               = new DicomDataset ( ) { AutoValidate = false };
+            var item               = new DicomDataset ( ).NotValidated();
 
             referencedInstance.Merge ( item ) ;
 
@@ -84,7 +84,7 @@ namespace DICOMcloud.Wado
         {
             var referencedInstance = GetReferencedInstsance ( ds ) ;
             var referencedSeq      = (_dataset.Contains(DicomTag.ReferencedSOPSequence)) ? _dataset.GetSequence(DicomTag.ReferencedSOPSequence) : new DicomSequence ( DicomTag.ReferencedSOPSequence) ;
-            var item               = new DicomDataset ( ) { AutoValidate = false };
+            var item               = new DicomDataset ( ).NotValidated();
 
             referencedInstance.Merge ( item ) ;
 
@@ -109,7 +109,7 @@ namespace DICOMcloud.Wado
         {
             var classUID = ds.GetSingleValueOrDefault<string> ( DicomTag.SOPClassUID, null ) ;
             var sopUID   = ds.GetSingleValueOrDefault<string> ( DicomTag.SOPInstanceUID, null ) ;
-            var dataset  = new DicomDataset ( ) { AutoValidate = false };
+            var dataset  = new DicomDataset ( ).NotValidated();
 
             dataset.AddOrUpdate ( DicomTag.SOPClassUID, classUID ) ;
             dataset.AddOrUpdate (DicomTag.SOPInstanceUID, sopUID ) ;

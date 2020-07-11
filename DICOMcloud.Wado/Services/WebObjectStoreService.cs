@@ -69,7 +69,9 @@ namespace DICOMcloud.Wado
             fo.DicomFile dicom ;
 
 
-            dicom = fo.DicomFile.Open ( dicomStream ) ;
+            dicom = fo.DicomFile.Open ( dicomStream, FileReadOption.ReadLargeOnDemand ) ;
+
+            dicom.Dataset.NotValidated();
 
             return dicom.Dataset ;
         }

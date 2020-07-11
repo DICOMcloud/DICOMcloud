@@ -24,7 +24,6 @@ namespace DICOMcloud.DataAccess.Database.Commands
         {
             Command.Connection.Open ( );
 
-            
             using ( var reader = Command.ExecuteReader ( CommandBehavior.CloseConnection | CommandBehavior.KeyInfo ) )
             {
                 do

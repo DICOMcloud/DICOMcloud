@@ -56,7 +56,7 @@ namespace DICOMcloud.Media
                     return data;
                 }
 
-                var ds = data.Clone (transfer) ;
+                var ds = data.Clone (transfer).NotValidated();
 
                 ds.AddOrUpdate ( DicomTag.TransferSyntaxUID, transfer.UID.UID ) ;
 
@@ -76,8 +76,7 @@ namespace DICOMcloud.Media
             DicomMediaProperties mediaProperties 
         )
         {
-            DicomFile df = new DicomFile ( dicomDataset ) ;
-
+            DicomFile df = new DicomFile ( dicomDataset) ;
 
             using (Stream stream = new MemoryStream())
             {

@@ -100,7 +100,7 @@ namespace DICOMcloud.Wado
 
         protected virtual IEnumerable<DicomDataset> QueryInstances (IStudyId studyId)
         {
-            DicomDataset ds = new DicomDataset() { AutoValidate = false };
+            DicomDataset ds = new DicomDataset().NotValidated();
 
             ds.Add(Dicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
             ds.Add(DicomTag.SeriesInstanceUID, "");
@@ -116,7 +116,7 @@ namespace DICOMcloud.Wado
 
         protected virtual IEnumerable<DicomDataset> QueryInstances(IStudyId studyId,ISeriesId seriesId)
         {
-            DicomDataset ds = new DicomDataset() { AutoValidate = false };
+            DicomDataset ds = new DicomDataset().NotValidated();
 
             ds.Add(Dicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
             ds.Add(DicomTag.SeriesInstanceUID, seriesId.SeriesInstanceUID);
@@ -132,7 +132,7 @@ namespace DICOMcloud.Wado
 
         protected virtual IEnumerable<DicomDataset> QueryInstances(IStudyId studyId, ISeriesId seriesId, IObjectId sopId)
         {
-            DicomDataset ds = new DicomDataset() { AutoValidate = false };
+            DicomDataset ds = new DicomDataset().NotValidated();
 
             ds.Add(Dicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
             ds.Add(DicomTag.SeriesInstanceUID, seriesId.SeriesInstanceUID);

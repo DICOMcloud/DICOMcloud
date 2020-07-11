@@ -16,7 +16,7 @@ namespace DICOMcloud
         {
             if (ds.InternalTransferSyntax.IsEncapsulated)
             {
-                Dataset = ds.Clone(DicomTransferSyntax.ImplicitVRLittleEndian);
+                Dataset = ds.Clone(DicomTransferSyntax.ImplicitVRLittleEndian).NotValidated();
             }
             else
             {

@@ -105,7 +105,7 @@ namespace DICOMcloud
 
         public DicomDataset Convert ( string xmlDcm )
         {
-            DicomDataset ds       = new DicomDataset( ) { AutoValidate = false };
+            DicomDataset ds       = new DicomDataset( ).NotValidated();
             XDocument    document = XDocument.Parse ( xmlDcm ) ;
 
             ReadChildren(ds, document.Root, 0 );
@@ -376,7 +376,7 @@ namespace DICOMcloud
 
             foreach ( var item in  element.Elements ( Constants.ATTRIBUTE_ITEM_NAME ) )
             {
-                DicomDataset itemDs = new DicomDataset ( ) { AutoValidate = false };
+                DicomDataset itemDs = new DicomDataset ( ).NotValidated();
 
                 level++ ;
 

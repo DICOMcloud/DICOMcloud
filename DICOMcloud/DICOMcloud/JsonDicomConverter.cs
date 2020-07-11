@@ -75,7 +75,7 @@ namespace DICOMcloud
                 {
                     if ( reader.Read ( ) )
                     { 
-                        dataset = new DicomDataset ( ) { AutoValidate = false };
+                        dataset = new DicomDataset ( ).NotValidated();
                     
                         if ( reader.TokenType == JsonToken.Null )
                             return null;
@@ -568,7 +568,7 @@ namespace DICOMcloud
                 {
                     while ( reader.Read ( ) && reader.TokenType != JsonToken.EndArray )
                     {
-                        DicomDataset itemDs = new DicomDataset ( ) { AutoValidate = false };
+                        DicomDataset itemDs = new DicomDataset ( ).NotValidated();
                         
                         ReadChildren ( reader, itemDs, ++level ) ;
                         
