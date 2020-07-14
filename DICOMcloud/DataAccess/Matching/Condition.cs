@@ -44,11 +44,16 @@ namespace DICOMcloud.DataAccess.Matching
             return CanMatch ( element ) ;
         }
 
-        protected virtual bool HasWildcardMatching ( string elementValue )
+        protected virtual bool HasWildcardMatching(DicomItem item)
         {
-            return elementValue.Contains ( "*") || elementValue.Contains ( "?") ;
+            //if SQ casting will fail and be null
+            DicomElement element = item as DicomElement;
+            if (element == null) { return false; }
+            string elementValue = element.Get<string>();
+
+            return elementValue.Contains("*") || elementValue.Contains("?");
         }
-    
+
     }
 
     public class SingleValueMatching : MatchingBase
@@ -77,7 +82,7 @@ namespace DICOMcloud.DataAccess.Matching
             }
             else
             {
-                if ( HasWildcardMatching (elementValue) )
+                if ( HasWildcardMatching (item) )
                 {
                     return false ;
                 }
@@ -145,7 +150,7 @@ namespace DICOMcloud.DataAccess.Matching
         {
             if ( _invliadVrs.Contains ( element.ValueRepresentation ) ) { return false ; }
 
-            if ( !HasWildcardMatching (element.ToString ( )) ) { return false ; }
+            if ( !HasWildcardMatching (element) ) { return false ; }
 
             return base.CanMatch ( element ) ;
         }
@@ -183,7 +188,7 @@ namespace DICOMcloud.DataAccess.Matching
             DicomVR elementVr = element.ValueRepresentation ;
             if ( !elementVr.Equals ( DicomVR.DA) && !elementVr.Equals ( DicomVR.TM ) && !elementVr.Equals ( DicomVR.DT)) { return false ; }
 
-            if ( HasWildcardMatching (element.ToString ( ) )) { return false ; }
+            if ( HasWildcardMatching (element)) { return false ; }
 
             return true ;
         }
