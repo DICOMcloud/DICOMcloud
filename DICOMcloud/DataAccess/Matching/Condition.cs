@@ -72,7 +72,7 @@ namespace DICOMcloud.DataAccess.Matching
 
             if ( element == null || element.Count == 0 ) { return false ;}
 
-            string elementValue = element.ToString ( ) ;
+            string elementValue = element.Get<string>();
 
             if ( element.ValueRepresentation.Equals ( DicomVR.DA) || 
                  element.ValueRepresentation.Equals ( DicomVR.DT ) || 
