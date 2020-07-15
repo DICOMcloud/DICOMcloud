@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix QIDO: UID list parsing is not according to standard. Issue #41
 - Fix Wado-RS GetStudies not always working. Issue #55
 - Fix WADO-RS retrieve frame is not working. Issue #48
+- Fix Wildcard Matching not working. Issue #101
 
 ## v0.7.0-beta
 

@@ -78,6 +78,7 @@
     <Compile Include="Helpers\DicomHelpers.cs" />
     <Compile Include="ObjectStoreServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MatchingConditionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
