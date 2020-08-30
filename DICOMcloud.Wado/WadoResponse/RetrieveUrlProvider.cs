@@ -14,8 +14,10 @@ namespace DICOMcloud.Wado
 
         public RetrieveUrlProvider( )
         {
-            string wadoRsUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoRs_API_URL] ;
-            string wadoUriUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoUri_API_URL] ;
+            string wadoRsUrl = ""; 
+            string wadoUriUrl =  "";
+            // string wadoRsUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoRs_API_URL] ;
+            // string wadoUriUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoUri_API_URL] ;
             
 
             wadoRsUrl = wadoRsUrl ?? "" ;

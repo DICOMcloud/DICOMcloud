@@ -1,16 +1,8 @@
 ﻿
-using DICOMcloud.Wado.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http.ModelBinding;
-using System.Web.Http.ValueProviders;
-using DICOMcloud.Pacs;
 using Dicom;
-
+using DICOMcloud.Wado.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Net.Http;
 
 namespace DICOMcloud.Wado
 {
@@ -45,21 +37,21 @@ namespace DICOMcloud.Wado
 
                 if ( null != studyParam ) 
                 { 
-                    result.Dataset.Add ( DicomTag.StudyInstanceUID, studyParam.AttemptedValue ) ; 
+                    result.Dataset.Add ( DicomTag.StudyInstanceUID, studyParam.FirstValue ) ; 
                     
                     result.DeleteLevel = ObjectQueryLevel.Study ;
                 }
 
                 if ( null != seriesParam  ) 
                 { 
-                    result.Dataset.Add ( DicomTag.StudyInstanceUID, seriesParam.AttemptedValue ) ;
+                    result.Dataset.Add ( DicomTag.StudyInstanceUID, seriesParam.FirstValue ) ;
 
                     result.DeleteLevel = ObjectQueryLevel.Series ;
                 }
                 
                 if ( null != instanceParam ) 
                 { 
-                    result.Dataset.Add ( DicomTag.StudyInstanceUID, instanceParam.AttemptedValue ) ; 
+                    result.Dataset.Add ( DicomTag.StudyInstanceUID, instanceParam.FirstValue) ; 
 
                     result.DeleteLevel = ObjectQueryLevel.Instance ;
                 }

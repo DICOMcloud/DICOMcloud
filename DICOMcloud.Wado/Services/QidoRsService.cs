@@ -10,7 +10,7 @@ using System.Text;
 using DICOMcloud.IO;
 using Dicom;
 using System;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 
 namespace DICOMcloud.Wado
 {
@@ -25,15 +25,19 @@ namespace DICOMcloud.Wado
         protected IDicomMediaIdFactory MediaIdFactory { get; set; }
         protected IMediaStorageService StorageService { get; set; }
 
-        public QidoRsService ( IObjectArchieveQueryService queryService ): this (queryService, null, null ) {}
+        private readonly IHttpContextAccessor _httpcontextaccessor;
 
-        public QidoRsService ( IObjectArchieveQueryService queryService, IDicomMediaIdFactory mediaIdFactory, IMediaStorageService storageService )
+        public QidoRsService ( IObjectArchieveQueryService queryService, IHttpContextAccessor httpcontextaccessor ): this (queryService, null, null, httpcontextaccessor) {}
+
+        public QidoRsService ( IObjectArchieveQueryService queryService, IDicomMediaIdFactory mediaIdFactory, IMediaStorageService storageService, IHttpContextAccessor httpcontextaccessor )
         {
+            this._httpcontextaccessor = httpcontextaccessor;
             QueryService   = queryService ;
             MediaIdFactory = mediaIdFactory;
             StorageService = storageService ;
 
-            var maxResultLimit = System.Configuration.ConfigurationManager.AppSettings[MaximumResultsLimit_ConfigName] ;
+            // var maxResultLimit = System.Configuration.ConfigurationManager.AppSettings[MaximumResultsLimit_ConfigName] ;
+            var maxResultLimit = "5";
 
             if (!string.IsNullOrWhiteSpace(maxResultLimit))
             {
@@ -178,16 +182,20 @@ namespace DICOMcloud.Wado
                 AddPreviewInstanceHeader(results.Result, response);
             }
 
+
             AddPaginationHeders(request, response, results);
 
         }
 
-        private static void AddPaginationHeders(IQidoRequestModel request, HttpResponseMessage response, PagedResult<DicomDataset> results)
+        private void AddPaginationHeders(IQidoRequestModel request, HttpResponseMessage response, PagedResult<DicomDataset> results)
         {
             LinkHeaderBuilder headerBuilder = new LinkHeaderBuilder ( ) ;
 
+
+
+            //Todo : Test
             response.Headers.Add ( "link", 
-                                    headerBuilder.GetLinkHeader ( results, HttpContext.Current.Request.Url.AbsoluteUri ) ) ;
+                                    headerBuilder.GetLinkHeader ( results, this._httpcontextaccessor.HttpContext.Request.ReturnAbsolutePath())) ;
             
             response.Headers.Add ( "X-Total-Count", results.TotalCount.ToString() ) ;
 

@@ -2,10 +2,9 @@
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Web.Http.ModelBinding;
-using System.Web.Http.ValueProviders;
 
 using DICOMcloud.Wado.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DICOMcloud.Wado
 {
@@ -16,7 +15,8 @@ namespace DICOMcloud.Wado
 
         public virtual bool TryParse ( HttpRequestMessage request, ModelBindingContext bindingContext, out T result )
         {
-            var query = request.RequestUri.ParseQueryString ( ) ;        
+            var query = request.RequestUri.ParseQuery();       
+
             result = null ;
 
             if ( typeof(T) == typeof(IWadoRsStudiesRequest) )
@@ -145,28 +145,28 @@ namespace DICOMcloud.Wado
 
         protected virtual void FillStudyParams ( IValueProvider valueProvider, IWadoRsStudiesRequest result )
         { 
-            result.StudyInstanceUID = valueProvider.GetValue ("StudyInstanceUID").RawValue as string  ;
+            result.StudyInstanceUID = valueProvider.GetValue ("StudyInstanceUID").FirstOrDefault() as string  ;
         }
 
         protected virtual void FillSeriesParams ( IValueProvider valueProvider, IWadoRsSeriesRequest result )
         { 
             FillStudyParams ( valueProvider, result ) ;
 
-            result.SeriesInstanceUID = valueProvider.GetValue ("SeriesInstanceUID").RawValue as string  ;
+            result.SeriesInstanceUID = valueProvider.GetValue ("SeriesInstanceUID").FirstOrDefault() as string  ;
         }
 
         protected virtual void FillInstanceParams ( IValueProvider valueProvider, IWadoRsInstanceRequest result )
         { 
             FillSeriesParams ( valueProvider, result ) ;
 
-            result.SOPInstanceUID = valueProvider.GetValue ("SOPInstanceUID").RawValue as string  ;
+            result.SOPInstanceUID = valueProvider.GetValue ("SOPInstanceUID").FirstOrDefault() as string  ;
         }
 
         protected virtual void FillIFramesParams ( IValueProvider valueProvider, IWadoRsFramesRequest result )
         { 
             FillInstanceParams ( valueProvider, result ) ;
 
-            result.Frames = ParseFrames ( valueProvider.GetValue ( "FrameList" ).RawValue as string ) ;
+            result.Frames = ParseFrames ( valueProvider.GetValue ( "FrameList" ).FirstOrDefault() as string ) ;
         }
 
         private int[] ParseFrames(string frames)
