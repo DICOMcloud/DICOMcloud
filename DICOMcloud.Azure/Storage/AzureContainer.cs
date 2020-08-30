@@ -23,9 +23,10 @@ namespace DICOMcloud.Azure.IO
             }
         }
 
-        public async Task DeleteAsync()
+        public void Delete()
         {
-            await __Container.DeleteIfExistsAsync ( ) ;
+            // Todo: This is dirty but is a temp fix till a decision is made with this.
+            __Container.DeleteIfExistsAsync( ).Wait() ;
         }
 
         public IStorageLocation GetLocation(string key = null, IMediaId id = null )
@@ -37,7 +38,9 @@ namespace DICOMcloud.Azure.IO
 
         public IEnumerable<IStorageLocation> GetLocations (string key )
         {
-            foreach (var blob in __Container.ListBlobs(key, true, BlobListingDetails.None).OfType<CloudBlockBlob>())
+            // Todo: This is dirty but is a temp fix till a decision is made with this.
+            var blobs = __Container.ListBlobs(key, true, BlobListingDetails.None).OfType<CloudBlockBlob>();
+            foreach (var blob in blobs)
             {
                 yield return new AzureLocation(blob);
             }
@@ -46,8 +49,7 @@ namespace DICOMcloud.Azure.IO
         public bool LocationExists ( string key )
         {
             var blob = __Container.GetBlockBlobReference ( key ) ;
-
-            return blob.Exists ( ) ;
+            return blob.ExistsAsync().Result;
         }
     }
 }

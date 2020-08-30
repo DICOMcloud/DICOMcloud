@@ -21,9 +21,9 @@ namespace DICOMcloud.Azure.Messaging
         
             var queue = client.GetQueueReference ( message.Name ) ;    
         
-            queue.CreateIfNotExists ( ) ;
+            queue.CreateIfNotExistsAsync ( ).Wait() ;
             
-            queue.AddMessage ( new CloudQueueMessage(JsonConvert.SerializeObject(message) ),
+            queue.AddMessageAsync( new CloudQueueMessage(JsonConvert.SerializeObject(message) ),
                                null, delay, null, new OperationContext ( ) { ClientRequestID = message.ID} );    
         }
     }
