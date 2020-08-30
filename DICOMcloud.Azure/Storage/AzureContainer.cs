@@ -23,9 +23,9 @@ namespace DICOMcloud.Azure.IO
             }
         }
 
-        public void Delete()
+        public async Task DeleteAsync()
         {
-            __Container.DeleteIfExists ( ) ;
+            await __Container.DeleteIfExistsAsync ( ) ;
         }
 
         public IStorageLocation GetLocation(string key = null, IMediaId id = null )

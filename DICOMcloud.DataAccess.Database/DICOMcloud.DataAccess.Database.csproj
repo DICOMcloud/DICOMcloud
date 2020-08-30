@@ -1,129 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4DBFD788-2CE9-449E-885A-70E55D83B528}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DICOMcloud.DataAccess.Database</RootNamespace>
-    <AssemblyName>DICOMcloud.DataAccess.Database</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <ProjectGuid>{4DBFD788-2CE9-449E-885A-70E55D83B528}</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dicom.Core, Version=4.0.3.0, Culture=neutral, PublicKeyToken=3a13f649e28eb09a, processorArchitecture=MSIL">
-      <HintPath>..\packages\fo-dicom.Desktop.4.0.3\lib\net45\Dicom.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+  <PackageReference Include="fo-dicom" Version="4.0.3" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Resources\Version\AssemblyInfo.Version.cs">
-      <Link>Properties\AssemblyInfo.Version.cs</Link>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AssemblyInfo.Version.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Commands\DicomDsQueryCommand.cs" />
-    <Compile Include="Commands\ExecuteNonQueryCommand.cs" />
-    <Compile Include="Commands\IDataAdapterCommand.cs" />
-    <Compile Include="Commands\ResultSetQueryCommand.cs" />
-    <Compile Include="Commands\ScalarCommand.cs" />
-    <Compile Include="Commands\SingleResultQueryCommand.cs" />
-    <Compile Include="IConnectionStringProvider.cs" />
-    <Compile Include="SortingStrategyFactory.cs" />
-    <Compile Include="ISortingStrategyFactory.cs" />
-    <Compile Include="ISortingStrategy.cs" />
-    <Compile Include="SqlDatabaseFactory.cs" />
-    <Compile Include="IDatabaseFactory.cs" />
-    <Compile Include="SqlConstants.cs" />
-    <Compile Include="ObjectArchieveDataAdapter.cs" />
-    <Compile Include="QueryResponseBuilder\IQueryResponseBuilder.cs" />
-    <Compile Include="ObjectArchieveStorageBuilder.cs" />
-    <Compile Include="QueryResponseBuilder\QueryResponseBuilder.cs" />
-    <Compile Include="QueryBuilder\JoinInfo.cs" />
-    <Compile Include="QueryBuilder\MatchBuilder.cs" />
-    <Compile Include="QueryResponseBuilder\ContextData.cs" />
-    <Compile Include="QueryResponseBuilder\ContextDataSets.cs" />
-    <Compile Include="QueryBuilder\QueryBuilder.cs" />
-    <Compile Include="QueryBuilder\SqlJoinBuilder.cs" />
-    <Compile Include="QueryBuilder\SqlQueries.cs" />
-    <Compile Include="Schema\ColumnInfo.cs" />
-    <Compile Include="Schema\DBSchemaProvider.cs" />
-    <Compile Include="Schema\DbSchemaSource.cs" />
-    <Compile Include="Schema\StorageDBSchemaProvider.cs" />
-    <Compile Include="Schema\TableKey.cs" />
-    <Compile Include="SqlDeleteStatments.cs" />
-    <Compile Include="SqlDeleteStatments.DeleteInstance.cs" />
-    <Compile Include="SqlDeleteStatments.DeleteSeries.cs" />
-    <Compile Include="SqlDeleteStatments.DeleteStudy.cs" />
-    <Compile Include="SqlInsertStatments.cs" />
-    <Compile Include="ObjectArchieveDataAccess.cs" />
-    <Compile Include="ObjectArchieveSortingStrategy.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\DICOMcloud\DICOMcloud.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="DatabaseSchema.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DICOMcloud\DICOMcloud.csproj">
-      <Project>{c9278c3e-53cb-4cb3-adb6-fe64d2585e7a}</Project>
-      <Name>DICOMcloud</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Resources\Version\AssemblyInfo.Version.tt">
-      <Link>Properties\AssemblyInfo.Version.tt</Link>
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>AssemblyInfo.Version1.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>call "$(ProjectDir)../Resources\Build\copyAssembly.bat" "$(ProjectDir)../dist" "$(ConfigurationName)" $(TargetPath)</PostBuildEvent>
-  </PropertyGroup>
-  <Import Project="..\packages\fo-dicom.Desktop.4.0.3\build\net45\fo-dicom.Desktop.targets" Condition="Exists('..\packages\fo-dicom.Desktop.4.0.3\build\net45\fo-dicom.Desktop.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\fo-dicom.Desktop.4.0.3\build\net45\fo-dicom.Desktop.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\fo-dicom.Desktop.4.0.3\build\net45\fo-dicom.Desktop.targets'))" />
-  </Target>
 </Project>

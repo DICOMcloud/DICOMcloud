@@ -1,11 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DICOMcloud</RootNamespace>
     <ProjectGuid>{C9278C3E-53CB-4CB3-ADB6-FE64D2585E7A}</ProjectGuid>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="fo-dicom" Version="4.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
