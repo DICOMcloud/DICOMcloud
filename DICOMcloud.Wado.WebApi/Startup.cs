@@ -10,7 +10,6 @@
 
     public class Startup
     {
-
         /// <summary>
         /// Gets the configuration.
         /// </summary>
