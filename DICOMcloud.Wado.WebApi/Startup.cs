@@ -7,6 +7,7 @@
     using Microsoft.Extensions.Hosting;
     using DICOMcloud.Wado.WebApi.Extensions;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+    using Microsoft.AspNetCore.Http;
 
     public class Startup
     {
@@ -41,6 +42,8 @@
                 .AddHttpContextAccessor()
                 .AddResponseCompression()
                 .AddOptions();
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // services.AddTransient<ITradingMarketService, TradingMarketService>();
 
