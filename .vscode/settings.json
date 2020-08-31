@@ -1,0 +1,15 @@
+{
+    "sqltools.connections": [
+        {
+            "askForPassword": false,
+            "connectionTimeout": 30,
+            "database": "SingleSignOn",
+            "dialect": "PostgreSQL",
+            "name": "SingleSignOn",
+            "password": "password",
+            "port": 5432,
+            "server": "127.0.0.1",
+            "username": "postgres"
+        }
+    ]
+}
