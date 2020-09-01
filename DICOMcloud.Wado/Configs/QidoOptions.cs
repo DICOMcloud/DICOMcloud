@@ -7,25 +7,23 @@ namespace DICOMcloud.Wado.Configs
     #endregion
 
     /// <summary>
-    ///     The UrlOptions.
+    ///     The QidoOptions.
     /// </summary>
-    public class UrlOptions
+    public class QidoOptions
     {
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UrlOptions"/> class.
+        /// Initializes a new instance of the <see cref="QidoOptions"/> class.
         /// </summary>
-        public UrlOptions()
+        public QidoOptions()
         {
         }
 
         #endregion
 
         #region Public Properties
-        public string WadoRsUrl { get; set; }
-        public string WadoUriUrl { get; set; }
-
+        public int MaximumResultsLimit { get; set; }
         #endregion
 
         #region Public Methods And Operators

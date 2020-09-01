@@ -1,4 +1,5 @@
 ﻿using System;
+using DICOMcloud.Wado.Configs;
 using Microsoft.Extensions.Options;
 
 namespace DICOMcloud.Wado

@@ -3,6 +3,7 @@
     #region Usings
 
     using System.Threading.Tasks;
+    using DICOMcloud.Wado.Configs;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
 
@@ -18,7 +19,8 @@
     public class TestController : ControllerBase
     {
         public TestController(
-            IOptions<UrlOptions> options
+            IOptions<UrlOptions> options,
+            IOptions<QidoOptions> options1
         )
         {
             var a = "";

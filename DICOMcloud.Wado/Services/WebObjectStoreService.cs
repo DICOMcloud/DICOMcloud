@@ -8,12 +8,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using DICOMcloud.Pacs;
 using DICOMcloud.Media;
-
 using DICOMcloud.DataAccess;
-using DICOMcloud;
 using DICOMcloud.Messaging;
 using Dicom;
 using Microsoft.Extensions.Options;
+using DICOMcloud.Wado.Configs;
 
 namespace DICOMcloud.Wado
 {

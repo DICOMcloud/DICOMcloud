@@ -1,16 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using fo = Dicom;
-
-using DICOMcloud;
-using DICOMcloud.Pacs;
-using DICOMcloud.Pacs.Commands;
 using System.Net;
 using Dicom;
+using DICOMcloud.Wado.Configs;
 using Microsoft.Extensions.Options;
 
 namespace DICOMcloud.Wado

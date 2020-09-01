@@ -8,6 +8,7 @@
     using DICOMcloud.Wado.WebApi.Extensions;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
     using Microsoft.AspNetCore.Http;
+    using DICOMcloud.Wado.Configs;
 
     public class Startup
     {
@@ -45,6 +46,7 @@
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.Configure<UrlOptions>(Configuration.GetSection("Urls"));
+            services.Configure<QidoOptions>(Configuration.GetSection("Qido"));
 
             // services.AddTransient<ITradingMarketService, TradingMarketService>();
 
