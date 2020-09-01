@@ -1,26 +1,26 @@
 ﻿
 using System;
-using System.Web.Http.Controllers;
-using System.Web.Http.ModelBinding;
+using System.Threading.Tasks;
 using DICOMcloud.Wado.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DICOMcloud.Wado
 {
     public class QidoRequestModelBinder : IModelBinder
     {
-        public bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
+        public Task BindModelAsync(ModelBindingContext bindingContext)
         {
             if (bindingContext.ModelType == typeof(IQidoRequestModel))
             {
                 IQidoRequestModel result ;
-                
+
                 var theValue = bindingContext.ValueProvider.GetValue ( bindingContext.ModelName);
 
-                if ( new QidoRequestModelConverter ( ).TryParse ( actionContext.Request, bindingContext, out result) )
+                if ( new QidoRequestModelConverter ( ).TryParse ( bindingContext.ActionContext.HttpContext.Request.ToHttpRequestMessage(), bindingContext, out result) )
                 { 
                     bindingContext.Model = result;
-               
-                    return true;
+
+                    return Task.CompletedTask;
                 }
                 else
                 { 
@@ -28,12 +28,12 @@ namespace DICOMcloud.Wado
                 }
             }
 
-            return false ;
+            throw new Exception( "Invalid binding");
         }
-
+        
         private class Constants
         {
-            public const string ErrorBindingModel = "Cannot convert request to a QIDO-RS valid request" ;
+            public const string ErrorBindingModel = "Cannot convert request to a QIDO-RS valid request";
         }
     }
 }

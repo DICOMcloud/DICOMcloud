@@ -29,7 +29,7 @@ namespace DICOMcloud.Azure.IO
 
         public override bool Exists()
         {
-            return Blob.Exists ( ) ;
+            return Blob.ExistsAsync().Result;
         }
 
         public override string ContentType 
@@ -48,10 +48,10 @@ namespace DICOMcloud.Azure.IO
             {
                 return _size.Value ;
             }
-            else if ( Blob.Exists ( ) )
+            else if ( Blob.ExistsAsync().Result)
             {
 
-                Blob.FetchAttributes ( ) ;
+                Blob.FetchAttributesAsync().Wait();
 
                 _size = Blob.Properties.Length ;
 
@@ -109,7 +109,7 @@ namespace DICOMcloud.Azure.IO
         {
             try
             {
-                Blob.Delete ();
+                Blob.DeleteAsync().Wait();
             }
             catch ( Microsoft.WindowsAzure.Storage.StorageException ex )
             {
@@ -123,18 +123,18 @@ namespace DICOMcloud.Azure.IO
 
         protected override Stream DoDownload()
         {
-            return Blob.OpenRead();
+            return Blob.OpenReadAsync();
         }
 
         protected override void DoDownload(Stream stream)
         {
-            Blob.DownloadToStream ( stream ) ;
+            Blob.DownloadToStreamAsync( stream ).Wait();
         }
 
         protected override void DoUpload(Stream stream, string contentType)
         {
             Blob.Properties.ContentType = contentType;
-            Blob.UploadFromStream (stream);
+            Blob.UploadFromStreamAsync(stream).Wait();
             
             WriteMetadata ( ) ;
         }
@@ -142,25 +142,25 @@ namespace DICOMcloud.Azure.IO
         protected override void DoUpload ( byte[] buffer, string contentType)
         {
             Blob.Properties.ContentType = contentType;
-            Blob.UploadFromByteArray ( buffer, 0, buffer.Length ) ;
+            Blob.UploadFromByteArrayAsync( buffer, 0, buffer.Length ).Wait();
             WriteMetadata ( ) ;
         }
 
         protected override void DoUpload(string filename, string contentType)
         {
             Blob.Properties.ContentType = contentType;
-            Blob.UploadFromFile (filename ) ;
+            Blob.UploadFromFileAsync(filename ).Wait() ;
             WriteMetadata( ) ;
          }
 
         protected override Stream DoGetReadStream()
         {
-            return Blob.OpenRead ( ) ;
+            return Blob.OpenReadAsync( ).Result ;
         }
 
         private void WriteMetadata ( )
         {
-            Blob.SetMetadata ( ) ;
+            Blob.SetMetadataAsync ( ).Wait();
             //__Blob.SetProperties ( ) ;
         }
 

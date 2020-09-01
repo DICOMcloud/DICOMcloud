@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http.Controllers;
-using System.Web.Http.ModelBinding;
+using Dicom.Imaging.Mathematics;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DICOMcloud.Wado
 {
     public class RsRequestModelBinder<T> : IModelBinder where T : class
     {
-        public bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
+        public Task BindModelAsync(ModelBindingContext bindingContext)
         {
             if (bindingContext.ModelType == typeof(T))
             {
@@ -19,21 +19,19 @@ namespace DICOMcloud.Wado
                 var theValue = bindingContext.ValueProvider.GetValue ( bindingContext.ModelName);
                 
                 
-                if ( GetConverter ( ).TryParse ( actionContext.Request, bindingContext, out result) )
+                if ( GetConverter ( ).TryParse ( bindingContext.ActionContext.HttpContext.Request.ToHttpRequestMessage(), bindingContext, out result) )
                 { 
                     bindingContext.Model = result;
-               
-                    return true;
+                    return Task.CompletedTask;
                 }
                 else
                 { 
                     bindingContext.ModelState.AddModelError( bindingContext.ModelName, "Cannot convert request to a Wado-RS valid request");
-
-                    return false;
+                    throw new ArgumentException ("Invalid binding");
                 }
             }
 
-            return false ;
+            throw new Exception("Invalid binding");
         }
 
         protected virtual RsRequestModelConverter<T> GetConverter ( ) 

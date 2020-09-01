@@ -27,7 +27,7 @@ namespace DICOMcloud.Azure.IO
 
             CloudBlobContainer cloudContainer = __CloudClient.GetContainerReference ( containerKey );
 
-            cloudContainer.CreateIfNotExists ( );
+            cloudContainer.CreateIfNotExistsAsync( ).Wait();
 
             return new AzureContainer ( cloudContainer );
         }
@@ -36,7 +36,7 @@ namespace DICOMcloud.Azure.IO
         {
             containerKey = GetValidContainerKey ( containerKey );
 
-            foreach ( var container in __CloudClient.ListContainers ( containerKey, ContainerListingDetails.None ) )
+            foreach ( var container in __CloudClient.ListBlobsSegmentedAsync(containerKey, ContainerListingDetails.None ) )
             {
                 yield return GetContainer ( containerKey ) ;
             }
@@ -59,7 +59,7 @@ namespace DICOMcloud.Azure.IO
 
             CloudBlobContainer cloudContainer = __CloudClient.GetContainerReference ( containerKey ) ;
 
-            return cloudContainer.Exists ( ) ;
+            return cloudContainer.ExistsAsync ( ).Result;
         }
 
         private static string GetValidContainerKey ( string containerKey )

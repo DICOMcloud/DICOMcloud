@@ -6,7 +6,6 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
 using DICOMcloud.Pacs;
 using DICOMcloud.Media;
 
@@ -177,7 +176,7 @@ namespace DICOMcloud.Wado
 
                 default:
                 {
-                    throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+                    throw new Exception("Invalid dataset");
                 }
             }
 

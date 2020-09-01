@@ -14,7 +14,7 @@ namespace DICOMcloud.Messaging
         {
             OnPublishing ( sender, message ) ;
             
-            _eventBroker.Publish <T> ( sender, message ) ;
+            _eventBroker.Publish <T>( message ) ;
         }
 
         public void Subscribe<T>(object sender, Action<T> handler) where T : ITransportMessage

@@ -8,6 +8,7 @@ using Dicom.Imaging;
 using Dicom.Imaging.Codec ;
 using DICOMcloud.IO;
 using System.IO;
+using System.Drawing;
 
 namespace DICOMcloud.Media
 {
@@ -49,7 +50,8 @@ namespace DICOMcloud.Media
         {
             var frameIndex = frame - 1 ;
             var dicomImage = new DicomImage (dicomObject, frameIndex);
-            var bitmap = dicomImage.RenderImage (frameIndex).AsSharedBitmap();
+            // Todo: Test as .AsSharedBitmap() doesn't seem to exist anymore
+            var bitmap = dicomImage.RenderImage(frameIndex).As<Bitmap>();
             var stream = new MemoryStream ( ) ;
             
             bitmap.Save (stream, System.Drawing.Imaging.ImageFormat.Jpeg );

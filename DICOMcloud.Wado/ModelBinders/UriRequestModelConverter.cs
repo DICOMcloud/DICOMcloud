@@ -2,10 +2,12 @@
 using DICOMcloud.Wado.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using DICOMcloud.Wado;
 
 
 namespace DICOMcloud.Wado
@@ -22,10 +24,9 @@ namespace DICOMcloud.Wado
             wadoReq.Headers = request.Headers;
             wadoReq.AcceptHeader = request.Headers.Accept;
             wadoReq.AcceptCharsetHeader = request.Headers.AcceptCharset;
+            var query = request.RequestUri.ParseQuery(); 
 
-            var query = request.RequestUri.ParseQueryString();
-
-            wadoReq.Query = query;
+            wadoReq.Query = query; 
             wadoReq.RequestType = query[WadoRequestKeys.RequestType];
             wadoReq.StudyInstanceUID = query[WadoRequestKeys.StudyUID];
             wadoReq.SeriesInstanceUID = query[WadoRequestKeys.SeriesUID];
