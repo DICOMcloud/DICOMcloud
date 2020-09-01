@@ -11,6 +11,7 @@ using DICOMcloud.Pacs;
 using DICOMcloud.Pacs.Commands;
 using System.Net;
 using Dicom;
+using Microsoft.Extensions.Options;
 
 namespace DICOMcloud.Wado
 {
@@ -31,10 +32,10 @@ namespace DICOMcloud.Wado
 
         }
 
-        public WadoStoreResponse ( IStudyId studyId, IRetrieveUrlProvider urlProvider = null)
+        public WadoStoreResponse ( IStudyId studyId, IOptions<UrlOptions> options, IRetrieveUrlProvider urlProvider = null)
         {
             _dataset         = new DicomDataset ( ).NotValidated();
-            UrlProvider      = urlProvider?? new RetrieveUrlProvider( ) ;
+            UrlProvider      = urlProvider?? new RetrieveUrlProvider( options ) ;
             StudyId          = studyId;
             HttpStatus       = HttpStatusCode.Unused ;
             StatusMessage    = "" ;

@@ -4,6 +4,7 @@
 
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
 
     #endregion
 
@@ -17,8 +18,10 @@
     public class TestController : ControllerBase
     {
         public TestController(
+            IOptions<UrlOptions> options
         )
         {
+            var a = "";
         }
 
         #region Fields

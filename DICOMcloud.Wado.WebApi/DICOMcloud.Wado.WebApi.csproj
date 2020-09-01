@@ -10,8 +10,8 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.1">
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-          <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.DynamicLinq" Version="1.0.20" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
@@ -23,17 +23,11 @@
         <PackageReference Include="NLog.Targets.ElasticSearch" Version="6.1.0" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.2" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.0" /> 
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.0" />
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
     </ItemGroup>
-
     <ItemGroup>
-        <ProjectReference Include="..\..\Core\Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Update="./Settings/Bittrex.settings">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
+        <ProjectReference Include="..\DICOMcloud\DICOMcloud.csproj" />
+        <ProjectReference Include="..\DICOMcloud.Wado\DICOMcloud.Wado.csproj" />
     </ItemGroup>
 </Project>

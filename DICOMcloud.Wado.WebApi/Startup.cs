@@ -44,6 +44,7 @@
                 .AddOptions();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.Configure<UrlOptions>(Configuration.GetSection("Urls"));
 
             // services.AddTransient<ITradingMarketService, TradingMarketService>();
 

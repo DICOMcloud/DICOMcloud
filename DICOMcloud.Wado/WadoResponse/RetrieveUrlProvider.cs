@@ -1,29 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DICOMcloud;
+using Microsoft.Extensions.Options;
 
 namespace DICOMcloud.Wado
 {
     public class RetrieveUrlProvider : IRetrieveUrlProvider
     {
-        public static string config_WadoRs_API_URL = "app:WadoRsUrl" ;
-        public static string config_WadoUri_API_URL = "app:WadoUriUrl" ;
+        private readonly IOptions<UrlOptions> _options;
 
-        public RetrieveUrlProvider( )
+        public RetrieveUrlProvider(IOptions<UrlOptions> options)
         {
-            string wadoRsUrl = ""; 
-            string wadoUriUrl =  "";
-            // string wadoRsUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoRs_API_URL] ;
-            // string wadoUriUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoUri_API_URL] ;
-            
-
-            wadoRsUrl = wadoRsUrl ?? "" ;
-            wadoUriUrl = wadoUriUrl ?? "" ;
-
-            Init ( wadoRsUrl, wadoUriUrl ) ;
+            this._options = options ?? throw new ArgumentException(nameof(options));
+            Init ( this._options.Value.WadoRsUrl, this._options.Value.WadoUriUrl ) ;
         }
 
         public RetrieveUrlProvider( string wadoRsUrl, string wadoUriUrl )
