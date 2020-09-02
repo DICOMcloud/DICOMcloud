@@ -57,7 +57,7 @@ namespace DICOMcloud.IO
             Directory.Delete ( FolderPath, true ) ;
         }
 
-        public IEnumerable<IStorageLocation> GetLocations ( string name )
+        public async IAsyncEnumerable<IStorageLocation> GetLocations ( string name )
         {
             //check if name is really a file 
             string path = Path.Combine ( FolderPath, name ) ;

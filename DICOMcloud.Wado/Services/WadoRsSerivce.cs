@@ -11,6 +11,7 @@ using DICOMcloud;
 using fo = Dicom;
 using System.IO;
 using System;
+using System.Threading.Tasks;
 
 namespace DICOMcloud.Wado
 {
@@ -26,53 +27,53 @@ namespace DICOMcloud.Wado
         //DICOM Instances are returned in either DICOM or Bulk data format
         //DICOM format is part10 native, Bulk data is based on the accept:
         //octet-stream, jpeg, jp2....
-        public virtual HttpResponseMessage RetrieveStudy ( IWadoRsStudiesRequest request )
+        public virtual async Task<HttpResponseMessage> RetrieveStudy ( IWadoRsStudiesRequest request )
         {
-            return RetrieveMultipartInstance ( request, new WadoRsInstanceRequest ( request ) ) ;
+            return await RetrieveMultipartInstance ( request, new WadoRsInstanceRequest ( request ) ) ;
         }
 
-        public virtual HttpResponseMessage RetrieveSeries ( IWadoRsSeriesRequest request )
+        public virtual async Task<HttpResponseMessage> RetrieveSeries ( IWadoRsSeriesRequest request )
         {
-            return RetrieveMultipartInstance ( request, new WadoRsInstanceRequest ( request ) ) ;
+            return await RetrieveMultipartInstance( request, new WadoRsInstanceRequest ( request ) ) ;
         }
 
-        public virtual HttpResponseMessage RetrieveInstance ( IWadoRsInstanceRequest request )
+        public virtual async Task<HttpResponseMessage> RetrieveInstance ( IWadoRsInstanceRequest request )
         {
-            return RetrieveMultipartInstance ( request, request ) ;
+            return await RetrieveMultipartInstance( request, request ) ;
         }
 
-        public virtual HttpResponseMessage RetrieveFrames ( IWadoRsFramesRequest request )
+        public virtual async Task<HttpResponseMessage> RetrieveFrames ( IWadoRsFramesRequest request )
         {
-            return RetrieveMultipartInstance ( request, request ) ;
+            return await RetrieveMultipartInstance( request, request ) ;
         }
 
-        public virtual HttpResponseMessage RetrieveBulkData ( IWadoRsInstanceRequest request )
+        public virtual async Task<HttpResponseMessage> RetrieveBulkData ( IWadoRsInstanceRequest request )
         {
             //TODO: validation accept header is not dicom...
 
-            return RetrieveMultipartInstance ( request, request ) ;
+            return await RetrieveMultipartInstance ( request, request ) ;
         }
         
-        public virtual HttpResponseMessage RetrieveBulkData ( IWadoRsFramesRequest request )
+        public virtual async Task<HttpResponseMessage> RetrieveBulkData ( IWadoRsFramesRequest request )
         {
             //TODO: validation accept header is not dicom...
 
-            return RetrieveMultipartInstance ( request, request ) ;
+            return await RetrieveMultipartInstance ( request, request ) ;
         }
         
         //Metadata can be XML (Required) or Json (optional) only. DICOM Instances are returned with no bulk data
         //Bulk data URL can be returned (which we should) 
-        public virtual HttpResponseMessage RetrieveStudyMetadata(IWadoRsStudiesRequest request)
+        public virtual async Task<HttpResponseMessage> RetrieveStudyMetadata(IWadoRsStudiesRequest request)
         {
-            return RetrieveInstanceMetadata ( new WadoRsInstanceRequest ( request ) );
+            return await RetrieveInstanceMetadata ( new WadoRsInstanceRequest ( request ) );
         }
 
-        public virtual HttpResponseMessage RetrieveSeriesMetadata(IWadoRsSeriesRequest request)
+        public virtual async Task<HttpResponseMessage> RetrieveSeriesMetadata(IWadoRsSeriesRequest request)
         {
-            return RetrieveInstanceMetadata ( new WadoRsInstanceRequest ( request ) );
+            return await RetrieveInstanceMetadata ( new WadoRsInstanceRequest ( request ) );
         }
 
-        public virtual HttpResponseMessage RetrieveInstanceMetadata(IWadoRsInstanceRequest request)
+        public virtual async Task<HttpResponseMessage> RetrieveInstanceMetadata(IWadoRsInstanceRequest request)
         {
             if ( IsMultiPartRequest ( request ) )
             {
@@ -83,15 +84,15 @@ namespace DICOMcloud.Wado
                     return new HttpResponseMessage ( System.Net.HttpStatusCode.BadRequest ) ;
                 }
 
-                return RetrieveMultipartInstance ( request, request ) ; //should be an XML request!
+                return await RetrieveMultipartInstance ( request, request ) ; //should be an XML request!
             }
             else //must be json, or just return json anyway (*/*)
             {
-                return ProcessJsonRequest ( request, request ) ;
+                return await ProcessJsonRequest ( request, request ) ;
             }
         }
 
-        public virtual HttpResponseMessage RetrieveMultipartInstance ( IWadoRequestHeader header, IObjectId request )
+        public virtual async Task<HttpResponseMessage> RetrieveMultipartInstance ( IWadoRequestHeader header, IObjectId request )
         {
             HttpResponseMessage response ;
             MultipartContent multiContent ;
@@ -119,7 +120,7 @@ namespace DICOMcloud.Wado
                     {
                         request.Frame = frame ;
 
-                        foreach ( var wadoResponse in ProcessMultipartRequest ( request, mediaTypeHeader ) )
+                        await foreach ( var wadoResponse in ProcessMultipartRequest ( request, mediaTypeHeader ) )
                         { 
                             MultipartResponseHelper.AddMultipartContent ( multiContent, wadoResponse );
 
@@ -129,7 +130,7 @@ namespace DICOMcloud.Wado
                 }
                 else
                 {
-                    foreach ( var wadoResponse in ProcessMultipartRequest ( request, mediaTypeHeader ) )
+                    await foreach ( var wadoResponse in ProcessMultipartRequest ( request, mediaTypeHeader ) )
                     { 
                         MultipartResponseHelper.AddMultipartContent ( multiContent, wadoResponse );
 
@@ -155,7 +156,7 @@ namespace DICOMcloud.Wado
             return response ;
         }
 
-        protected virtual HttpResponseMessage ProcessJsonRequest 
+        protected virtual async Task<HttpResponseMessage> ProcessJsonRequest 
         ( 
             IWadoRequestHeader header, 
             IObjectId objectID
@@ -192,7 +193,7 @@ namespace DICOMcloud.Wado
             {
                 selectedTransfer = transfer == "*" ? defaultTransfer : transfer ;
 
-                foreach ( IStorageLocation storage in GetLocations (objectID, new DicomMediaProperties ( MimeMediaTypes.Json, selectedTransfer ) ) )
+                await foreach ( IStorageLocation storage in GetLocations (objectID, new DicomMediaProperties ( MimeMediaTypes.Json, selectedTransfer ) ) )
                 {
                     exists = true ;
                     
@@ -237,7 +238,7 @@ namespace DICOMcloud.Wado
         /// Accept: multipart/related; type="image/jpx"; transfer-syntax=1.2.840.10008.1.2.4.93
         /// Accept: multipart/related; type="image/jpeg"
         /// </Examples>
-        protected virtual IEnumerable<IWadoRsResponse> ProcessMultipartRequest
+        protected virtual async IAsyncEnumerable<IWadoRsResponse> ProcessMultipartRequest
         (
             IObjectId objectID,
             MediaTypeWithQualityHeaderValue mediaTypeHeader
@@ -255,11 +256,11 @@ namespace DICOMcloud.Wado
 
             transferSyntaxes = MultipartResponseHelper.GetRequestedTransferSyntax ( mediaTypeHeader, defaultTransfer );
 
-            foreach ( var result in FindLocations ( objectID, subMediaType, transferSyntaxes, defaultTransfer ) )
+            await foreach ( var result in FindLocations ( objectID, subMediaType, transferSyntaxes, defaultTransfer ) )
             {
                 instancesFound = true ;
 
-                yield return new WadoResponse ( result.Location.GetReadStream ( ), subMediaType ) { TransferSyntax = result.TransferSyntax };
+                yield return new WadoResponse ( await result.Location.GetReadStream ( ), subMediaType ) { TransferSyntax = result.TransferSyntax };
             }
 
             if ( !instancesFound )
@@ -270,32 +271,33 @@ namespace DICOMcloud.Wado
                 DefaultMediaTransferSyntax.Instance.TryGetValue ( MimeMediaTypes.DICOM, out defaultDicomTransfer ) ; 
                 
 
-                foreach ( var result in RetrieveService.GetTransformedSopInstances ( objectID, MimeMediaTypes.DICOM, defaultDicomTransfer, subMediaType, transferSyntaxes.FirstOrDefault ( ) ) )
+                await foreach ( var result in RetrieveService.GetTransformedSopInstances ( objectID, MimeMediaTypes.DICOM, defaultDicomTransfer, subMediaType, transferSyntaxes.FirstOrDefault ( ) ) )
                 {
-                    yield return new WadoResponse ( result.Location.GetReadStream ( ), subMediaType ) { TransferSyntax = result.TransferSyntax };
+                    yield return new WadoResponse ( await result.Location.GetReadStream ( ), subMediaType ) { TransferSyntax = result.TransferSyntax };
                 }
             }
         }
 
-        protected virtual IEnumerable<ObjectRetrieveResult> FindLocations ( IObjectId objectID, string subMediaType, IEnumerable<string> transferSyntaxes, string defaultTransfer )
+        protected virtual async IAsyncEnumerable<ObjectRetrieveResult> FindLocations ( IObjectId objectID, string subMediaType, IEnumerable<string> transferSyntaxes, string defaultTransfer )
         {
-            return RetrieveService.FindSopInstances ( objectID, subMediaType, transferSyntaxes, defaultTransfer ) ;
+            await foreach (var result in RetrieveService.FindSopInstances(objectID, subMediaType, transferSyntaxes, defaultTransfer))
+            { 
+                yield return result;
+            }
         }
 
-        protected virtual IEnumerable<IStorageLocation> GetLocations ( IObjectId request, DicomMediaProperties mediaInfo )
+        protected virtual async IAsyncEnumerable<IStorageLocation> GetLocations ( IObjectId request, DicomMediaProperties mediaInfo )
         {
             if ( null != request.Frame )
             {
-                List<IStorageLocation> result = new List<IStorageLocation> ( ) ;
-
-                
-                result.Add ( RetrieveService.RetrieveSopInstance ( request, mediaInfo ) ) ;
-
-                return result ;
+                yield return RetrieveService.RetrieveSopInstance ( request, mediaInfo ) ;
             }
             else
             {
-                return RetrieveService.RetrieveSopInstances ( request, mediaInfo ) ;
+                await foreach (var result in RetrieveService.RetrieveSopInstances ( request, mediaInfo ))
+                { 
+                    yield return result;
+                }
             }
         }
 

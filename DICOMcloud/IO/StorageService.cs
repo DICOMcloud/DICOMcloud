@@ -9,7 +9,7 @@ namespace DICOMcloud.IO
 {
     public abstract class MediaStorageService : IMediaStorageService 
     {
-        public virtual Stream Read ( IMediaId key ) 
+        public virtual Task<Stream> Read ( IMediaId key ) 
         {
             var location = GetLocation ( key ) ;
         
@@ -33,15 +33,15 @@ namespace DICOMcloud.IO
             return location ;
         }
 
-        public IEnumerable<IStorageLocation> EnumerateLocation ( IMediaId id )
+        public async IAsyncEnumerable<IStorageLocation> EnumerateLocation ( IMediaId id )
         {
             string  key          = KeyProvider.GetStorageKey ( id ) ;
             string containerName = KeyProvider.GetContainerName ( key) ;
             
             
-            foreach ( IStorageContainer container in GetContainers ( containerName ) )
+            await foreach ( IStorageContainer container in GetContainers ( containerName ) )
             {
-                foreach ( IStorageLocation location in container.GetLocations ( KeyProvider.GetLocationName (key) ) )
+                await foreach ( IStorageLocation location in container.GetLocations ( KeyProvider.GetLocationName (key) ) )
                 {
                     yield return location ;
                 }
@@ -122,7 +122,7 @@ namespace DICOMcloud.IO
         /// <returns>
         /// An instance of <see cref="IEnumerable{IStorageContainer}"/>
         /// </returns>
-        protected abstract IEnumerable<IStorageContainer> GetContainers     ( string containerKey ) ;
+        protected abstract IAsyncEnumerable<IStorageContainer> GetContainers     ( string containerKey ) ;
         
         /// <summary>
         /// Determines whether a container exists based on the provided <paramref name="containerName"/>

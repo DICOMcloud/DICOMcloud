@@ -22,9 +22,9 @@ namespace DICOMcloud.Wado
             return string.Compare (mimeType , MimeMediaTypes.PlainText, true ) == 0 ;
         }
 
-        protected override WadoResponse DoProcess(IWadoUriRequest request, string mimeType)
+        protected override async Task<WadoResponse> DoProcess(IWadoUriRequest request, string mimeType)
         {
-            fo.DicomFile df = fo.DicomFile.Open (Location.GetReadStream ( )) ;//TODO: check how the toolkit loads the image in memory or not. we do not need to load it
+            fo.DicomFile df = fo.DicomFile.Open (await Location.GetReadStream ( )) ;//TODO: check how the toolkit loads the image in memory or not. we do not need to load it
             WadoResponse response = new WadoResponse ( ) ;
 
 

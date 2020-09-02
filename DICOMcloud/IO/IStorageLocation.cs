@@ -18,13 +18,13 @@ namespace DICOMcloud.IO
         bool   Exists   ( );
         long   GetSize  ( );
         void   Delete   ( );
-        Stream Download ( );  
+        Task<Stream> Download ( );  
         void   Download ( Stream stream  );
         void   Upload   ( Stream stream, string ContentType = null);
         void   Upload   ( byte[] buffer, string ContentType = null);
         void   Upload   ( string filename, string ContentType = null);
 
-        Stream GetReadStream  ( );
+        Task<Stream> GetReadStream  ( );
     }
 
 

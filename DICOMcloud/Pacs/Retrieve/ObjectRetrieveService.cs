@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using Dicom ;
 using Dicom.Imaging.Codec ;
+using System.Threading.Tasks;
 
 namespace DICOMcloud.Pacs
 {
@@ -35,12 +36,12 @@ namespace DICOMcloud.Pacs
             return StorageService.GetLocation ( MediaFactory.Create (query, mediaInfo ) ) ;
         }
         
-        public virtual IEnumerable<IStorageLocation> RetrieveSopInstances ( IObjectId query, DicomMediaProperties mediaInfo ) 
+        public virtual IAsyncEnumerable<IStorageLocation> RetrieveSopInstances ( IObjectId query, DicomMediaProperties mediaInfo ) 
         {
             return StorageService.EnumerateLocation ( MediaFactory.Create ( query, mediaInfo )) ;
         }
 
-        public virtual IEnumerable<ObjectRetrieveResult> FindSopInstances
+        public virtual async IAsyncEnumerable<ObjectRetrieveResult> FindSopInstances
         ( 
             IObjectId query, 
             string mediaType, 
@@ -56,7 +57,7 @@ namespace DICOMcloud.Pacs
                 var    mediaID         = MediaFactory.Create      ( query, mediaProperties ) ;
                 var    found           = false ;
                 
-                foreach ( IStorageLocation location in StorageService.EnumerateLocation ( mediaID ) )
+                await foreach ( IStorageLocation location in StorageService.EnumerateLocation ( mediaID ) )
                 {
                     found = true ;
 
@@ -70,7 +71,7 @@ namespace DICOMcloud.Pacs
             }
         }
 
-        public virtual IEnumerable<ObjectRetrieveResult> GetTransformedSopInstances 
+        public virtual async IAsyncEnumerable<ObjectRetrieveResult> GetTransformedSopInstances 
         ( 
             IObjectId query, 
             string fromMediaType, 
@@ -86,9 +87,9 @@ namespace DICOMcloud.Pacs
 
             if (StorageService.Exists(fromMediaID))
             {
-                foreach (IStorageLocation location in StorageService.EnumerateLocation(fromMediaID))
+                await foreach (IStorageLocation location in StorageService.EnumerateLocation(fromMediaID))
                 {
-                    DicomFile defaultFile = DicomFile.Open(location.GetReadStream());
+                    DicomFile defaultFile = DicomFile.Open(await location.GetReadStream());
 
                     foreach (var transformedLocation in TransformDataset(defaultFile.Dataset, toMediaType, toTransferSyntax, frameList))
                     {
@@ -142,7 +143,7 @@ namespace DICOMcloud.Pacs
             
         }
 
-        protected virtual DicomDataset RetrieveDicomDataset ( IObjectId objectId, DicomMediaProperties mediainfo )
+        protected virtual async Task<DicomDataset> RetrieveDicomDataset ( IObjectId objectId, DicomMediaProperties mediainfo )
         {
             IStorageLocation location    ;
             DicomFile defaultFile ;
@@ -155,7 +156,7 @@ namespace DICOMcloud.Pacs
                 return null ;
             }
 
-            defaultFile = DicomFile.Open ( location.GetReadStream ( ) ) ;
+            defaultFile = DicomFile.Open ( await location.GetReadStream ( ) ) ;
 
             return defaultFile.Dataset ;
 

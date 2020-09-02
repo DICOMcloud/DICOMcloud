@@ -27,9 +27,9 @@
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
     </ItemGroup>
 
-    <ItemGroup>
+    <!--<ItemGroup>
         <ProjectReference Include="..\..\Core\Core.csproj" />
-    </ItemGroup>
+    </ItemGroup>-->
 
     <ItemGroup>
         <None Update="./Settings/Bittrex.settings">

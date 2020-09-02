@@ -3,6 +3,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using System;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace DICOMcloud.Azure.IO
 {
@@ -121,14 +122,14 @@ namespace DICOMcloud.Azure.IO
             }
         }
 
-        protected override Stream DoDownload()
+        protected override async Task<Stream> DoDownload()
         {
-            return Blob.OpenReadAsync();
+            return await Blob.OpenReadAsync(null, new BlobRequestOptions(), null);
         }
 
-        protected override void DoDownload(Stream stream)
+        protected override async void DoDownload(Stream stream)
         {
-            Blob.DownloadToStreamAsync( stream ).Wait();
+            await Blob.DownloadToStreamAsync(stream);
         }
 
         protected override void DoUpload(Stream stream, string contentType)
@@ -146,16 +147,16 @@ namespace DICOMcloud.Azure.IO
             WriteMetadata ( ) ;
         }
 
-        protected override void DoUpload(string filename, string contentType)
+        protected override async void DoUpload(string filename, string contentType)
         {
             Blob.Properties.ContentType = contentType;
-            Blob.UploadFromFileAsync(filename ).Wait() ;
+            await Blob.UploadFromFileAsync(filename ) ;
             WriteMetadata( ) ;
          }
 
-        protected override Stream DoGetReadStream()
+        protected override async Task<Stream> DoGetReadStream()
         {
-            return Blob.OpenReadAsync( ).Result ;
+            return await Blob.OpenReadAsync(null, new BlobRequestOptions(), null);
         }
 
         private void WriteMetadata ( )

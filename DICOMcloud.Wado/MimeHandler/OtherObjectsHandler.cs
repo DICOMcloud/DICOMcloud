@@ -15,7 +15,7 @@ namespace DICOMcloud.Wado
          return false;
       }
 
-      public IWadoRsResponse Process(IWadoUriRequest request, string mimeType)
+      public Task<IWadoRsResponse> Process(IWadoUriRequest request, string mimeType)
       {
          throw new NotImplementedException();
       }

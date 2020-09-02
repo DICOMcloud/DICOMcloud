@@ -79,13 +79,13 @@ namespace DICOMcloud.IO
             _location = null ;
         }
 
-        public Stream Download ( )
+        public Task<Stream> Download ( )
         {
             MemoryStream ms = new MemoryStream ( ) ;
 
             Download ( ms ) ;
             
-            return ms ;
+            return new Task<Stream>(() => ms) ;
         }
 
         public void Download ( Stream stream )
@@ -98,12 +98,12 @@ namespace DICOMcloud.IO
             return _location != null ;
         }
 
-        public Stream GetReadStream ( )
+        public Task<Stream> GetReadStream ( )
         {
             //throws exception http://stackoverflow.com/questions/1646193/why-does-memorystream-getbuffer-always-throw
             //return new MemoryStream ( _location.GetBuffer ( ), 0, (int) _location.Length, false ) ;
 
-            return _location ;
+            return new Task<Stream> (() => _location);
         }
 
         public void Upload ( string filename, string contentType = null)

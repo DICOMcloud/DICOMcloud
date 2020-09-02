@@ -28,7 +28,7 @@ namespace DICOMcloud.Wado
             get; protected set;
         }
 
-        public virtual IWadoRsResponse Process (IWadoUriRequest request, string mimeType)
+        public virtual async Task<IWadoRsResponse> Process (IWadoUriRequest request, string mimeType)
         {
             Location = MediaStorage.GetLocation ( MediaFactory.Create (request, 
                                                                        GetMediaProperties ( request, mimeType, 
@@ -36,14 +36,14 @@ namespace DICOMcloud.Wado
          
             if ( Location != null && Location.Exists ( ) )
             {
-                WadoResponse response = new WadoResponse ( Location.GetReadStream ( ), mimeType ) ;
+                WadoResponse response = new WadoResponse ( await Location.GetReadStream ( ), mimeType ) ;
                 
                 return response ;
             }
             else
             {
                 //TODO: in case mime not storedmethod to create on 
-                return DoProcess(request, mimeType);
+                return await DoProcess(request, mimeType);
             }
         }
 
@@ -58,7 +58,7 @@ namespace DICOMcloud.Wado
             return new DicomMediaProperties {  MediaType = mimeType, TransferSyntax = transferSyntax } ;
         }
 
-      protected abstract WadoResponse DoProcess(IWadoUriRequest request, string mimeType);
+      protected abstract Task<WadoResponse> DoProcess(IWadoUriRequest request, string mimeType);
 
        protected IStorageLocation Location { get; set; }
 

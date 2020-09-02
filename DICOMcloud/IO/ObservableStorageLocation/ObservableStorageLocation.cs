@@ -53,11 +53,11 @@ namespace DICOMcloud.IO
             }
         }
 
-        public virtual Stream Download ( )
+        public virtual Task<Stream> Download ( )
         {
             var stream = DoDownload ( ) ;
             
-            PublisherSubscriberFactory.Instance.Publish ( this, CreateLocationDownloadedEventArgs ( stream ) ) ;
+            PublisherSubscriberFactory.Instance.Publish ( this, CreateLocationDownloadedEventArgs ( stream.Result ) ) ;
 
             return stream ;
         }
@@ -71,11 +71,11 @@ namespace DICOMcloud.IO
 
         public abstract bool Exists ( ) ;
 
-        public virtual Stream GetReadStream ( )
+        public virtual Task<Stream> GetReadStream ( )
         {
             var stream  = DoGetReadStream ( ) ;
 
-            PublisherSubscriberFactory.Instance.Publish ( this, CreateLocationDownloadedEventArgs ( stream ) ) ;
+            PublisherSubscriberFactory.Instance.Publish ( this, CreateLocationDownloadedEventArgs ( stream.Result ) ) ;
 
             return stream ;
         }
@@ -166,9 +166,9 @@ namespace DICOMcloud.IO
         }
 
         protected abstract void DoDelete ( );
-        protected abstract Stream DoDownload ( );
+        protected abstract Task<Stream> DoDownload ( );
         protected abstract void DoDownload ( Stream stream );
-        protected abstract Stream DoGetReadStream ( );
+        protected abstract Task<Stream> DoGetReadStream ( );
         protected abstract void DoUpload ( string fileName, string contentType );
         protected abstract void DoUpload ( byte[] buffer, string contentType );
         protected abstract void DoUpload ( Stream stream, string contentType );
