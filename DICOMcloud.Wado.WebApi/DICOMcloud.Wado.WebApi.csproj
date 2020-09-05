@@ -29,5 +29,6 @@
     <ItemGroup>
         <ProjectReference Include="..\DICOMcloud\DICOMcloud.csproj" />
         <ProjectReference Include="..\DICOMcloud.Wado\DICOMcloud.Wado.csproj" />
+        <ProjectReference Include="..\DICOMcloud.Azure\DICOMcloud.Azure.csproj" />
     </ItemGroup>
 </Project>
