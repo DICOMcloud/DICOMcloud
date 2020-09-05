@@ -10,6 +10,6 @@ namespace DICOMcloud.Wado
 {
    public interface IWadoUriService
    {
-      HttpResponseMessage GetInstance ( IWadoUriRequest request ) ;
+      Task<HttpResponseMessage> GetInstance ( IWadoUriRequest request ) ;
    }
 }

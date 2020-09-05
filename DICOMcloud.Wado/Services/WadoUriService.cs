@@ -25,7 +25,7 @@ namespace DICOMcloud.Wado
             RetrieveService = retrieveService ;
         }
 
-        public virtual HttpResponseMessage GetInstance ( IWadoUriRequest request )
+        public virtual async Task<HttpResponseMessage> GetInstance ( IWadoUriRequest request )
         {
             //validation code should go in here
             if (null == request || string.Compare(request.RequestType, "WADO", true ) != 0 )
@@ -61,7 +61,7 @@ namespace DICOMcloud.Wado
                     }
                     else
                     {
-                        StreamContent sc = new StreamContent ( dcmLocation.GetReadStream ( ) );
+                        StreamContent sc = new StreamContent ( await dcmLocation.GetReadStream ( ) );
                         sc.Headers.ContentType = new MediaTypeHeaderValue ( mediaType.MediaType );
                         HttpResponseMessage msg = new HttpResponseMessage ( HttpStatusCode.OK );
 
@@ -72,11 +72,11 @@ namespace DICOMcloud.Wado
                 }
             }
 
-            HttpResponseMessage responseMessage ;
-
-            if ( TryOnDemandTransform ( request, mediaTypeHeader, out responseMessage ) )
+            OnDemandTransformResult result = await TryOnDemandTransform(request, mediaTypeHeader);
+            
+            if (result.Success)
             {
-                return responseMessage ;
+                return result.Result;
             }
 
 
@@ -123,13 +123,13 @@ namespace DICOMcloud.Wado
             return currentTransfer;
         }
 
-        protected virtual bool TryOnDemandTransform 
+        protected virtual async Task<OnDemandTransformResult> TryOnDemandTransform 
         ( 
             IWadoUriRequest request, 
-            List<MediaTypeHeaderValue> mediaTypeHeaderList, 
-            out HttpResponseMessage responseMessage 
+            List<MediaTypeHeaderValue> mediaTypeHeaderList
         )
         {
+            HttpResponseMessage responseMessage;
             string defaultDicomTransfer ;
 
 
@@ -143,21 +143,21 @@ namespace DICOMcloud.Wado
                 transferSyntax = GetRequestedMediaTransferSyntax ( request, mediaTypeHeader );
 
                 //should return only one for URI service
-                foreach ( var result in RetrieveService.GetTransformedSopInstances ( request, MimeMediaTypes.DICOM, defaultDicomTransfer, mediaTypeHeader.MediaType, transferSyntax ) )
+                await foreach ( var result in RetrieveService.GetTransformedSopInstances ( request, MimeMediaTypes.DICOM, defaultDicomTransfer, mediaTypeHeader.MediaType, transferSyntax ) )
                 {
-                    StreamContent sc        = new StreamContent        (  result.Location.GetReadStream ( ) ) ;
+                    StreamContent sc        = new StreamContent        (  await result.Location.GetReadStream ( ) ) ;
                     sc.Headers.ContentType  = new MediaTypeHeaderValue ( mediaTypeHeader.MediaType ) ;
                     responseMessage         = new HttpResponseMessage  ( HttpStatusCode.OK ) ;
 
                     responseMessage.Content = sc;
 
-                    return true ;
+                    return new OnDemandTransformResult () { Result = responseMessage, Success = true };
                 }
             }
 
             responseMessage = null ;
 
-            return false ;
+            return new OnDemandTransformResult () { Result = responseMessage, Success = false };
         }
 
         //TODO: there is more into this now in part 18 2016 version, reference section 6.1.1.5 and 6.1.1.6
@@ -206,5 +206,12 @@ namespace DICOMcloud.Wado
         {
             return obj.MediaType.GetHashCode();
         }
+    }
+
+    public class OnDemandTransformResult
+    {
+        public bool Success { get; set; }
+        public HttpResponseMessage Result { get; set; }
+
     }
 }

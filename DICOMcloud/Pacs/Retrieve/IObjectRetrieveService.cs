@@ -8,10 +8,10 @@ namespace DICOMcloud.Pacs
     public interface IObjectRetrieveService
     { 
         IStorageLocation RetrieveSopInstance ( IObjectId query, DicomMediaProperties mediaInfo ) ;
-    
-        IEnumerable<IStorageLocation> RetrieveSopInstances ( IObjectId query, DicomMediaProperties mediaInfo ) ;
 
-        IEnumerable<ObjectRetrieveResult> FindSopInstances 
+        IAsyncEnumerable<IStorageLocation> RetrieveSopInstances ( IObjectId query, DicomMediaProperties mediaInfo ) ;
+
+        IAsyncEnumerable<ObjectRetrieveResult> FindSopInstances 
         ( 
             IObjectId query, 
             string mediaType, 
@@ -19,7 +19,7 @@ namespace DICOMcloud.Pacs
             string defaultTransfer
         ) ;
 
-        IEnumerable<ObjectRetrieveResult> GetTransformedSopInstances 
+        IAsyncEnumerable<ObjectRetrieveResult> GetTransformedSopInstances 
         ( 
             IObjectId query, 
             string fromMediaType, 

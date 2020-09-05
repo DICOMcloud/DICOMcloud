@@ -42,7 +42,7 @@ namespace DICOMcloud.IO
             return __KeyProvider ;
         }
 
-        protected override IEnumerable<IStorageContainer> GetContainers ( string containerKey ) 
+        protected override async IAsyncEnumerable<IStorageContainer> GetContainers ( string containerKey ) 
         {
             if ( !Directory.Exists (Path.Combine(BaseStorePath,containerKey)))
             {

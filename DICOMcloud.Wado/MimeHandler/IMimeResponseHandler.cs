@@ -12,6 +12,6 @@ namespace DICOMcloud.Wado
    {
       bool CanProcess(string mimeType);
 
-      IWadoRsResponse Process(IWadoUriRequest request, string mimeType);
+      Task<IWadoRsResponse> Process(IWadoUriRequest request, string mimeType);
    }
 }

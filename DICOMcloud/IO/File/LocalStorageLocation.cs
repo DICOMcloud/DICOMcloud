@@ -51,11 +51,11 @@ namespace DICOMcloud.IO
             Refresh ( ) ;
         }
 
-        public virtual Stream Download()
+        public virtual Task<Stream> Download()
         {
             Refresh ( ) ;
 
-            return File.Open(ID, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
+            return new Task<Stream>(() => File.Open(ID, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite));
         }
 
         public virtual void Download ( Stream stream )
@@ -90,13 +90,13 @@ namespace DICOMcloud.IO
             WriteMetadata ( ) ;
         }
 
-        public virtual Stream GetWriteStream ( )
+        public virtual Task<Stream> GetWriteStream ( )
         {
             string path = ID ;
 
             //FileOptions options = autoDeletOnClose ? FileOptions.DeleteOnClose : FileOptions.None ;
 
-            return File.Create ( path ) ;//, 1024*1024, options );
+            return new Task<Stream> (() => File.Create (path)) ;//, 1024*1024, options );
 
         }
         
@@ -105,9 +105,9 @@ namespace DICOMcloud.IO
             File.Delete ( ID ) ;
         }
 
-        public Stream GetReadStream()
+        public Task<Stream> GetReadStream()
         {
-            return File.OpenRead ( ID ) ;
+            return new Task<Stream>(() => File.OpenRead (ID));
         }
 
         public string ContentType 

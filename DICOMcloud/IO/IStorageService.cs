@@ -42,7 +42,7 @@ namespace DICOMcloud.IO
         /// <returns>
         /// Returns the <see cref="Stream"/> of the provided media
         /// </returns>
-        Stream Read   ( IMediaId key ) ;
+        Task<Stream> Read   ( IMediaId key ) ;
 
         /// <summary>
         /// Determines whether a media exists by its Key
@@ -65,7 +65,7 @@ namespace DICOMcloud.IO
         /// <returns>
         /// Returns an <see cref="IEnumerable{IStorageLocation}"/> for all the medias in the given <paramref name="key"/>
         /// </returns>
-        IEnumerable<IStorageLocation> EnumerateLocation ( IMediaId key ) ;
+        IAsyncEnumerable<IStorageLocation> EnumerateLocation ( IMediaId key ) ;
 
         /// <summary>
         /// Deletes all media represented in the given <paramref name="key"/>
