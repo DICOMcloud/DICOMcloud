@@ -36,4 +36,3 @@ services:
             Urls:WadoUriUrl: "http://localhost:44301/wadouri"
             Anonymous:EnableAnonymizer: "true"
             Anonymous:AnonymizerOptions: "BasicProfile,RetainUIDs,RetainLongFullDates,RetainPatientChars"
-            
