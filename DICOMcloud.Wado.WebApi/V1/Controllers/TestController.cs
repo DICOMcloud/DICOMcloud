@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using DICOMcloud.Wado.Configs;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
 
     #endregion
@@ -14,13 +15,15 @@
     /// </summary>
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
+    // [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/{version:apiVersion}/[controller]")]
     // [Authorize]
     public class TestController : ControllerBase
     {
         public TestController(
             IOptions<UrlOptions> options,
-            IOptions<QidoOptions> options1
+            IOptions<QidoOptions> options1,
+            IConfiguration configuration
         )
         {
             var a = "";

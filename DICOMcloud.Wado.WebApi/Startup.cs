@@ -9,6 +9,7 @@
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
     using Microsoft.AspNetCore.Http;
     using DICOMcloud.Wado.Configs;
+    using System;
 
     public class Startup
     {
@@ -28,6 +29,9 @@
         {
             this.Configuration = configuration;
             this._environment = enviroment;
+
+            Console.WriteLine($"Config:{this.Configuration.GetConnectionString("pacsDataArchieve")}");
+            Console.WriteLine($"PacsDataArchieve:{this.Configuration.GetValue<string>("Urls:WadoRsUrl")}");
         }
 
         public void ConfigureServices(IServiceCollection services)
