@@ -62,17 +62,11 @@
             app.UseExceptionHandler("/error");
             app.UseHttpsRedirection();
 
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
-            // specifying the Swagger JSON endpoint.
             app.UseSwagger();
             app.UseSwaggerUI(options =>
                 {
-                    // options.DisplayOperationId();
+                    options.DisplayOperationId();
                     // build a swagger endpoint for each discovered API version
-                    // foreach (var description in provider.ApiVersionDescriptions)
-                    // {
-                    //     options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
-                    // }
                     options.RoutePrefix = string.Empty;
                     options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
                 }
