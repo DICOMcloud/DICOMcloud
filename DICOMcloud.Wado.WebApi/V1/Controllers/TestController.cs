@@ -16,8 +16,9 @@
     [ApiController]
     [ApiVersion("1.0")]
     // [Route("api/v{version:apiVersion}/[controller]")]
-    [Route("api/{version:apiVersion}/[controller]")]
+    // [Route("api/{version:apiVersion}/[controller]")]
     // [Authorize]
+    [Route("api/[controller]")]
     public class TestController : ControllerBase
     {
         public TestController(

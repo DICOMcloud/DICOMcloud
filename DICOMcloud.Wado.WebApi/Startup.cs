@@ -1,7 +1,6 @@
 ﻿namespace DICOMcloud.Wado.WebApi
 {
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -43,7 +42,7 @@
             // services.ConfigureAuthentication(this.Configuration);
             // this.ConfigureAuthorization(services);
 
-            services.AddSwaggerDocumentation(Configuration)
+            services.AddSwaggerDocumentation(Configuration, false)
                 .AddHttpContextAccessor()
                 .AddResponseCompression()
                 .AddOptions();
@@ -58,30 +57,34 @@
             // services.Configure<Setting>(options => Configuration.GetSection("Strategy").Bind(options));
         }
 
-        public void Configure(IApplicationBuilder app, IApiVersionDescriptionProvider provider)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseExceptionHandler("/error");
             app.UseHttpsRedirection();
-            app.UseRouting();
-            app.UseDefaultCors();
-            // app.UseAuthentication();
-            // app.UseAuthorization();
-            app.UseResponseCompression();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
             app.UseSwagger();
             app.UseSwaggerUI(options =>
                 {
-                    options.DisplayOperationId();
+                    // options.DisplayOperationId();
                     // build a swagger endpoint for each discovered API version
-                    foreach (var description in provider.ApiVersionDescriptions)
-                    {
-                        options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
-                    }
+                    // foreach (var description in provider.ApiVersionDescriptions)
+                    // {
+                    //     options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+                    // }
                     options.RoutePrefix = string.Empty;
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
                 }
             );
+
+            app.UseRouting();
+            app.UseDefaultCors();
+            // app.UseAuthentication();
+            // app.UseAuthorization();
+            app.UseResponseCompression();
+
+            
 
             app.UseEndpoints(endpoints =>
             {

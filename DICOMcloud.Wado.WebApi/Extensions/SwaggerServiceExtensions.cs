@@ -8,41 +8,46 @@ namespace DICOMcloud.Wado.WebApi.Extensions
 {
     public static class SwaggerServiceExtensions
     {
-        public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services, IConfiguration configuration, bool addOpenAuth)
         {
             services.AddSwaggerGen(o =>
             {
                 o.CustomSchemaIds(x => x.FullName);
-
-                o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                if (addOpenAuth)
                 {
-                    Description = "In the value text box type \"Bearer \" and then paste the token.",
-                    Name = "Authorization",
-                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-
-                var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
-                foreach (var description in provider.ApiVersionDescriptions)
-                {
-                    o.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description, configuration));
+                    o.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                    {
+                        Description = "In the value text box type \"Bearer \" and then paste the token.",
+                        Name = "Authorization",
+                        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                        Scheme = "Bearer"
+                    });
                 }
 
+                // var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+                // foreach (var description in provider.ApiVersionDescriptions)
+                // {
+                //     o.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description, configuration));
+                // }
+
                 // add a custom operation filter which sets default values
-                o.OperationFilter<SwaggerDefaultValues>();
+                // o.OperationFilter<SwaggerDefaultValues>();
+                o.SwaggerDoc("v1", CreateInfoForApiVersion(configuration));
             });
+
+            // services.AddSwaggerGen();
 
             return services;
         }
 
-        static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description, IConfiguration config)
+        static OpenApiInfo CreateInfoForApiVersion(IConfiguration config)
         {
             var title = config["Service:Title"];
             var info = new OpenApiInfo()
             {
-                Title = $"{title} {description.ApiVersion}",
-                Version = description.ApiVersion.ToString(),
+                Title = $"{title} {config["Service:Version"]}",
+                Version = config["Service:Version"],
                 Description = config["Service:Description"],
                 Contact = new OpenApiContact()
                 {
@@ -50,11 +55,6 @@ namespace DICOMcloud.Wado.WebApi.Extensions
                     Email = config["Service:Contact:Email"]
                 }
             };
-
-            if (description.IsDeprecated)
-            {
-                info.Description += " This API version has been deprecated.";
-            }
 
             return info;
         }
