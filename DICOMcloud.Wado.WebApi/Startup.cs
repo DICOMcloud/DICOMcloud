@@ -51,10 +51,10 @@
             services.Configure<UrlOptions>(Configuration.GetSection("Urls"));
             services.Configure<QidoOptions>(Configuration.GetSection("Qido"));
 
-            // services.AddTransient<ITradingMarketService, TradingMarketService>();
+            DicomExtensions dicomExtensions = new DicomExtensions(this.Configuration, services);
+            dicomExtensions.Build();
 
-            // var settings = this.Configuration.GetSection("Strategy").Get<Setting>();
-            // services.Configure<Setting>(options => Configuration.GetSection("Strategy").Bind(options));
+            
         }
 
         public void Configure(IApplicationBuilder app)
