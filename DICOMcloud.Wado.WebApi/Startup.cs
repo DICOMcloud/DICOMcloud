@@ -9,6 +9,7 @@
     using Microsoft.AspNetCore.Http;
     using DICOMcloud.Wado.Configs;
     using System;
+    using Microsoft.Extensions.Options;
 
     public class Startup
     {
@@ -51,7 +52,8 @@
             services.Configure<UrlOptions>(Configuration.GetSection("Urls"));
             services.Configure<QidoOptions>(Configuration.GetSection("Qido"));
 
-            DicomExtensions dicomExtensions = new DicomExtensions(this.Configuration, services);
+            var urlOptions = services.BuildServiceProvider().GetRequiredService<IOptions<UrlOptions>>();
+            DicomExtensions dicomExtensions = new DicomExtensions(this.Configuration, services, urlOptions);
             dicomExtensions.Build();
 
             
