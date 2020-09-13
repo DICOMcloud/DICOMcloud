@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DICOMcloud.Wado.WebApi.Controllers
 {
+    [ApiController]
+    [ApiVersion("1.0")]
+    [Route("api/[controller]")]
     public class FramesController : ControllerBase
     {
         protected IQidoRsService QidoService { get; set; }
@@ -12,7 +15,7 @@ namespace DICOMcloud.Wado.WebApi.Controllers
 
         public FramesController
         (
-            IQidoRsService qidoService, 
+            IQidoRsService qidoService,
             IWadoRsService wadoService
         )
         {

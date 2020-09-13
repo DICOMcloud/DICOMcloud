@@ -163,8 +163,8 @@ namespace DICOMcloud.Wado.WebApi.Extensions
             this._services.AddScoped<DbSchemaProvider, StorageDbSchemaProvider>();
             this._services.AddScoped<IDatabaseFactory, SqlDatabaseFactory>();
             this._services.AddScoped<ISortingStrategyFactory, SortingStrategyFactory>();
-            this._services.AddScoped<ObjectArchieveDataAdapter>();
-            this._services.AddScoped<ObjectArchieveDataAccess>();
+            this._services.AddScoped<ObjectArchieveDataAdapter, ObjectArchieveDataAdapter>();
+            this._services.AddScoped<IObjectArchieveDataAccess, ObjectArchieveDataAccess>();
             IRetrieveUrlProvider urlProvider = new RetrieveUrlProvider(this._options.Value.WadoRsUrl, this._options.Value.WadoUriUrl);
 
             this._services.AddScoped<IDCloudCommandFactory, DCloudCommandFactory>();
@@ -178,6 +178,7 @@ namespace DICOMcloud.Wado.WebApi.Extensions
             this._services.AddScoped<IOhifService, OhifService>();
             this._services.AddScoped<IDicomMediaIdFactory, DicomMediaIdFactory>();
             this._services.AddScoped<IRetrieveUrlProvider>(x => urlProvider);
+            this._services.AddScoped<IConnectionStringProvider, ConnectionStringProvider>();
             RegisterStoreCommandSettings();
 
             //todo: implement properly
@@ -247,7 +248,8 @@ namespace DICOMcloud.Wado.WebApi.Extensions
 
             // For<Func<string, IDicomMediaWriter>>().Use((m => new Func<String, IDicomMediaWriter>(name => m.TryGetInstance<IDicomMediaWriter>(name))));
 
-            // For<IDicomMediaWriterFactory>().Use<DicomMediaWriterFactory>();
+            this._services.AddScoped<IDicomMediaWriterFactory,DicomMediaWriterFactory>();
+            this._services.AddScoped<IJsonDicomConverter,JsonDicomConverter>();
 
             // For<IJsonDicomConverter>().Use<JsonDicomConverter>();
             

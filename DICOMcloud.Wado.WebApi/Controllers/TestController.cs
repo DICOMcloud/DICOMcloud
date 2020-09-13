@@ -36,25 +36,25 @@
 
         #region Public Methods And Operators
 
-        /// <summary>
-        /// Test
-        /// </summary>
-        /// <returns>
-        /// The <see cref="Task"/>.
-        /// </returns>
-        [HttpPost("TestMethod")]
-        // [Authorize(Policy = "Trading")]
-        [ApiConventionMethod(typeof(DefaultApiConventions),
-                     nameof(DefaultApiConventions.Post))]
-        public async Task<ActionResult> TestMethod()
-        {
-            // if (exchangeTickers == null || exchangeTickers.Request == null || exchangeTickers.MarketIds == null)
-            // {
-            //     return NotFound();
-            // }
-            // return this.Ok(await this._service.ReturnExchangeTickersAsync(exchangeTickers.Request, exchangeTickers.MarketIds));
-            return Ok("Test");
-        } 
+        // /// <summary>
+        // /// Test
+        // /// </summary>
+        // /// <returns>
+        // /// The <see cref="Task"/>.
+        // /// </returns>
+        // [HttpPost("TestMethod")]
+        // // [Authorize(Policy = "Trading")]
+        // [ApiConventionMethod(typeof(DefaultApiConventions),
+        //              nameof(DefaultApiConventions.Post))]
+        // public async Task<ActionResult> TestMethod()
+        // {
+        //     // if (exchangeTickers == null || exchangeTickers.Request == null || exchangeTickers.MarketIds == null)
+        //     // {
+        //     //     return NotFound();
+        //     // }
+        //     // return this.Ok(await this._service.ReturnExchangeTickersAsync(exchangeTickers.Request, exchangeTickers.MarketIds));
+        //     return Ok("Test");
+        // } 
 
         #endregion
     }

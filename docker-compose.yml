@@ -7,10 +7,13 @@ services:
     #############################
     dicom-cloud-database:
       image: "mcr.microsoft.com/mssql/server:2019-latest"
+      user: root # don't use root in production
       container_name: "dicom-cloud-sql"
       restart: unless-stopped
       expose: 
         - "1433"
+      volumes:
+       - /home/docker/mssql/data:/var/opt/mssql/data
       environment:
           SA_PASSWORD: "Password123#"
           ACCEPT_EULA: "Y"
@@ -29,8 +32,8 @@ services:
             - dicom-cloud-database
         environment: 
             ASPNETCORE_ENVIRONMENT: Development
-            ASPNETCORE_URLS: http://+:5021
-            ConnectionStrings:pacsDataArchieve: "Server=localhost1a,1433;Initial Catalog=DICOMcloud;Integrated Security=True;User Id=sa;Password=Password123#"
+            ASPNETCORE_URLS: http://+:44301
+            ConnectionStrings:pacsDataArchieve: "Server=localhost,1433;Initial Catalog=DICOMcloud;Integrated Security=True;User Id=sa;Password=Password123#"
             ConnectionStrings:pacsStorageConnection: "|DataDirectory|/App_Data/Storage/ds"
             Urls:WadoRsUrl: "http://localhost:44301/wadors/"
             Urls:WadoUriUrl: "http://localhost:44301/wadouri"

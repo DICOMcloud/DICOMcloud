@@ -64,6 +64,8 @@
             app.UseExceptionHandler("/error");
             app.UseHttpsRedirection();
 
+            app.UseDeveloperExceptionPage();
+
             app.UseSwagger();
             app.UseSwaggerUI(options =>
                 {
