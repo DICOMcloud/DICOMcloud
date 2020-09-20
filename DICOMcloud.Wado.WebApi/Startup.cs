@@ -55,8 +55,6 @@
             var urlOptions = services.BuildServiceProvider().GetRequiredService<IOptions<UrlOptions>>();
             DicomExtensions dicomExtensions = new DicomExtensions(this.Configuration, services, urlOptions);
             dicomExtensions.Build();
-
-            
         }
 
         public void Configure(IApplicationBuilder app)
@@ -100,6 +98,12 @@
             // {
             //     options.AddPolicy("Trading", policy => policy.RequireClaim("trade_access", "1"));
             // });
+        }
+        
+        private void ConfigureDicom()
+        {
+            GlobalConfiguration.Configure(WebApiConfig.Register);
+
         }
 
     }
