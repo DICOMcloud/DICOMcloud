@@ -48,11 +48,11 @@ namespace DICOMcloud.Media
         )
         {
             var frameIndex = frame - 1 ;
-            var dicomImage = new DicomImage (dicomObject, frameIndex);
-            var bitmap = dicomImage.RenderImage (frameIndex).AsSharedBitmap();
+            var dicomImage = (dicomObject.GetSingleValue<string>(fo.DicomTag.Modality) != "SR") ? new DicomImage(dicomObject, frameIndex) : null;
+            var bitmap = dicomImage?.RenderImage (frameIndex).AsSharedBitmap();
             var stream = new MemoryStream ( ) ;
             
-            bitmap.Save (stream, System.Drawing.Imaging.ImageFormat.Jpeg );
+            bitmap?.Save (stream, System.Drawing.Imaging.ImageFormat.Jpeg );
             
             stream.Position = 0 ;
 

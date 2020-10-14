@@ -24,7 +24,7 @@ namespace DICOMcloud
                 Dataset = ds ;
             }
             
-            PixelData = DicomPixelData.Create (Dataset) ;
+            PixelData = (Dataset.GetSingleValue<string>(DicomTag.Modality) != "SR") ? DicomPixelData.Create(Dataset) : null;
         }
 
         public fo.DicomDataset Dataset { get; private set; }

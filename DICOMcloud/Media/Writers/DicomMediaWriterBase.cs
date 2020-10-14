@@ -4,6 +4,7 @@ using fo = Dicom;
 using Dicom.Imaging ;
 using DICOMcloud.IO;
 using DICOMcloud.Media ;
+using Dicom;
 
 namespace DICOMcloud.Media
 {
@@ -47,7 +48,7 @@ namespace DICOMcloud.Media
                 var                    dataset        = GetMediaDataset ( mediaParameters.Dataset, mediaParameters.MediaInfo ) ;
                 string                 transferSyntax = ( !string.IsNullOrWhiteSpace (mediaParameters.MediaInfo.TransferSyntax ) ) ? ( mediaParameters.MediaInfo.TransferSyntax ) : "" ;
 
-                if ( StoreMultiFrames )
+                if ( StoreMultiFrames && (dataset.GetSingleValue<string>(DicomTag.Modality) != "SR"))
                 {
                     DicomPixelData pd ;
 
