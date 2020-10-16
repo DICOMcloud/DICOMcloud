@@ -23,8 +23,8 @@ namespace DICOMcloud
                 // pull uncompressed frame from source pixel data
                 Dataset = ds ;
             }
-            
-            PixelData = (Dataset.GetSingleValue<string>(DicomTag.Modality) != "SR") ? DicomPixelData.Create(Dataset) : null;
+
+            PixelData = DicomPixelData.Create(Dataset);
         }
 
         public fo.DicomDataset Dataset { get; private set; }
