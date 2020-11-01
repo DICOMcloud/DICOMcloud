@@ -19,7 +19,7 @@ namespace DICOMcloud.Wado
                 if ( new QidoRequestModelConverter ( ).TryParse ( bindingContext.ActionContext.HttpContext.Request.ToHttpRequestMessage(), bindingContext, out result) )
                 { 
                     bindingContext.Model = result;
-
+                    bindingContext.Result = ModelBindingResult.Success(result);
                     return Task.CompletedTask;
                 }
                 else

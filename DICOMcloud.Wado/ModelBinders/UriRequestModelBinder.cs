@@ -22,6 +22,7 @@ namespace DICOMcloud.Wado
             if (new UriRequestModelConverter().TryParse(bindingContext.ActionContext.HttpContext.Request.ToHttpRequestMessage(), out result))
             {
                 bindingContext.Model = result;
+                bindingContext.Result = ModelBindingResult.Success(result);
                 return Task.CompletedTask;
             }
             else

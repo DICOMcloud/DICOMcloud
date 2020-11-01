@@ -10,30 +10,28 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.1.1" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.1">
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-          <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.DynamicLinq" Version="1.0.20" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
         <!-- <PackageReference Include="Microsoft.XmlSerializer.Generator" Version="2.2.0" /> -->
         <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.0" />
         <PackageReference Include="NLog" Version="4.6.8" />
         <PackageReference Include="NLog.Extensions.Logging" Version="1.6.0" />
         <PackageReference Include="NLog.Targets.ElasticSearch" Version="6.1.0" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.2" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.0" /> 
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.0" />
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
+        <PackageReference Include="fo-dicom" Version="4.0.3" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.8" />
     </ItemGroup>
-
-    <!--<ItemGroup>
-        <ProjectReference Include="..\..\Core\Core.csproj" />
-    </ItemGroup>-->
-
     <ItemGroup>
-        <None Update="./Settings/Bittrex.settings">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
+        <ProjectReference Include="..\DICOMcloud\DICOMcloud.csproj" />
+        <ProjectReference Include="..\DICOMcloud.Wado\DICOMcloud.Wado.csproj" />
+        <ProjectReference Include="..\DICOMcloud.Azure\DICOMcloud.Azure.csproj" />
+        <ProjectReference Include="..\DICOMcloud.DataAccess.Database\DICOMcloud.DataAccess.Database.csproj" />
     </ItemGroup>
 </Project>

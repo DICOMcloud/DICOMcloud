@@ -1,16 +1,16 @@
 ﻿using DICOMcloud.Extensions;
 using DICOMcloud.IO;
-using Microsoft.Azure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Collections.Generic;
 
 namespace DICOMcloud.Azure.IO
 {
-    public class AzureStorageService : MediaStorageService//, IEnumerable<IStorageContainer>
+    public class AzureStorageService : MediaStorageService
     {
-        public AzureStorageService ( string connectionName )
-        : this ( CloudStorageAccount.Parse( CloudConfigurationManager.GetSetting(connectionName) ) )
+        public AzureStorageService ( string connectionName, IConfiguration config )
+        : this ( CloudStorageAccount.Parse( config.GetConnectionString(connectionName)))
         {}
 
         public AzureStorageService ( CloudStorageAccount storageAccount )

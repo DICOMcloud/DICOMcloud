@@ -11,4 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DICOMcloud\DICOMcloud.csproj" />
   </ItemGroup>
+  <ItemGroup>
+  <EmbeddedResource Include="DatabaseSchema.xml" />
+</ItemGroup>
 </Project>

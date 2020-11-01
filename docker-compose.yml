@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+
+    #############################
+    # Database
+    #############################
+    dicom-cloud-database:
+      image: "mcr.microsoft.com/mssql/server:2019-latest"
+      user: root # don't use root in production
+      container_name: "dicom-cloud-sql"
+      restart: unless-stopped
+      expose: 
+        - "1433"
+      volumes:
+       - /home/docker/mssql/data:/var/opt/mssql/data
+      environment:
+          SA_PASSWORD: "Password123#"
+          ACCEPT_EULA: "Y"
+          MSSQL_PID: "Express"
+    
+    #############################
+    # DICOMCloud
+    #############################
+    dicom-cloud:
+        image: "dicomcloud/dicomcloud"
+        container_name: "dicom-cloud-api"
+        build: 
+          context: .
+          dockerfile: Development.Dockerfile
+        depends_on:
+            - dicom-cloud-database
+        environment: 
+            ASPNETCORE_ENVIRONMENT: Development
+            ASPNETCORE_URLS: http://+:44301
+            ConnectionStrings:pacsDataArchieve: "Server=localhost,1433;Initial Catalog=DICOMcloud;Integrated Security=True;User Id=sa;Password=Password123#"
+            ConnectionStrings:pacsStorageConnection: "|DataDirectory|/App_Data/Storage/ds"
+            Urls:WadoRsUrl: "http://localhost:44301/wadors/"
+            Urls:WadoUriUrl: "http://localhost:44301/wadouri"
+            Anonymous:EnableAnonymizer: "true"
+            Anonymous:AnonymizerOptions: "BasicProfile,RetainUIDs,RetainLongFullDates,RetainPatientChars"

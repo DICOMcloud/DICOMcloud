@@ -55,20 +55,6 @@ namespace DICOMcloud.Wado.WebApi.Extensions
                 options.SerializerSettings.DateParseHandling = DateParseHandling.DateTimeOffset;
                 options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
             });
-
-            services.AddApiVersioning(options =>
-            {
-                // Reporting api versions will return the headers "api-supported-versions" and "api-deprecated-versions"
-                options.ReportApiVersions = true;
-                options.DefaultApiVersion = new ApiVersion(1, 0);
-                options.AssumeDefaultVersionWhenUnspecified = true;
-            })
-            .AddVersionedApiExplorer(options =>
-            {
-                // Add the versioned api explorer, which also adds IApiVersionDescriptionProvider service
-                // Note: the specified format code will format the version as "'v'major[.minor][-status]"
-                options.GroupNameFormat = "'v'VVV";
-            });
         }
 
         public static void ConfigureDbContext(this IServiceCollection services, IConfiguration configuration)
