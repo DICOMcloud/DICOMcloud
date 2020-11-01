@@ -102,7 +102,7 @@
         
         private void ConfigureDicom()
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            // GlobalConfiguration.Configure(WebApiConfig.Register);
 
         }
 
