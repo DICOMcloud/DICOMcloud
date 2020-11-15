@@ -7,6 +7,7 @@ using fo = Dicom;
 using Dicom.Imaging;
 using DICOMcloud.IO;
 using Dicom.IO.Buffer;
+using Dicom;
 
 namespace DICOMcloud.Media
 {
@@ -32,10 +33,17 @@ namespace DICOMcloud.Media
             }
         }
 
+        public override bool CanUpload(DicomDataset ds, int frame)
+        {
+            var pixelDataItem = ds.GetDicomItem<DicomItem>(fo.DicomTag.PixelData);
+
+            return pixelDataItem != null;
+        }
+
         protected override void Upload ( fo.DicomDataset dicomDataset, int frame, IStorageLocation storeLocation, DicomMediaProperties mediaProperties)
         {
             var uncompressedData = new UncompressedPixelDataWrapper ( dicomDataset ) ;
-            var buffer           = uncompressedData.PixelData.GetFrame ( frame - 1 ) ;
+            var buffer           = uncompressedData.PixelData.GetFrame(frame - 1);
             var  data            = new byte[0] ;
             
             

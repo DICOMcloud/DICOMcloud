@@ -4,6 +4,7 @@ using fo = Dicom;
 using Dicom.Imaging ;
 using DICOMcloud.IO;
 using DICOMcloud.Media ;
+using Dicom;
 
 namespace DICOMcloud.Media
 {
@@ -26,6 +27,11 @@ namespace DICOMcloud.Media
             get ;
         }
 
+        public virtual bool CanUpload (DicomDataset ds, int frame)
+        {
+            return true;
+        }
+
         public IList<IStorageLocation> CreateMedia
         (
             DicomMediaWriterParameters mediaParameters
@@ -46,8 +52,9 @@ namespace DICOMcloud.Media
                 List<IStorageLocation> locations      = new List<IStorageLocation> ( ) ;
                 var                    dataset        = GetMediaDataset ( mediaParameters.Dataset, mediaParameters.MediaInfo ) ;
                 string                 transferSyntax = ( !string.IsNullOrWhiteSpace (mediaParameters.MediaInfo.TransferSyntax ) ) ? ( mediaParameters.MediaInfo.TransferSyntax ) : "" ;
+                var                    pixelDataItem  = dataset.GetDicomItem<DicomItem>(fo.DicomTag.PixelData);
 
-                if ( StoreMultiFrames )
+                if (StoreMultiFrames && pixelDataItem != null)
                 {
                     DicomPixelData pd ;
 
@@ -58,12 +65,15 @@ namespace DICOMcloud.Media
                 
                 for ( int frame = 1; frame <= framesCount; frame++ )
                 {
-                    var storeLocation = sotrageProvider.GetLocation ( MediaFactory.Create ( mediaParameters.Dataset, frame, MediaType, transferSyntax ));
-                    
-                    
-                    Upload ( dataset, frame, storeLocation, mediaParameters.MediaInfo ) ;
-                
-                    locations.Add ( storeLocation ) ;
+                    if (CanUpload(dataset, frame))
+                    {
+                        var storeLocation = sotrageProvider.GetLocation(MediaFactory.Create(mediaParameters.Dataset, frame, MediaType, transferSyntax));
+
+
+                        Upload(dataset, frame, storeLocation, mediaParameters.MediaInfo);
+
+                        locations.Add(storeLocation);
+                    }
                 }
 
                 return locations ;
@@ -94,12 +104,15 @@ namespace DICOMcloud.Media
 
             foreach ( int frame in frameList )
             {
-                var storeLocation = storageProvider.GetLocation ( MediaFactory.Create ( mediaParameters.Dataset, frame, MediaType, transferSyntax ));
-                    
-                    
-                Upload ( mediaParameters.Dataset, frame, storeLocation, mediaParameters.MediaInfo ) ;
-                
-                locations.Add ( storeLocation ) ;
+                if (CanUpload(dataset, frame))
+                {
+                    var storeLocation = storageProvider.GetLocation(MediaFactory.Create(mediaParameters.Dataset, frame, MediaType, transferSyntax));
+
+
+                    Upload(mediaParameters.Dataset, frame, storeLocation, mediaParameters.MediaInfo);
+
+                    locations.Add(storeLocation);
+                }
             }
 
             return locations ;
