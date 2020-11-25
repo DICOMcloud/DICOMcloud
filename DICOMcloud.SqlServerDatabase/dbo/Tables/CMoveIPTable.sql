@@ -1,0 +1,8 @@
+﻿CREATE TABLE [dbo].[CMoveIPTable]
+(
+    [Id] BIGINT IDENTITY (1, 1) NOT NULL,
+    [IP] NVARCHAR(50) NOT NULL, 
+    [Port] INT NOT NULL, 
+    [AEtitle] NVARCHAR(50) NOT NULL UNIQUE, 
+    PRIMARY KEY ([Id])
+)

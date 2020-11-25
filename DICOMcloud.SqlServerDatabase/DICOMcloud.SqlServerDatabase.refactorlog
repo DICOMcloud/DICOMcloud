@@ -7,4 +7,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="Major" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="dc4c4056-eedd-4d59-a2ea-823122e33c1d" ChangeDateTime="11/24/2020 01:03:41">
+    <Property Name="ElementName" Value="[dbo].[CMoveIPTable].[port]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[CMoveIPTable]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Port" />
+  </Operation>
 </Operations>
