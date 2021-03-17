@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{20
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{8A37B518-B8AC-4785-94D2-F1EA6A8BA027}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOMcloud.Wado.PacsInterface", "DICOMcloud.Wado.PacsInterface\DICOMcloud.Wado.PacsInterface.csproj", "{EABECB00-E418-49F7-8907-2290082AFBE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
