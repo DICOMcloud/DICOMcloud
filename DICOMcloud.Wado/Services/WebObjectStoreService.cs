@@ -44,7 +44,10 @@ namespace DICOMcloud.Wado
                 
                 if (!string.IsNullOrWhiteSpace(storeResult.StatusMessage))
                 {
-                    result.ReasonPhrase = storeResult.StatusMessage;
+                    result.ReasonPhrase =
+                        storeResult.StatusMessage.Length > 512 ?
+                        storeResult.StatusMessage.Substring(0, 512) :
+                        storeResult.StatusMessage;
                 }
 
                 result.Content = CreateResponseContent (request, storeResult);
