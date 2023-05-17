@@ -1,0 +1,38 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+
+/*****************************************/
+.swagger-section #header {
+   background-color: #000000;
+}
+
+.app-logo {
+   float: left;
+   width: 140px;
+   height: 40px;
+   position: absolute;
+   z-index: 501;
+}
+
+.app-logo a {
+   width: 140px;
+   height: 40px;
+   background-image: url(/logo.png);
+}
+

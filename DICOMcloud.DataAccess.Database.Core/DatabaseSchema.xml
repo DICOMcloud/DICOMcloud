@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dbSchema>
+   <tables>
+      <table name="Patient" order="10" parent=""/>
+      <table name="Study" order="20" parent="Patient"/>
+      <table name="Series" order="30" parent="Study"/>
+      <table name="ObjectInstance" order="40" parent="Series"/>
+   
+      <table name="RequestAttributeSequence" seq="true" tag="4194933" order="70" parent="Series"/>
+
+   </tables>
+
+   <columns>
+      <column name="PatientKey" table="Patient" key="true" defenition="[PatientKey] [nvarchar](64) NOT NULL" tag="" />
+      <column name="PatientId" modelKey="true" table="Patient" defenition="[PatientId] [nvarchar](64) NOT NULL" tag="1048608" />
+      <column name="IssuerOfPatientId" table="Patient" defenition="[IssuerOfPatientId] [nvarchar](64) NULL" tag="1048609" />
+      <column name="PatientsBirthDate" table="Patient" isDate="true" defenition="[PatientsBirthDate] [datetime] NULL" tag="1048624" />
+      <column name="PatientsSex" table="Patient" defenition="[PatientsSex] [char](1) NULL" tag="1048640" />
+      <column name="PatientsName_Family" table="Patient" defenition="[PatientsName_Family] [nvarchar](64) NULL" tag="1048592" />
+      <column name="PatientsName_Given" table="Patient" defenition="[PatientsName_Given] [nvarchar](64) NULL" tag="1048592" />
+      <column name="PatientsName_Middle" table="Patient" defenition="[PatientsName_Middle] [nvarchar](64) NULL" tag="1048592" />
+      <column name="PatientsName_Prefix" table="Patient" defenition="[PatientsName_Prefix] [nvarchar](64) NULL" tag="1048592" />
+      <column name="PatientsName_Suffix" table="Patient" defenition="[PatientsName_Suffix] [nvarchar](64) NULL" tag="1048592" />
+      <column name="EthnicGroup" table="Patient" defenition="[EthnicGroup] [nvarchar](16) NULL" tag="1057120" />
+
+      <column name="StudyKey" table="Study" key="true" defenition="[StudyKey] [bigint] NOT NULL" tag="" />
+      <column name="Study_PatientKey" foreign="true" table="Study" defenition="[Study_PatientKey] [bigint] NOT NULL" tag="" />
+      <column name="StudyInstanceUid" modelKey="true" table="Study" defenition="[StudyInstanceUid] [nchar](64) NOT NULL" tag="2097165" />
+      <column name="StudyId" table="Study" defenition="[StudyId] [nvarchar](16) NULL" tag="2097168" />
+      <column name="AccessionNumber" table="Study" defenition="[AccessionNumber] [nvarchar](16) NULL" tag="524368" />
+      <column name="StudyDate" table="Study" isDate="true" defenition="[StudyDate] [datetime] NULL" tag="524320,524336" />
+      <column name="StudyDescription" table="Study" defenition="[StudyDescription] [nvarchar](64) NULL" tag="528432" />
+
+      <column name="SeriesKey" table="Series" key="true" defenition="[SeriesKey] [bigint] NOT NULL" tag="" />
+      <column name="Series_StudyKey" table="Series" foreign="true" defenition="[Series_StudyKey] [bigint] NOT NULL" tag="" />
+      <column name="SeriesInstanceUid" table="Series" modelKey="true" defenition="[SeriesInstanceUid] [nchar](64) NOT NULL" tag="2097166" />
+      <column name="SeriesNumber" table="Series" isNum="true" defenition="[SeriesNumber] [int] NULL" tag="2097169" />
+      <column name="Modality" table="Series" defenition="[Modality] [char](2) NOT NULL" tag="524384" />
+      <column name="SeriesDescription" table="Series" defenition="[SeriesDescription] [nchar](64) NULL" tag="528446" />
+
+      <column name="ObjectInstanceKey" table="ObjectInstance" key="true" defenition="[ObjectInstanceKey] [bigint] NOT NULL" tag="" />
+      <column name="ObjectInstance_SeriesKey" table="ObjectInstance" foreign="true" defenition="[ObjectInstance_SeriesKey] [bigint] NOT NULL" tag="" />
+      <column name="SopInstanceUid" table="ObjectInstance" modelKey="true" defenition="[SopInstanceUid] [nchar](64) NOT NULL" tag="524312" />
+      <column name="SopClassUid" table="ObjectInstance" defenition="[SopClassUid] [nchar](43) NOT NULL" tag="524310" />
+      <column name="InstanceNumber" table="ObjectInstance" isNum="true" defenition="[InstanceNumber] [int] NULL" tag="2097171" />
+      <column name="Rows" table="ObjectInstance" isNum="true" defenition="[Rows] [int] NULL" tag="2621456" />
+      <column name="Columns" table="ObjectInstance" isNum="true" defenition="[Columns] [int] NULL" tag="2621457" />
+      <column name="BitsAllocated" table="ObjectInstance" isNum="true" defenition="[BitsAllocated] [int] NULL" tag="2621696" />
+      <column name="NumberOfFrames" table="ObjectInstance" isNum="true" defenition="[NumberOfFrames] [int] NULL" tag="2621448" />
+
+      <column name="Metadata" table="ObjectInstance" isData="true" defenition="[Metadata] TEXT NULL" tag="" />
+      <column name="Owner" table="ObjectInstance" defenition="[Owner] NVARCHAR (265) NULL" tag="" />      
+    
+      <column name="Id" table="RequestAttributeSequence" key="true" defenition="[Id] [int] NOT NULL" tag="" />
+      <column name="ScheduledProcedureStepID" table="RequestAttributeSequence" defenition="[ScheduledProcedureStepID] [nvarchar](16) NULL" tag="4194313" />
+      <column name="RequestedProcedureID" table="RequestAttributeSequence" defenition="[RequestedProcedureID] [nvarchar](16) NULL" tag="4198401" />
+      <column name="RequestAttributeSeq_SeriesKey" table="RequestAttributeSequence" modelKey="true" foreign="true" defenition="[RequestAttributeSeq_SeriesKey] [bigint] NOT NULL" tag="" />
+
+   </columns>
+
+</dbSchema>

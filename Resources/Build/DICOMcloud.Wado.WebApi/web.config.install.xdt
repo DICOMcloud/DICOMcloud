@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+
+   <appSettings>
+      <!--***********TODO: update your storage connection*********-->
+      <!-- <add key="app:PacsStorageConnection" value="UseDevelopmentStorage=true;" />-->
+      <!--<add key="app:PacsStorageConnection" value="C:\DICOMcloud\Storage" />-->
+      <!--************************************************************-->
+
+      <!--***********TODO: update your databbase connection string*********-->
+      <!--<add key="app:PacsDataArchieve" value="TODO: ENTER YOUR SQL DATABASE CONNECTION STRING" />-->
+      <!--***********************************************************-->
+      
+      <add key="app:PacsStorageConnection" value="|DataDirectory|\App_Data\Storage\ds" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="app:PacsDataArchieve" value="Data Source=(LocalDb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\DB\DICOMcloud.mdf;Initial Catalog=DICOMcloud;Integrated Security=True" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+
+      <add key="app:WadoRsUrl" value="https://localhost:44301/wadors/" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="app:WadoUriUrl" value="https://localhost:44301/wadouri" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+
+      <add key="app:enableAnonymizer" value="true" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="app:anonymizerOptions" value="BasicProfile,RetainUIDs,RetainLongFullDates,RetainPatientChars" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+
+      <add key="app:supportPreSignedUrls" value="true" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="cors:enabled" value="true" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="cors:origins" value="*" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="cors:headers" value="*" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+      <add key="cors:methods" value="*" xdt:Transform="InsertIfMissing" xdt:Locator="Match(key)" />
+   </appSettings>
+
+</configuration>

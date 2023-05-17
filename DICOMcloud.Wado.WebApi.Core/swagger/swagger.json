@@ -1,0 +1,1297 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "v0.5 (preview)",
+    "title": "DICOMcloud",
+    "description": "  **DICOMcloud is an open source DICOMweb server that implements RESTful services in DICOM part 13**\n\nBelow is the API documentation of the DICOM PS3.18 Web Services implemented by the DICOMcloud server.\n\nThe documentation is powered by swagger UI using the OpenAPI specification. The “Try it out!” button won’t work on all APIs (can’t process multipart/related). \n\n**For an example client that uses this server, a live demo is hosted [here](http://dicomweb.azurewebsites.net/) with the source code in [GitHub](https://github.com/DICOMcloud/dicomweb-JS).**\n\n[**DICOMcloud Source Code on GitHub**](https://github.com/DICOMcloud/DICOMcloud) "
+  },
+  "host": "dicomcloud.azurewebsites.net",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/qidors/studies": {
+      "get": {
+        "tags": [
+          "QidoRS"
+        ],
+        "summary": "Look up studies (i.e., for a particular patient)",
+        "description": "This action searches for DICOM Studies that match specified search parameters and returns a list of matching studies and the requested attributes for each study.",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.7.html"
+        },
+        "operationId": "QidoRS_SearchForStudies",
+        "consumes": [
+          "application/dicom+json",
+          "multipart/related; type=\"application/dicom+xml\""
+        ],
+        "produces": [
+          "application/dicom+json",
+          "multipart/related; type=\"application/dicom+xml\""
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/study-attributeID"
+          },
+          {
+            "$ref": "#/parameters/includefield"
+          },
+          {
+            "$ref": "#/parameters/fuzzymatching"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/qidoOK"
+          },
+          "400": {
+            "$ref": "#/responses/qidoBadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/qidoUnauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/qidoForbidden"
+          },
+          "413": {
+            "$ref": "#/responses/qidoTooLong"
+          },
+          "503": {
+            "$ref": "#/responses/qidoBusy"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/qidors/studies/{StudyInstanceUID}/series": {
+      "get": {
+        "tags": [
+          "QidoRS"
+        ],
+        "summary": "Look up a series",
+        "description": "This action searches for DICOM Series in the specified *StudyInstanceUID* that match specified search parameters and returns a list of matching series and the requested attributes for each series.",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.7.htm"
+        },
+        "operationId": "QidoRS_SearchForSeries",
+        "consumes": [],
+        "produces": [
+          "application/dicom+json",
+          "multipart/related; type=\"application/dicom+xml\""
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/series-studyInstance"
+          },
+          {
+            "$ref": "#/parameters/series-attributeID"
+          },
+          {
+            "$ref": "#/parameters/includefield"
+          },
+          {
+            "$ref": "#/parameters/fuzzymatching"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/qidoOK"
+          },
+          "400": {
+            "$ref": "#/responses/qidoBadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/qidoUnauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/qidoForbidden"
+          },
+          "413": {
+            "$ref": "#/responses/qidoTooLong"
+          },
+          "503": {
+            "$ref": "#/responses/qidoBusy"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/qidors/series": {
+      "get": {
+        "tags": [
+          "QidoRS"
+        ],
+        "summary": "Look up a series",
+        "description": "This action searches for DICOM Series that match specified search parameters and returns a list of matching series and the requested attributes for each series.",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.7.html"
+        },
+        "operationId": "QidoRS_SearchForSeries1",
+        "consumes": [],
+        "produces": [
+          "application/dicom+json",
+          "multipart/related; type=\"application/dicom+xml\""
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/series-attributeID"
+          },
+          {
+            "$ref": "#/parameters/includefield"
+          },
+          {
+            "$ref": "#/parameters/fuzzymatching"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/qidoOK"
+          },
+          "400": {
+            "$ref": "#/responses/qidoBadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/qidoUnauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/qidoForbidden"
+          },
+          "413": {
+            "$ref": "#/responses/qidoTooLong"
+          },
+          "503": {
+            "$ref": "#/responses/qidoBusy"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/qidors/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/instances": {
+      "get": {
+        "tags": [
+          "QidoRS"
+        ],
+        "summary": "Look up instances",
+        "description": "This action searches for DICOM Instances in the specified *StudyInstanceUID* and *SeriesInstanceUID* that match specified search parameters and returns a list of matching instances and the requested attributes for each instance.",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.7.html"
+        },
+        "operationId": "QidoRS_SearchForInstances",
+        "consumes": [],
+        "produces": [
+          "application/dicom+json",
+          "multipart/related; type=\"application/dicom+xml\""
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/instance-studyInstance"
+          },
+          {
+            "$ref": "#/parameters/seriesInstance"
+          },
+          {
+            "$ref": "#/parameters/instance-attributeID"
+          },
+          {
+            "$ref": "#/parameters/includefield"
+          },
+          {
+            "$ref": "#/parameters/fuzzymatching"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/qidoOK"
+          },
+          "400": {
+            "$ref": "#/responses/qidoBadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/qidoUnauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/qidoForbidden"
+          },
+          "413": {
+            "$ref": "#/responses/qidoTooLong"
+          },
+          "503": {
+            "$ref": "#/responses/qidoBusy"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/qidors/studies/{StudyInstanceUID}/instances": {
+      "get": {
+        "tags": [
+          "QidoRS"
+        ],
+        "summary": "Look up instances",
+        "description": "This action searches for DICOM Instances in the specified *StudyInstanceUID* that match specified search parameters and returns a list of matching instances and the requested attributes for each instance.",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.7.html"
+        },
+        "operationId": "QidoRS_SearchForInstances1",
+        "consumes": [],
+        "produces": [
+          "application/json",
+          "text/json",
+          "application/xml",
+          "text/xml"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/instance-studyInstance"
+          },
+          {
+            "$ref": "#/parameters/instance-attributeID"
+          },
+          {
+            "$ref": "#/parameters/includefield"
+          },
+          {
+            "$ref": "#/parameters/fuzzymatching"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/qidoOK"
+          },
+          "400": {
+            "$ref": "#/responses/qidoBadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/qidoUnauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/qidoForbidden"
+          },
+          "413": {
+            "$ref": "#/responses/qidoTooLong"
+          },
+          "503": {
+            "$ref": "#/responses/qidoBusy"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/qidors/instances": {
+      "get": {
+        "tags": [
+          "QidoRS"
+        ],
+        "summary": "Look up instances",
+        "description": "This action searches for DICOM Instances that match specified search parameters and returns a list of matching instances and the requested attributes for each instance.",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.7.html"
+        },
+        "operationId": "QidoRS_SearchForInstances2",
+        "consumes": [],
+        "produces": [
+          "application/dicom+json",
+          "multipart/related; type=\"application/dicom+xml\""
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/instance-attributeID"
+          },
+          {
+            "$ref": "#/parameters/includefield"
+          },
+          {
+            "$ref": "#/parameters/fuzzymatching"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/qidoOK"
+          },
+          "400": {
+            "$ref": "#/responses/qidoBadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/qidoUnauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/qidoForbidden"
+          },
+          "413": {
+            "$ref": "#/responses/qidoTooLong"
+          },
+          "503": {
+            "$ref": "#/responses/qidoBusy"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/stowrs/studies/{StudyInstanceUID}": {
+      "post": {
+        "tags": [
+          "StowRS"
+        ],
+        "summary": "Store DICOM Instances",
+        "description": "(DICOM Part 18 rev. 2016 section 6.6)\n\nThis action creates new resources for the given SOP Instances on the Server or appends to existing resources on the Server.\n\nAll request messages are HTTP multipart messages. The organization of SOP Instances into message parts depends on whetherthe SOP Instances are structured as PS3.10 binary instances, or metadata and bulk data.\n\n\nPS3.10 binary instances shall be encoded with one message part per DICOM Instance.\nMetadata and bulk data requests will be encoded in the following manner:(see Figure 6.5-1 Mapping between IOD and HTTP messageparts)\n\n* All XML request messages shall be encoded as described in the Native DICOM Model defined in PS3.19 with one message partper XML object.\n* All JSON request messages shall be encoded as an array of DICOM JSON Model Objects defined in Annex F in a single messagepart.\n* Uncompressed bulk and pixel data shall be encoded in a Little Endian format using the application/octet-stream media type withone message part per bulk data item.\n* Compressed pixel data shall be encoded in one of two ways\n* Single-frame pixel data encoded using a single-frame media type (one message part)\n\n* Multi-frame or video pixel data encoded using a multi-frame media type (multiple frames in one message part)\n\nCompressed pixel data shall be encoded using the media types and transfer syntaxes specified in Table 6.1.1.8-3b. Media typescorresponding to several DICOM Transfer Syntax UIDs may require a transfer-syntax parameter to convey the Transfer Syntax thecompressed pixel data is encoded in.\n\nThe request header field Content-Type is used to indicate the media type of the payload.\n\nThe Service shall support uncompressed bulk data (multipart/related; type=\"application/octet-stream\").",
+        "operationId": "StowRS_Post",
+        "consumes": [
+          "multipart/related; type=\"application/dicom\"; boundary={messageBoundary},",
+          "multipart/related; type=\"application/dicom+xml\"; boundary={messageBoundary},",
+          "multipart/related; type=\"application/dicom+json\"; boundary={messageBoundary}"
+        ],
+        "produces": [
+          "application/dicom+xml",
+          "application/dicom+json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/stowStudyInstanceUID"
+          },
+          {
+            "$ref": "#/parameters/stowContent"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/stowOK"
+          },
+          "202": {
+            "$ref": "#/responses/stowAccepted"
+          },
+          "400": {
+            "$ref": "#/responses/stowBadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/stowUnauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/stowForbidden"
+          },
+          "409": {
+            "$ref": "#/responses/stowConflict"
+          },
+          "415": {
+            "$ref": "#/responses/stowUnsupportedMedia"
+          },
+          "503": {
+            "$ref": "#/responses/stowBusy"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/stowrs/studies/": {
+      "post": {
+        "tags": [
+          "StowRS"
+        ],
+        "summary": "Store DICOM Instances",
+        "description": "This action supports storing DICOM instances without explicitly specifying the *StudyInstanceUID*. For complete description refer to the action /stowrs/studies/{StudyInstanceUID}",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.6.html"
+        },
+        "operationId": "StowRS_Post2",
+        "consumes": [
+          "multipart/related; type=\"application/dicom\"; boundary={messageBoundary},",
+          "multipart/related; type=\"application/dicom+xml\"; boundary={messageBoundary},",
+          "multipart/related; type=\"application/dicom+json\"; boundary={messageBoundary}"
+        ],
+        "produces": [
+          "application/dicom+xml",
+          "application/dicom+json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/stowContent"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/stowOK"
+          },
+          "202": {
+            "$ref": "#/responses/stowAccepted"
+          },
+          "400": {
+            "$ref": "#/responses/stowBadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/stowUnauthorized"
+          },
+          "403": {
+            "$ref": "#/responses/stowForbidden"
+          },
+          "409": {
+            "$ref": "#/responses/stowConflict"
+          },
+          "415": {
+            "$ref": "#/responses/stowUnsupportedMedia"
+          },
+          "503": {
+            "$ref": "#/responses/stowBusy"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/wadors/studies/{StudyInstanceUID}": {
+      "get": {
+        "tags": [
+          "WadoRS"
+        ],
+        "summary": "Retrieve Study",
+        "description": "This action retrieves the set of DICOM instances associated with a given study unique identifier (UID). The response can be DICOM or bulk data depending on the \"Accept\" type, and is encapsulated in a multipart MIME response.",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.html"
+        },
+        "operationId": "WadoRS_GetStudies",
+        "consumes": [],
+        "produces": [
+          "multipart/related; type=\"application/dicom\" [dcm-parameters]",
+          "multipart/related; type=\"application/octet-stream\" [dcm-parameters]",
+          "multipart/related; type=\"{media-type}\" [dcm-parameters]"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/rs-studyInstance"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[(ref. DICOM Part 18 rev. 2016 section 6.5.1.2)](http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.html)  \n\n### 6.5.1.2.1 DICOM Response\n\n**Content-Type:**\n\n*  multipart/related; type=application/dicom; boundary={MessageBoundary}\n\nThe entire multipart response contains every instance for the specified Study that can be converted to one of the requested Transfer Syntaxes.\n\nEach part in the multipart response represents a DICOM SOP Instance with the following http headers:\n\n* Content-Type: application/dicom [dcm-parameters]\n* See Section 6.1.3.\n\n### 6.5.1.2.2 Bulk Data Response\n\n\n**Content-Type:**\n\n* multipart/related; type=\"application/octet-stream\"; boundary={MessageBoundary} [dcm-parameters]\n\n* multipart/related; type=\"{media-type}\"; boundary={MessageBoundary} [dcm-parameters] See Section 6.1.3.\n\nThe entire multipart response contains all bulk data for the specified Study that can be converted to one of the requested mediatypes.\n\nEach item in the response is one of:\n\nan uncompressed bulk data element encoded in Little Endian binary format with the following headers:\n* Content-Type: application/octet-stream\n\n* Content-Location: {BulkDataURI}\n\na compressed bulk data element from a SOP Instance in the Study encoded in a single-frame compression {MediaType} withthe following headers:\n\n* Content-Type: {media-type} [dcm-parameters]\n\n* Content-Location: {BulkDataURI}\n\na compressed frame from a multi-frame SOP Instance in the Study encoded in a single-frame media type with the followingheaders:\n\n* Content-Type: {media-type} [dcm-parameters]\n\n* Content-Location: {BulkDataURI}/frames/{FrameNumber} Note Each frame will come in a separate part.\n\nall of the compressed frames from a SOP Instance in the Study encoded in a video media type with the following headers:\n\n* Content-Type: {media-type} [dcm-parameters]\n\n* Content-Location: {BulkDataURI}"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/wadors/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}": {
+      "get": {
+        "tags": [
+          "WadoRS"
+        ],
+        "operationId": "WadoRS_GetSeries",
+        "summary": "Retrieve Series",
+        "description": "This action retrieves the set of DICOM instances associated with a given study and series UID. The response can be DICOM or bulk data depending on the \"Accept\" type, and is encapsulated in a multipart MIME response.",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.html"
+        },
+        "consumes": [],
+        "produces": [
+          "multipart/related; type=\"application/dicom\" [dcm-parameters]",
+          "multipart/related; type=\"application/octet-stream\" [dcm-parameters]",
+          "multipart/related; type=\"{media-type}\" [dcm-parameters]"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/rs-studyInstance"
+          },
+          {
+            "$ref": "#/parameters/rs-seriesInstance"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[(ref. DICOM Part 18 rev. 2016 section 6.5.2)](http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.2.2.html)\n\n## 6.5.2.2 Response\n\nThe Server shall provide the document(s) indicated in the request. In order to parse the bulk data items it is necessary to also retrieve the corresponding metadata for the specified Study, Series, or Instance.\n\nThe Server shall return the document(s), or an error code when the document(s) cannot be returned. If the server cannot convert all of the data to any of the requested media types/Transfer Syntaxes, then an error code shall be returned, either a \"Not Acceptable\" response if no data is returned or a \"Partial Content\" response if only some data is returned.\n\nThe client can compare the SOP Instance UIDs or BulkDataURIs in the metadata and the message response to determine which bulk data elements have been returned.\n\nAll response formats have a media type of multipart/related with a message boundary separator. The response format depends on the Accept header specified in the request.\n\n## 6.5.2.2.1 DICOM Response\n\n**Content-Type:**\n\n* multipart/related; type=application/dicom; boundary={MessageBoundary}\n\nThe entire multipart response contains every instance for the specified Series that can be converted to one of the requested Transfer Syntaxes.\n\n**Each part in the multipart response represents a DICOM SOP Instance with the following http headers:**\n\n* Content-Type: application/dicom [dcm-parameters]"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/wadors/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/instances/{SOPInstanceUID}": {
+      "get": {
+        "tags": [
+          "WadoRS"
+        ],
+        "operationId": "WadoRS_GetInstance",
+        "summary": "Retrieve Instance",
+        "description": "This action retrieves the DICOM instance associated with the given study, series, and SOP Instance UID. The response can be DICOM or bulk data depending on the \"Accept\" type, and is encapsulated in a multipart MIME response.",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.3.html"
+        },
+        "consumes": [],
+        "produces": [
+          "multipart/related; type=\"application/dicom\" [dcm-parameters]",
+          "multipart/related; type=\"application/octet-stream\" [dcm-parameters]",
+          "multipart/related; type=\"{media-type}\" [dcm-parameters]"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/rs-studyInstance"
+          },
+          {
+            "$ref": "#/parameters/rs-seriesInstance"
+          },
+          {
+            "$ref": "#/parameters/rs-sopInstance"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[(ref. DICOM Part 18 rev. 2016 section 6.5.3)](http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.3.html)\n\n## 6.5.3.2 Response\n\nThe Server shall provide either a single DICOM PS3.10 object for the SOP Instance or one or more bulk data items. In order to parse the bulk data items it is necessary to also retrieve the corresponding metadata for the specified Study, Series, or Instance.\n\nThe Server shall return the document(s), or an error code when the document(s) cannot be returned. If the server cannot convert allof the bulk data to any of the requested media types, then an error code shall be returned, either a \"Not Acceptable\" response if nodata is returned or a \"Partial Content\" response if only some data is returned.\n\nThe client can compare the BulkDataURIs in the metadata and the message response to determine which bulk data elements havebeen returned.\n\nAll response formats have a media type of **multipart/related** with a message boundary separator. The response format depends onthe Accept header specified in the request.\n### 6.5.3.2.1 DICOM Response\n\n**Content-Type:**\n* multipart/related; type=\"application/dicom\"; boundary={MessageBoundary}\n\nThe multipart response contains a single part representing the specified DICOM SOP Instance with the following http headers:\n* Content-Type: application/dicom [dcm-parameters]\nSee Section 6.1.3.\n\n### 6.5.3.2.2 Bulk Data Response\n\n**Content-Type:**\n* multipart/related; type=\"application/octet-stream\"; boundary={MessageBoundary} [dcm-parameters]\n* multipart/related; type=\"{media-type}\"; boundary={MessageBoundary} [dcm-parameters]\nSee Section 6.1.3.\n\nThe entire multipart response contains all bulk data for the specified Instance that can be converted to one of the requested mediatypes.\n\nEach item in the response is one of:\n\nan uncompressed bulk data element encoded in Little Endian binary format with the following headers:\n* Content-Type: application/octet-stream\n\n*. Content-Location: {BulkDataURI}\n**a compressed bulk data element from a SOP Instance encoded in a single-frame media type with the following headers:**\n* Content-Type: {media-type} [dcm-parameters]\n* Content-Location: {BulkDataURI}\n**a compressed frame from a multi-frame SOP Instance encoded in a single-frame media type with the following headers:**\n* Content-Type: {media-type} [dcm-parameters]\n* Content-Location: {BulkDataURI}/frames/{FrameNumber}\n**all of the compressed frames from a multi-frame SOP Instance encoded in a video media type with the following headers:**\n* Content-Type: {media-type} [dcm-parameters] * Content-Location: {BulkDataURI} "
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/wadors/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/instances/{SOPInstanceUID}/frames/{FrameList}": {
+      "get": {
+        "tags": [
+          "WadoRS"
+        ],
+        "operationId": "WadoRS_GetFrames",
+        "summary": "Retrieve Frames",
+        "description": "This action retrieves the DICOM frames for a given study, series, SOP Instance UID, and frame numbers. The response is pixel data,and is encapsulated in a multipart MIME response",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.html"
+        },
+        "consumes": [],
+        "produces": [
+          "multipart/related; type=\"application/octet-stream\" [dcm-parameters]",
+          "multipart/related; type=\"{media-type}\" [dcm-parameters]"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/rs-studyInstance"
+          },
+          {
+            "$ref": "#/parameters/rs-seriesInstance"
+          },
+          {
+            "$ref": "#/parameters/rs-sopInstance"
+          },
+          {
+            "$ref": "#/parameters/rs-frameList"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "[(ref. DICOM Part 18 rev. 2016 section 6.5.3)](http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.3.html)\n### 6.5.4.2.1 Pixel Data Response\n\n**Content-Type:**\n\n* multipart/related; type=\"application/octet-stream\"; boundary={MessageBoundary} [dcm-parameters]\n*multipart/related; type=\"{media-type}\"; boundary={MessageBoundary} [dcm-parameters]\n\nThe entire multipart response contains all requested Frames for the specified Instance.\n\nEach item in the response is one of:\n\n**an uncompressed frame encoded in Little Endian binary format (as specified in Table 6.1.1.8-3a) with the following headers:**\n* Content-Type: application/octet-stream\n* Content-Location: {BulkDataURI}[/frames/{FrameNumber}]\n\n**a compressed frame encoded in a single-frame media type (as specified in Table 6.1.1.8-3b) with the following headers:**\n* Content-Type: {media-type} [dcm-parameters]\n\n* Content-Location: {BulkDataURI}/frames/{FrameNumber}\nall of the compressed frames encoded in a video media type (as specified in Table 6.1.1.8-3b) with the following headers:\n* Content-Type: {media-type} [dcm-parameters]\n*Content-Location: {BulkDataURI}[/frames/{FrameList}]\n*{FrameList} is a list of frames separated by %2C (comma). It may be omitted if the message part includes all frames for thespecified bulk pixel data object.\n\nThe frames will be returned in the order specified by the Frame List. ",
+            "schema": {
+              "$ref": "#/definitions/Object"
+            }
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/wadors/studies/{StudyInstanceUID}/metadata": {
+      "get": {
+        "tags": [
+          "WadoRS"
+        ],
+        "operationId": "WadoRS_GetStudiesMetadata",
+        "summary": "Retrieve Metadata",
+        "description": "This action retrieves the DICOM instances presented as the study metadata with the bulk data removed. The response is metadata for the DICOM attributes.",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.html"
+        },
+        "consumes": [],
+        "produces": [
+          "multipart/related; type=\"application/dicom+xml\"",
+          "application/dicom+json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/rs-studyInstance"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/rsMetaOK"
+          },
+          "400": {
+            "$ref": "#/responses/rsMetaBadRequest"
+          },
+          "404": {
+            "$ref": "#/responses/rsMetaNotFound"
+          },
+          "406": {
+            "$ref": "#/responses/rsMetaNotAcceptable"
+          },
+          "410": {
+            "$ref": "#/responses/rsMetaGone"
+          },
+          "503": {
+            "$ref": "#/responses/rsMetaBusy"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/wadors/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/metadata": {
+      "get": {
+        "tags": [
+          "WadoRS"
+        ],
+        "operationId": "WadoRS_GetSeriesMetadata",
+        "summary": "Retrieve Metadata",
+        "description": "This action retrieves the DICOM instances presented as the series metadata with the bulk data removed. The response is metadata for the DICOM attributes.",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.html"
+        },
+        "consumes": [],
+        "produces": [
+          "multipart/related; type=\"application/dicom+xml\"",
+          "application/dicom+json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/rs-studyInstance"
+          },
+          {
+            "$ref": "#/parameters/rs-seriesInstance"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/rsMetaOK"
+          },
+          "400": {
+            "$ref": "#/responses/rsMetaBadRequest"
+          },
+          "404": {
+            "$ref": "#/responses/rsMetaNotFound"
+          },
+          "406": {
+            "$ref": "#/responses/rsMetaNotAcceptable"
+          },
+          "410": {
+            "$ref": "#/responses/rsMetaGone"
+          },
+          "503": {
+            "$ref": "#/responses/rsMetaBusy"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/wadors/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/instances/{SOPInstanceUID}/metadata": {
+      "get": {
+        "tags": [
+          "WadoRS"
+        ],
+        "operationId": "WadoRS_GetInstanceMetadata",
+        "summary": "Retrieve Metadata",
+        "description": "This action retrieves the DICOM instances presented as the instance metadata with the bulk data removed. The response is metadata for the DICOM attributes.",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.html"
+        },
+        "consumes": [],
+        "produces": [
+          "multipart/related; type=\"application/dicom+xml\"",
+          "application/dicom+json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/rs-studyInstance"
+          },
+          {
+            "$ref": "#/parameters/rs-seriesInstance"
+          },
+          {
+            "$ref": "#/parameters/rs-sopInstance"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/rsMetaOK"
+          },
+          "400": {
+            "$ref": "#/responses/rsMetaBadRequest"
+          },
+          "404": {
+            "$ref": "#/responses/rsMetaNotFound"
+          },
+          "406": {
+            "$ref": "#/responses/rsMetaNotAcceptable"
+          },
+          "410": {
+            "$ref": "#/responses/rsMetaGone"
+          },
+          "503": {
+            "$ref": "#/responses/rsMetaBusy"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/WadoUri": {
+      "get": {
+        "tags": [
+          "WadoUri"
+        ],
+        "operationId": "WadoUri_Get",
+        "summary": "Web Access to DICOM Objects by URI",
+        "description": "A service enabling the user  to retrieve DICOM Objects managed by the DICOMcloud server,through HTTP/HTTPS protocol.\nWADO-URI is not a RESTful service and has it own way of negotiating media content in addition to the regual content-type header. For detailed information on allowed media types and expected output you can refer to [PS3.18 2016 sec. 6](http://dicom.nema.org/medical/dicom/current/output/html/part18.html#chapter_6)",
+        "externalDocs": {
+          "description": "Find more info here",
+          "url": "http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.2"
+        },
+        "consumes": [],
+        "produces": [],
+        "parameters": [
+          {
+            "name": "requestType",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "**(supported)** The parameter name shall be \"requestType\".",
+            "enum": [
+              "WADO"
+            ]
+          },
+          {
+            "name": "studyUID",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "**(supported)** Study Instance UID as defined in PS3.3"
+          },
+          {
+            "name": "seriesUID",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "**(supported)** Series Instance UID as defined in PS3.3"
+          },
+          {
+            "name": "objectUID",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "**(supported)** SOP Instance UID as defined in PS3.3"
+          },
+          {
+            "name": "contentType",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "**(partially supported - not all media types)**. This parameter contains one or more Acceptable Media Types as defined in Section [6.1.1.4](http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_6.1.1.4)"
+          },
+          {
+            "name": "charset",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Character set with which the returned objects are to be encoded, as defined in the [RFC7230]."
+          },
+          {
+            "name": "frameNumber",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "description": "**(supported)** Specifies that the single frame with that number within a multi-frame image object, as defined in PS3.3\n\nIt shall not be present if contentType is ap-plication/dicom.\n\nThe value shall be encoded as an integer string (IS), as specified in PS3.5."
+          },
+          {
+            "name": "transferSyntax",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": " **(supported)**. The Transfer Syntax to be used within the DICOM image objects, as specified in PS3.6.\nBy default the DICOM object(s) returned will be encoded in Explicit VR Little Endian. Neither Implicit VR, nor Big Endian will be be used. The response will be the Transfer Syntax requested if possible. If it is not possible for the response to be sent using the requested transfer syntax then the Explicit VR Little Endian Uncompressed Transfer Syntax will be used."
+          },
+          {
+            "name": "anonymize",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "(not supported). Removal of all patient identification information from within the DICOM Objects, if not already done, as defined in PS3.15",
+            "enum": [
+              "yes"
+            ]
+          },
+          {
+            "name": "burnAnnotation",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "string",
+            "enum": [
+              "patient",
+              "technique"
+            ],
+            "description": "(not supported). For image Annotation of objects retrieved and displayed as an image."
+          },
+          {
+            "name": "rows",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "description": "(not supported). The value shall be expressed as an integer, representing the image height to be returned"
+          },
+          {
+            "name": "columns",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "description": "(not supported). The value shall be expressed as an integer, representing the image width to be returned."
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "(not supported). This parameter allows selection of a rectangular region of an image matrix to be retrieved. The purpose of this parameter is to allow a user to view a selected area of the image matrix, for example at higher magnification.\n\nIt shall only be present if the Acceptable Media Types are Rendered Media Types. See Section 6.1.1.3.\n\nIt shall not be present if the Unique Identifier of the Presentation Object parameter is present.\n\nFor more information about the format of this parameter refer to [PS3.18 2016 sec. 8.2.4](http://dicom.nema.org/medical/dicom/current/output/html/part18.html#sect_8.2.4)"
+          },
+          {
+            "name": "windowCenter",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "(not supported). Controls the window center of the images as defined in PS3.3.\n\nThis parameter shall not be present if there is a presentationUID parameter. It shall notbe present if contentType is application/dicom."
+          },
+          {
+            "name": "windowWidth",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "(not supported). Controls the window width of the images as defined in PS3.3.\n\nThis parameter shall not be present if there is a presentationUID parameter. It shall not be present ifcontentType is application/dicom.\n\nThe value shall be encoded as a decimal string (DS), as specified in PS3.5."
+          },
+          {
+            "name": "imageQuality",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "description": "(not supported). It shall not be present if contentType isapplication/dicom, except if the transferSyntax parameter is present and corresponds to a lossy compression.\n\nIf the requested media type is for a lossy compressed image (e.g., image/jpeg), this parameter indicates the required quality of theimage to be returned within the range 1 to 100, 100 being the best quality."
+          },
+          {
+            "name": "presentationUID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "(not supported). SOP Instance UID of the presentation state storage object to be applied to the images."
+          },
+          {
+            "name": "presentationSeriesUID",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "(not supported). Series Instance UID of the series containing the presentation state storage object to be applied on the images."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "parameters": {
+    "series-studyInstance": {
+      "name": "StudyInstanceUID",
+      "in": "path",
+      "required": true,
+      "type": "string",
+      "description": "Study Instance UID of the returned series"
+    },
+    "instance-studyInstance": {
+      "name": "StudyInstanceUID",
+      "in": "path",
+      "required": true,
+      "type": "string",
+      "description": "Study Instance UID of the returned instance"
+    },
+    "seriesInstance": {
+      "name": "SeriesInstanceUID",
+      "in": "path",
+      "required": true,
+      "type": "string",
+      "description": "Series Instance UID of the returned instance"
+    },
+    "study-attributeID": {
+      "name": "0020000D",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "collectionFormat": "multi",
+      "format": "attributeID=value",
+      "description": "0-n / {attributeID}={value} pairs allowed. {attributeID} is any {dicomTag} in Hex representation. 0020000D is for Study Instance UID"
+    },
+    "series-attributeID": {
+      "name": "00200010",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "collectionFormat": "multi",
+      "format": "attributeID=value",
+      "description": "0-n / {attributeID}={value} pairs allowed. {attributeID} is any {dicomTag} in Hex representation. 00200010 is for Study ID"
+    },
+    "instance-attributeID": {
+      "name": "00080060",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "collectionFormat": "multi",
+      "format": "attributeID=value",
+      "description": "0-n / {attributeID}={value} pairs allowed. {attributeID} is any {dicomTag} in Hex representation. 00080060 is for Modality"
+    },
+    "includefield": {
+      "name": "includefield",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "collectionFormat": "multi",
+      "format": "includefield=attributeID",
+      "description": "0-n includefield / {attributeID} pairs allowed (e.g. includefield=00100020)"
+    },
+    "fuzzymatching": {
+      "name": "fuzzymatching",
+      "in": "query",
+      "required": false,
+      "type": "boolean",
+      "description": "fuzzy matching is always supported by the server"
+    },
+    "limit": {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "type": "integer",
+      "format": "int64",
+      "description": "Not supported. Per DICOM, The “limit” parameter value is an unsigned integer, which specifies the maximum number of results the origin server should return.If the “limit” parameter is not present, its value is 50."
+    },
+    "offset": {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "type": "integer",
+      "format": "int64",
+      "description": "Not supported. Per DICOM, The “offset” parameter value is an unsigned integer, which specifies the number of results the origin server should skip before thefirst returned result. If the “offset” query parameter is not present, its value is 0."
+    },
+    "stowStudyInstanceUID": {
+      "name": "StudyInstanceUID",
+      "in": "path",
+      "required": true,
+      "type": "string",
+      "default": "s",
+      "description": "is the study instance UID for a single study. If not specified, instances can be from multiple studies. If specified, all instances shall be from that study; instances not matching the StudyInstanceUID shall be rejected."
+    },
+    "stowContent": {
+      "name": "content",
+      "in": "body",
+      "required": true,
+      "schema": {
+        "$ref": "#/definitions/Object"
+      },
+      "description": "1. (supported) The DICOM Request Message has a multipart body.  \n\n  * *Content-Type*: multipart/related; type=\"application/dicom\"; boundary={MessageBoundary} \n\n  * The multipart request body contains every instance to be stored. Each instance is in a separate part of the multipart body. \n\n  * Each part in the multipart body represents a DICOM SOP Instance with the following HTTP headers: Content-Type: application/dicom"
+    },
+    "rs-studyInstance": {
+      "name": "StudyInstanceUID",
+      "in": "path",
+      "required": true,
+      "type": "string",
+      "description": "The Study Instance UID of the instances to retrieve"
+    },
+    "rs-seriesInstance": {
+      "name": "SeriesInstanceUID",
+      "in": "path",
+      "required": true,
+      "type": "string",
+      "description": "The Series Instance UID of the instances to retrieve"
+    },
+    "rs-sopInstance": {
+      "name": "SOPInstanceUID",
+      "in": "path",
+      "required": true,
+      "type": "string",
+      "description": "The SOP Instance UID of the instance to retrieve"
+    },
+    "rs-frameList": {
+      "name": "FrameList",
+      "in": "path",
+      "required": true,
+      "type": "string",
+      "description": "is a comma or %2C separated list of one or more non duplicate frame numbers. These may be in any order (e.g.,../frames/1,2,4,3)"
+    }
+  },
+  "responses": {
+    "qidoOK": {
+      "description": "OK. The query completed and any matching results are returned in the message body.",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/queryModel"
+        }
+      }
+    },
+    "qidoBadRequest": {
+      "description": "Bad Request. The QIDO-RS Provider was unable to perform the query because the ServiceProvider cannot understand the query component."
+    },
+    "qidoUnauthorized": {
+      "description": "(not used) Unauthorized. The QIDO-RS Provider refused to perform the query because the client is notauthenticated."
+    },
+    "qidoForbidden": {
+      "description": "(not used) Forbidden. The QIDO-RS Provider understood the request, but is refusing to perform thequery (e.g., an authenticated user with insufficient privileges)."
+    },
+    "qidoTooLong": {
+      "description": "(not used) Request Too Long. The query was too broad and a narrower query or paging should be requested.The use of this status code should be documented in the conformance statement."
+    },
+    "qidoBusy": {
+      "description": "Busy. Service is unavailable."
+    },
+    "stowBadRequest": {
+      "description": "Bad Request. This indicates that the STOW-RS Service was unable to store any instances due tobad syntax."
+    },
+    "stowUnauthorized": {
+      "description": "Unauthorized. This indicates that the STOW-RS Service refused to create or append any instancesbecause the client is not authorized."
+    },
+    "stowForbidden": {
+      "description": "Forbidden. This indicates that the STOW-RS Service understood the request, but is refusing tofulfill it (e.g., an authorized user with insufficient privileges)."
+    },
+    "stowConflict": {
+      "description": "Conflict. This indicates that the STOW-RS Service request was formed correctly but the servicewas unable to store any instances due to a conflict in the request (e.g., unsupported SOP Class or StudyInstanceUID mismatch). This may also be used to indicate that a STOW-RS Service was unable to store any instances for a mixture of reasons. Additional information regarding the instance errors can be found in the XML response message body."
+    },
+    "stowUnsupportedMedia": {
+      "description": "Unsupported Media. This indicates that the STOW-RS Service does not support the Content-Type specifiedin the storage request (e.g., the service does not support JSON metadata)."
+    },
+    "stowBusy": {
+      "description": "Busy. This indicates that the STOW-RS Service was unable to store any instances because it was out of resources."
+    },
+    "stowAccepted": {
+      "description": "Accepted. This indicates that the STOW-RS Service stored some of the instances but warnings or failures exist for others. Additional information regarding this error can be found in the XML response message body"
+    },
+    "stowOK": {
+      "description": "OK. This indicates that the STOW-RS Service successfully stored all the instances."
+    },
+    "rsMetaPartial": {
+      "description": "Partial Content. Accept type, Transfer Syntax or decompression method supportedfor some but not all requested content."
+    },
+    "rsMetaBadRequest": {
+      "description": "Bad Request. Malformed resource"
+    },
+    "rsMetaNotFound": {
+      "description": "Not Found. Specified resource does not exist"
+    },
+    "rsMetaNotAcceptable": {
+      "description": "Accept type, Transfer Syntax or decompression method notsupported"
+    },
+    "rsMetaGone": {
+      "description": "Gone. Specified resource was deleted"
+    },
+    "rsMetaBusy": {
+      "description": "Busy. Service is unavailable"
+    },
+    "rsMetaOK": {
+      "description": "[(ref. DICOM Part 18 rev. 2016 section 6.5.6)](http://dicom.nema.org/medical/dicom/current/output/chtml/part18/sect_6.5.6.html)\n## 6.5.6.2 Response\n\nThe Server shall provide the document(s) indicated in the request. The Server shall return the document(s) or an error code whenthe document(s) could not be returned.\n\nThe response has a media type of either:\n\n* multipart/related; type=\"application/dicom+xml\", as described in the Native DICOM Model defined in PS3.19, or\n* application/dicom+json, as described in Annex F.\n\nThe response must include the URL attribute for each BulkData element.\n\n### 6.5.6.2.1 XML Metadata Response\n**Content-Type:**\n\n* multipart/related; type=\"application/dicom+xml\" [dcm-parameters]\n\nThe entire multipart response contains all XML metadata for the specified Study, Series, or Instance.\n\n**Each item in the response is the XML encoded metadata for an Instance with the following http headers:**\n* Content-Type: application/dicom+xml; [dcm-parameters]\n\nWhere the transfer-syntax in the dcm-parameters is the UID of the DICOM Transfer Syntax used to encode the inline binary datain the XML metadata.\n\n### 6.5.6.2.2 JSON Metadata Response\n**Content-Type:**\n\n* application/dicom+json [dcm-parameters]\n\nWhere the transfer-syntax in the dcm-parameters is the UID of the DICOM Transfer Syntax used to encode the inline binary datain the JSON metadata.\n\nThe response is a JSON array that contains all metadata for the specified Study.\n\nEach element in the array is the DICOM JSON encoded metadata for an Instance (see Annex F). "
+    }
+  },
+  "definitions": {
+    "StudyResponse": {
+      "type": "object",
+      "items": {
+        "$ref": "#/definitions/queryModel"
+      }
+    },
+    "queryModel": {
+      "type": "object",
+      "properties": {
+        "ggggeeee": {
+          "$ref": "#/definitions/stringDicomElement"
+        },
+        "0002000D": {
+          "$ref": "#/definitions/stringDicomElement"
+        },
+        "{personNameTag}": {
+          "$ref": "#/definitions/pnDicomElement"
+        }
+      }
+    },
+    "stringDicomElement": {
+      "type": "object",
+      "properties": {
+        "vr": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "pnDicomElement": {
+      "type": "object",
+      "properties": {
+        "vr": {
+          "type": "string",
+          "default": "PN"
+        },
+        "Value": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PersonName"
+          }
+        }
+      }
+    },
+    "PersonName": {
+      "type": "object",
+      "properties": {
+        "Alphabetic": {
+          "type": "string"
+        },
+        "Ideographic": {
+          "type": "string"
+        },
+        "Phonetic": {
+          "type": "string"
+        }
+      }
+    },
+    "IQidoRequestModel": {
+      "type": "object",
+      "properties": {
+        "FuzzyMatching": {
+          "type": "boolean"
+        },
+        "Limit": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "Offset": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "Query": {
+          "$ref": "#/definitions/QidoQuery"
+        },
+        "AcceptHeader": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MediaTypeWithQualityHeaderValue"
+          }
+        },
+        "AcceptCharsetHeader": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StringWithQualityHeaderValue"
+          }
+        }
+      }
+    },
+    "QidoQuery": {
+      "type": "object",
+      "properties": {
+        "MatchingElements": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "readOnly": true
+        },
+        "IncludeElements": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "readOnly": true
+        }
+      }
+    },
+    "MediaTypeWithQualityHeaderValue": {
+      "type": "object",
+      "properties": {
+        "Quality": {
+          "format": "double",
+          "type": "number"
+        },
+        "CharSet": {
+          "type": "string"
+        },
+        "Parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NameValueHeaderValue"
+          },
+          "readOnly": true
+        },
+        "MediaType": {
+          "type": "string"
+        }
+      }
+    },
+    "StringWithQualityHeaderValue": {
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "string",
+          "readOnly": true
+        },
+        "Quality": {
+          "format": "double",
+          "type": "number",
+          "readOnly": true
+        }
+      }
+    },
+    "NameValueHeaderValue": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string",
+          "readOnly": true
+        },
+        "Value": {
+          "type": "string"
+        }
+      }
+    },
+    "Object": {
+      "type": "object",
+      "properties": {}
+    }
+  }
+}
