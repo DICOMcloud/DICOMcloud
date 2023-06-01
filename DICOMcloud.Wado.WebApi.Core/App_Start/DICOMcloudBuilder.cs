@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Net.Http ;
 using Dicom;
-using DICOMcloud.Azure.IO;
+//using DICOMcloud.Azure.IO;
 using DICOMcloud.DataAccess;
 using DICOMcloud.DataAccess.Database.Schema;
 using DICOMcloud.IO;
@@ -10,8 +10,8 @@ using DICOMcloud.Messaging;
 using DICOMcloud.Pacs;
 using DICOMcloud.Pacs.Commands;
 using Microsoft.Azure;
-using Microsoft.WindowsAzure.Storage;
-using StructureMap;
+//using Microsoft.WindowsAzure.Storage;
+//using StructureMap;
 using System;
 using fo = Dicom;
 using System.Web.Http;
@@ -19,18 +19,28 @@ using System.Web.Http.ExceptionHandling;
 using DICOMcloud.Wado.WebApi.Exceptions;
 using DICOMcloud.DataAccess.Database;
 using DICOMcloud.Wado.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.WindowsAzure.Storage;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DICOMcloud.Wado
 {
-    public partial class DICOMcloudBuilder
+    public static class DICOMcloudBuilder 
     {
-        private WebApplicationBuilder _Builder { get; set;}
-        public DICOMcloudBuilder (WebApplicationBuilder builder)
-        {
-            _Builder = builder;
+        //private WebApplicationBuilder _Builder { get; set;}
+        //private readonly IConfiguration _configuration;
+        //private readonly IHostingEnvironment _hostingEnvironment;
 
-            Build ( ) ;
-        }
+        //public DICOMcloudBuilder(WebApplicationBuilder builder, IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+        //{
+        //    _Builder = builder;
+
+        //    Build();
+        //    _configuration = configuration;
+        //    _hostingEnvironment = hostingEnvironment;
+        //}
 
 
         public static void ConfigureLogging (HttpConfiguration config)
@@ -41,25 +51,25 @@ namespace DICOMcloud.Wado
             config.Services.Replace(typeof(IExceptionHandler), new DICOMcloudExceptionHandler());
         }
 
-        protected virtual void Build ( )
+        public static void  Build (this IServiceCollection services)
         {
             Init ( ) ;
 
-            RegisterEvents ( ) ;
+            RegisterEvents (services) ;
 
-            RegisterComponents ( ) ;
+            RegisterComponents (services) ;
 
-            RegisterMediaWriters ( ) ;
+            RegisterMediaWriters (services) ;
 
-            EnsureCodecsLoaded ( ) ;
+            //EnsureCodecsLoaded ( ) ;
         }
         
-        public bool AzureStorageSupported { get; protected set; }
+        static bool AzureStorageSupported { get;  set; }
 
-        protected virtual void Init ( )
+        static  void Init ( )
         {
-            ConnectionStringProvider =  new ConnectionStringProvider (_Builder.Configuration ) ;
-            StorageConection         = CloudConfigurationManager.GetSetting ( "app:PacsStorageConnection" ) ;
+            //ConnectionStringProvider =  new ConnectionStringProvider (_Builder.Configuration ) ;
+             StorageConection         = CloudConfigurationManager.GetSetting ( "app:PacsStorageConnection" ) ;
 
             var supportPreSignedUrl = CloudConfigurationManager.GetSetting("app:supportPreSignedUrls");
 
@@ -75,12 +85,12 @@ namespace DICOMcloud.Wado
             }
         }
 
-        protected virtual void RegisterEvents ( )
+        static void RegisterEvents (IServiceCollection services)
         {
-            RegisterAnonymizer ( ) ;
+            RegisterAnonymizer (services) ;
         }
 
-        protected virtual void RegisterAnonymizer ( )
+        static void RegisterAnonymizer (IServiceCollection services)
         {
             string enableAnonymizer = CloudConfigurationManager.GetSetting   ( "app:enableAnonymizer" ) ;
             bool   enable             = true ;
@@ -107,7 +117,7 @@ namespace DICOMcloud.Wado
                 RemoveAnonymizerTag ( anonymizer, DicomTag.PatientName ) ;
                 RemoveAnonymizerTag ( anonymizer, DicomTag.PatientID ) ;
 
-                PublisherSubscriberFactory.Instance.Subscribe<WebStoreDatasetProcessingMessage>(this, (message) =>
+                PublisherSubscriberFactory.Instance.Subscribe<WebStoreDatasetProcessingMessage>(services, (message) =>
                 {
                     var queryParams = message.Request.Request.RequestUri.ParseQueryString ( ) ;
 
@@ -133,36 +143,54 @@ namespace DICOMcloud.Wado
             }
         }
 
-        protected virtual void RegisterComponents ( )
+        static void RegisterComponents (IServiceCollection services)
         {
+            services.AddScoped(typeof(IConnectionStringProvider), typeof(ConnectionStringProvider));
+            services.AddScoped(typeof(DbSchemaProvider), typeof(StorageDbSchemaProvider));
+            services.AddScoped(typeof(IDatabaseFactory), typeof(SqlDatabaseFactory));
+            services.AddScoped(typeof(ISortingStrategyFactory), typeof(SortingStrategyFactory));
+            services.AddScoped(typeof(ObjectArchieveDataAdapter));
+            services.AddScoped(typeof(IObjectArchieveDataAccess), typeof(ObjectArchieveDataAccess));
 
-            For<IConnectionStringProvider> ( ).Use<ConnectionStringProvider> ( ) ;
-            For<DbSchemaProvider> ( ).Use<StorageDbSchemaProvider> ( ) ; //default constructor
-            For<IDatabaseFactory> ( ).Use<SqlDatabaseFactory> ( ) ;
-            For<ISortingStrategyFactory> ( ).Use <SortingStrategyFactory> ( ) ;
-            For<ObjectArchieveDataAdapter> ( ).Use <ObjectArchieveDataAdapter> ( ) ;
-            For<IObjectArchieveDataAccess> ( ).Use <ObjectArchieveDataAccess> ( ) ;
+            //For<IConnectionStringProvider> ( ).Use<ConnectionStringProvider> ( ) ;
+            //For<DbSchemaProvider> ( ).Use<StorageDbSchemaProvider> ( ) ; //default constructor
+            //For<IDatabaseFactory> ( ).Use<SqlDatabaseFactory> ( ) ;
+            //For<ISortingStrategyFactory> ( ).Use <SortingStrategyFactory> ( ) ;
+            //For<ObjectArchieveDataAdapter> ( ).Use <ObjectArchieveDataAdapter> ( ) ;
+            //For<IObjectArchieveDataAccess> ( ).Use <ObjectArchieveDataAccess> ( ) ;
 
             IRetrieveUrlProvider urlProvider = new RetrieveUrlProvider ( CloudConfigurationManager.GetSetting ( RetrieveUrlProvider.config_WadoRs_API_URL),
                                                                          CloudConfigurationManager.GetSetting ( RetrieveUrlProvider.config_WadoUri_API_URL) ) ;
-            
-            For<IDCloudCommandFactory> ( ).Use<DCloudCommandFactory> ( ) ;
 
-            For<IObjectArchieveQueryService> ( ).Use<ObjectArchieveQueryService> ( ) ;
-            For<IObjectStoreService>         ( ).Use<ObjectStoreService>         ( ) ;
-            For<IObjectRetrieveService>      ( ).Use<ObjectRetrieveService>      ( ) ;
+            services.AddScoped(typeof(IDCloudCommandFactory), typeof(DCloudCommandFactory));
+            services.AddScoped(typeof(IObjectArchieveQueryService), typeof(ObjectArchieveQueryService));
+            services.AddScoped(typeof(IObjectStoreService), typeof(ObjectStoreService));
+            services.AddScoped(typeof(IObjectRetrieveService), typeof(ObjectRetrieveService));
+            services.AddScoped(typeof(IWadoRsService), typeof(WadoRsService));
+            services.AddScoped(typeof(IWebObjectStoreService), typeof(WebObjectStoreService));
+            services.AddScoped(typeof(IQidoRsService), typeof(QidoRsService));
+            services.AddScoped(typeof(IWadoUriService), typeof(WadoUriService));
+            services.AddScoped(typeof(IOhifService), typeof(OhifService));
+            services.AddScoped(typeof(IDicomMediaIdFactory), typeof(DicomMediaIdFactory));
+            services.AddScoped(typeof(IRetrieveUrlProvider));
 
-            For<IWadoRsService>         ( ).Use<WadoRsService>         ( ) ;
-            For<IWebObjectStoreService> ( ).Use<WebObjectStoreService> ( ) ;
-            For<IQidoRsService>         ( ).Use<QidoRsService>         ( ) ;
-            For<IWadoUriService>        ( ).Use<WadoUriService>        ( ) ;
-            For<IOhifService>           ( ).Use<OhifService>           ( ) ;
+            //For<IDCloudCommandFactory> ( ).Use<DCloudCommandFactory> ( ) ;
 
-            For<IDicomMediaIdFactory> ( ).Use <DicomMediaIdFactory> ( ) ;
+            //For<IObjectArchieveQueryService> ( ).Use<ObjectArchieveQueryService> ( ) ;
+            //For<IObjectStoreService>         ( ).Use<ObjectStoreService>         ( ) ;
+            //For<IObjectRetrieveService>      ( ).Use<ObjectRetrieveService>      ( ) ;
 
-            For<IRetrieveUrlProvider> ( ).Use (urlProvider) ;
+            //For<IWadoRsService>         ( ).Use<WadoRsService>         ( ) ;
+            //For<IWebObjectStoreService> ( ).Use<WebObjectStoreService> ( ) ;
+            //For<IQidoRsService>         ( ).Use<QidoRsService>         ( ) ;
+            //For<IWadoUriService>        ( ).Use<WadoUriService>        ( ) ;
+            //For<IOhifService>           ( ).Use<OhifService>           ( ) ;
 
-            RegisterStoreCommandSettings( );
+            //For<IDicomMediaIdFactory> ( ).Use <DicomMediaIdFactory> ( ) ;
+
+            //For<IRetrieveUrlProvider> ( ).Use (urlProvider) ;
+
+            RegisterStoreCommandSettings(services);
 
             if ( StorageConection.StartsWith("|datadirectory|", StringComparison.OrdinalIgnoreCase))
             {
@@ -176,8 +204,11 @@ namespace DICOMcloud.Wado
             
             if ( System.IO.Path.IsPathRooted ( StorageConection ) )
             {
-                For<IKeyProvider> ( ).Use<HashedFileKeyProvider> ( ) ;
-                For<IMediaStorageService> ( ).Use<FileStorageService> ( ).Ctor<string> ( ).Is (StorageConection) ;
+                services.AddScoped(typeof(IKeyProvider), typeof(HashedFileKeyProvider));
+                services.AddScoped(typeof(IMediaStorageService), typeof(FileStorageService));
+
+                //For<IKeyProvider> ( ).Use<HashedFileKeyProvider> ( ) ;
+                //For<IMediaStorageService> ( ).Use<FileStorageService> ( ).Ctor<string> ( ).Is (StorageConection) ;
             }
             else
             {
@@ -185,13 +216,16 @@ namespace DICOMcloud.Wado
 
                 AzureStorageSupported = true ;
 
-                For<CloudStorageAccount> ( ).Use ( @StorageAccount ) ;
+                services.AddScoped(typeof(CloudStorageAccount));
+                services.AddScoped(typeof(IMediaStorageService));
+
+                //For<CloudStorageAccount> ( ).Use ( @StorageAccount ) ;
                 
-                For<IMediaStorageService> ( ).Use <AzureStorageService> ( ).Ctor<CloudStorageAccount> ( ).Is ( StorageAccount ) ;
+                //For<IMediaStorageService> ( ).Use <AzureStorageService> ( ).Ctor<CloudStorageAccount> ( ).Is ( StorageAccount ) ;
             }
         }
 
-        private void RegisterStoreCommandSettings()
+        static void RegisterStoreCommandSettings(IServiceCollection services)
         {
             StorageSettings storageSettings = new StorageSettings ( ) ;
 
@@ -215,38 +249,78 @@ namespace DICOMcloud.Wado
                 storageSettings.StoreQueryModel = validateDuplicateValue;
             }
 
-            For<StorageSettings>().Use (@storageSettings);
+            services.AddScoped(typeof(StorageSettings));
+            //For<StorageSettings>().Use (@storageSettings);
         }
 
-        protected virtual void RegisterMediaWriters ( ) 
+        static void RegisterMediaWriters (IServiceCollection services) 
         {
             //var factory = new InjectionFactory(c => new Func<string, IDicomMediaWriter> (name => c.Resolve<IDicomMediaWriter>(name))) ;
 
-            For<IDicomMediaWriter>().Use<NativeMediaWriter>().Named(MimeMediaTypes.DICOM);
-            For<IDicomMediaWriter>().Use<JsonMediaWriter>().Named(MimeMediaTypes.Json);
-            For<IDicomMediaWriter>().Use<XmlMediaWriter>().Named(MimeMediaTypes.xmlDicom);
-            For<IDicomMediaWriter>().Use<JpegMediaWriter>().Named(MimeMediaTypes.Jpeg);
-            For<IDicomMediaWriter>().Use<UncompressedMediaWriter>().Named(MimeMediaTypes.UncompressedData);
-            
-            For<Func<string, IDicomMediaWriter>> ( ).Use ( ( m=> new Func<String,IDicomMediaWriter> ( name => m.TryGetInstance<IDicomMediaWriter> (name)) )) ;
-            
-            For<IDicomMediaWriterFactory>( ).Use <DicomMediaWriterFactory>();
 
-            For<IJsonDicomConverter> ( ).Use <JsonDicomConverter>();
+            // You can also use a factory method to create the instances
+
+            services.AddScoped<IDicomMediaWriter, NativeMediaWriter>(provider =>
+            {
+                var name = MimeMediaTypes.DICOM; 
+                return provider.GetServices<NativeMediaWriter>().FirstOrDefault(service => service.GetType().Name == name);
+            });
+
+            services.AddScoped<IDicomMediaWriter, JsonMediaWriter>(provider =>
+            {
+                var name = MimeMediaTypes.Json; 
+                return provider.GetServices<JsonMediaWriter>().FirstOrDefault(service => service.GetType().Name == name);
+            });
+            
+            services.AddScoped<IDicomMediaWriter, XmlMediaWriter>(provider =>
+            {
+                var name = MimeMediaTypes.xmlDicom; 
+                return provider.GetServices<XmlMediaWriter>().FirstOrDefault(service => service.GetType().Name == name);
+            });
+
+            services.AddScoped<IDicomMediaWriter, JpegMediaWriter>(provider =>
+            {
+                var name = MimeMediaTypes.Jpeg; 
+                return provider.GetServices<JpegMediaWriter>().FirstOrDefault(service => service.GetType().Name == name);
+            });
+
+            services.AddScoped<IDicomMediaWriter, UncompressedMediaWriter>(provider =>
+            {
+                var name = MimeMediaTypes.UncompressedData; 
+                return provider.GetServices<UncompressedMediaWriter>().FirstOrDefault(service => service.GetType().Name == name);
+            });
+
+            //For<IDicomMediaWriter>().Use<NativeMediaWriter>().Named(MimeMediaTypes.DICOM);
+            //For<IDicomMediaWriter>().Use<JsonMediaWriter>().Named(MimeMediaTypes.Json);
+            //For<IDicomMediaWriter>().Use<XmlMediaWriter>().Named(MimeMediaTypes.xmlDicom);
+            //For<IDicomMediaWriter>().Use<JpegMediaWriter>().Named(MimeMediaTypes.Jpeg);
+            //For<IDicomMediaWriter>().Use<UncompressedMediaWriter>().Named(MimeMediaTypes.UncompressedData);
+
+            //For<Func<string, IDicomMediaWriter>> ( ).Use ( ( m=> new Func<String,IDicomMediaWriter> ( name => m.TryGetInstance<IDicomMediaWriter> (name)) )) ;
+
+            services.AddScoped<IDicomMediaWriterFactory, DicomMediaWriterFactory>();
+            services.AddScoped<IJsonDicomConverter, JsonDicomConverter>();
+
+            //For<IDicomMediaWriterFactory>( ).Use <DicomMediaWriterFactory>();
+
+            //For<IJsonDicomConverter> ( ).Use <JsonDicomConverter>();
         }
 
-        protected virtual void EnsureCodecsLoaded ( ) 
+        public static void EnsureCodecsLoaded (this IWebHostEnvironment _hostingEnvironment) 
         {
-            var path = System.IO.Path.Combine ( System.Web.Hosting.HostingEnvironment.MapPath ( "~/" ), "bin" );
+            var path = System.IO.Path.Combine (_hostingEnvironment.WebRootPath, "bin" );
+            //var path = System.IO.Path.Combine ( System.Web.Hosting.HostingEnvironment.MapPath ( "~/" ), "bin" );
 
             System.Diagnostics.Trace.TraceInformation ( "Path: " + path );
 
             fo.Imaging.Codec.TranscoderManager.LoadCodecs ( path ) ;
         }
 
-        protected string                    StorageConection { get; set; }
-        protected ConnectionStringProvider  ConnectionStringProvider { get; set; }
-        protected CloudStorageAccount       StorageAccount   { get; private set ; }
+        static string  StorageConection { get; set; }
+        /// <summary>
+        static ConnectionStringProvider  ConnectionStringProvider { get; set; }
+        /// </summary>
+        static CloudStorageAccount       StorageAccount   { get;  set ; }
         
         private static void RemoveAnonymizerTag ( DicomAnonymizer anonymizer, DicomTag tag )
         {

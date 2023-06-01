@@ -1,3 +1,7 @@
+using DICOMcloud.Wado;
+using System.Web.Http;
+using System.Web.Mvc;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +10,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.Build();
 
 var app = builder.Build();
 
@@ -14,12 +19,22 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.Environment.EnsureCodecsLoaded();
 }
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.Map("{resource}.axd/{*pathInfo}", delegate { });
+
+app.MapControllerRoute(
+    name: "DefaultApi",
+    pattern: "api/{controller = \"Home\"}/{id}",
+    defaults: new
+    {
+        id = RouteParameter.Optional
+    });
+
 
 app.Run();
