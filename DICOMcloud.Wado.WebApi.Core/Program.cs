@@ -4,6 +4,8 @@ using System.Web.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Init();
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -18,15 +20,16 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
-    app.Environment.EnsureCodecsLoaded();
+    app.UseSwaggerUI();    
 }
+
+app.Environment.EnsureCodecsLoaded();
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.Map("{resource}.axd/{*pathInfo}", delegate { });
+app.Map("/{resource}.axd/{*pathInfo}", delegate { });
 
 app.MapControllerRoute(
     name: "DefaultApi",
@@ -35,6 +38,8 @@ app.MapControllerRoute(
     {
         id = RouteParameter.Optional
     });
+
+app.UseCors("AllowCores");
 
 
 app.Run();

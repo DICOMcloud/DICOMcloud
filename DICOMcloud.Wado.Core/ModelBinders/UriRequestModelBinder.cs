@@ -1,11 +1,12 @@
 ﻿
 using DICOMcloud.Wado.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http.ModelBinding;
+//using System.Web.Http.ModelBinding;
 
 namespace DICOMcloud.Wado
 {
@@ -34,5 +35,10 @@ namespace DICOMcloud.Wado
             return false;
          }
        }
-   }
+
+        public Task BindModelAsync(ModelBindingContext bindingContext)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

@@ -25,6 +25,7 @@
   <ItemGroup>
     <PackageReference Include="fo-dicom" Version="4.0.8" />
     <PackageReference Include="fo-dicom.ImageSharp" Version="4.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="PubSub" Version="4.0.2" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />

@@ -24,13 +24,14 @@ using Microsoft.WindowsAzure.Storage;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc;
+using DICOMcloud.Wado.WebApi.Core.App_Start;
 
 namespace DICOMcloud.Wado
 {
     public static class DICOMcloudBuilder 
     {
         //private WebApplicationBuilder _Builder { get; set;}
-        //private readonly IConfiguration _configuration;
+        //private readonly IConfiguration _configuration ;
         //private readonly IHostingEnvironment _hostingEnvironment;
 
         //public DICOMcloudBuilder(WebApplicationBuilder builder, IConfiguration configuration, IHostingEnvironment hostingEnvironment)
@@ -43,40 +44,51 @@ namespace DICOMcloud.Wado
         //}
 
 
-        public static void ConfigureLogging (HttpConfiguration config)
+        public static void ConfigureLogging (IServiceCollection services)
         {
+            var config = new HttpConfiguration();
             fo.Log.LogManager.SetImplementation ( TraceLogManager.Instance );
 
             config.Services.Add ( typeof(IExceptionLogger), new DICOMcloudExceptionLogger()) ;
             config.Services.Replace(typeof(IExceptionHandler), new DICOMcloudExceptionHandler());
+
+            services.AddSingleton(config);
         }
 
         public static void  Build (this IServiceCollection services)
         {
-            Init ( ) ;
-
+            //Init ( ) ;
             RegisterEvents (services) ;
 
             RegisterComponents (services) ;
 
             RegisterMediaWriters (services) ;
 
+            ConfigureLogging(services) ;
+
+            WebApiConfig.Register(services,Config) ;
+
             //EnsureCodecsLoaded ( ) ;
         }
         
         static bool AzureStorageSupported { get;  set; }
 
-        static  void Init ( )
+        public static  void Init (this WebApplicationBuilder _Builder)
         {
-            //ConnectionStringProvider =  new ConnectionStringProvider (_Builder.Configuration ) ;
-             StorageConection         = CloudConfigurationManager.GetSetting ( "app:PacsStorageConnection" ) ;
+            ConnectionStringProvider =  new ConnectionStringProvider (_Builder.Configuration ) ;
+            Config =  new Config (_Builder.Configuration ) ;
+            StorageConection         = Config.StorageConection ;
+            var supportPreSignedUrl = Config.SupportPreSignedUrl;
 
-            var supportPreSignedUrl = CloudConfigurationManager.GetSetting("app:supportPreSignedUrls");
+            //StorageConection         = CloudConfigurationManager.GetSetting ( "app:PacsStorageConnection" ) ;
+            
+            //var supportPreSignedUrl = CloudConfigurationManager.GetSetting("app:supportPreSignedUrls");
 
             // For backward compatability - Feb-1-2020
             if (string.IsNullOrEmpty(supportPreSignedUrl))
             {
-                supportPreSignedUrl = CloudConfigurationManager.GetSetting("app:supportSelfSignedUrls");
+                supportPreSignedUrl = Config.SupportSelfSignedUrl;
+                //supportPreSignedUrl = CloudConfigurationManager.GetSetting("app:supportSelfSignedUrls");
             }
 
             if (!string.IsNullOrWhiteSpace(supportPreSignedUrl))
@@ -92,13 +104,15 @@ namespace DICOMcloud.Wado
 
         static void RegisterAnonymizer (IServiceCollection services)
         {
-            string enableAnonymizer = CloudConfigurationManager.GetSetting   ( "app:enableAnonymizer" ) ;
+            string enableAnonymizer = Config.EnableAnonymizer ;
+            //string enableAnonymizer = CloudConfigurationManager.GetSetting   ( "app:enableAnonymizer" ) ;
             bool   enable             = true ;
             
 
             if ( !bool.TryParse ( enableAnonymizer, out enable ) || enable )
             {
-                string anonymizerOptions = CloudConfigurationManager.GetSetting   ( "app:anonymizerOptions" ) ;
+                string anonymizerOptions = Config.AnonymizerOptions;
+                //string anonymizerOptions = CloudConfigurationManager.GetSetting   ( "app:anonymizerOptions" ) ;
                 var    options = DicomAnonymizer.SecurityProfileOptions.BasicProfile |
                                  DicomAnonymizer.SecurityProfileOptions.RetainUIDs |
                                  DicomAnonymizer.SecurityProfileOptions.RetainLongFullDates |
@@ -145,12 +159,12 @@ namespace DICOMcloud.Wado
 
         static void RegisterComponents (IServiceCollection services)
         {
-            services.AddScoped(typeof(IConnectionStringProvider), typeof(ConnectionStringProvider));
-            services.AddScoped(typeof(DbSchemaProvider), typeof(StorageDbSchemaProvider));
-            services.AddScoped(typeof(IDatabaseFactory), typeof(SqlDatabaseFactory));
-            services.AddScoped(typeof(ISortingStrategyFactory), typeof(SortingStrategyFactory));
-            services.AddScoped(typeof(ObjectArchieveDataAdapter));
-            services.AddScoped(typeof(IObjectArchieveDataAccess), typeof(ObjectArchieveDataAccess));
+            services.AddScoped<IConnectionStringProvider, ConnectionStringProvider>();
+            services.AddScoped<DbSchemaProvider, StorageDbSchemaProvider>();
+            services.AddScoped<IDatabaseFactory, SqlDatabaseFactory>();
+            services.AddScoped<ISortingStrategyFactory, SortingStrategyFactory>();
+            services.AddScoped<ObjectArchieveDataAdapter>();
+            services.AddScoped<IObjectArchieveDataAccess, ObjectArchieveDataAccess>();
 
             //For<IConnectionStringProvider> ( ).Use<ConnectionStringProvider> ( ) ;
             //For<DbSchemaProvider> ( ).Use<StorageDbSchemaProvider> ( ) ; //default constructor
@@ -159,20 +173,22 @@ namespace DICOMcloud.Wado
             //For<ObjectArchieveDataAdapter> ( ).Use <ObjectArchieveDataAdapter> ( ) ;
             //For<IObjectArchieveDataAccess> ( ).Use <ObjectArchieveDataAccess> ( ) ;
 
-            IRetrieveUrlProvider urlProvider = new RetrieveUrlProvider ( CloudConfigurationManager.GetSetting ( RetrieveUrlProvider.config_WadoRs_API_URL),
-                                                                         CloudConfigurationManager.GetSetting ( RetrieveUrlProvider.config_WadoUri_API_URL) ) ;
+            IRetrieveUrlProvider urlProvider = new RetrieveUrlProvider(Config.Config_WadoRs_API_URL, Config.Config_WadoUri_API_URL);
 
-            services.AddScoped(typeof(IDCloudCommandFactory), typeof(DCloudCommandFactory));
-            services.AddScoped(typeof(IObjectArchieveQueryService), typeof(ObjectArchieveQueryService));
-            services.AddScoped(typeof(IObjectStoreService), typeof(ObjectStoreService));
-            services.AddScoped(typeof(IObjectRetrieveService), typeof(ObjectRetrieveService));
-            services.AddScoped(typeof(IWadoRsService), typeof(WadoRsService));
-            services.AddScoped(typeof(IWebObjectStoreService), typeof(WebObjectStoreService));
-            services.AddScoped(typeof(IQidoRsService), typeof(QidoRsService));
-            services.AddScoped(typeof(IWadoUriService), typeof(WadoUriService));
-            services.AddScoped(typeof(IOhifService), typeof(OhifService));
-            services.AddScoped(typeof(IDicomMediaIdFactory), typeof(DicomMediaIdFactory));
-            services.AddScoped(typeof(IRetrieveUrlProvider));
+            //IRetrieveUrlProvider urlProvider = new RetrieveUrlProvider ( CloudConfigurationManager.GetSetting ( RetrieveUrlProvider.config_WadoRs_API_URL),
+            //                                                             CloudConfigurationManager.GetSetting ( RetrieveUrlProvider.config_WadoUri_API_URL) ) ;
+
+            services.AddScoped<IDCloudCommandFactory, DCloudCommandFactory>();
+            services.AddScoped<IObjectArchieveQueryService, ObjectArchieveQueryService>();
+            services.AddScoped<IObjectStoreService, ObjectStoreService>();
+            services.AddScoped<IObjectRetrieveService, ObjectRetrieveService>();
+            services.AddScoped<IWadoRsService, WadoRsService>();
+            services.AddScoped<IWebObjectStoreService, WebObjectStoreService>();
+            services.AddScoped<IQidoRsService, QidoRsService>();
+            services.AddScoped<IWadoUriService, WadoUriService>();
+            services.AddScoped<IOhifService, OhifService>();
+            services.AddScoped<IDicomMediaIdFactory, DicomMediaIdFactory>();
+            services.AddScoped<IRetrieveUrlProvider, RetrieveUrlProvider>();
 
             //For<IDCloudCommandFactory> ( ).Use<DCloudCommandFactory> ( ) ;
 
@@ -204,8 +220,8 @@ namespace DICOMcloud.Wado
             
             if ( System.IO.Path.IsPathRooted ( StorageConection ) )
             {
-                services.AddScoped(typeof(IKeyProvider), typeof(HashedFileKeyProvider));
-                services.AddScoped(typeof(IMediaStorageService), typeof(FileStorageService));
+                services.AddScoped<IKeyProvider, HashedFileKeyProvider>();
+                services.AddScoped<IMediaStorageService, FileStorageService>();
 
                 //For<IKeyProvider> ( ).Use<HashedFileKeyProvider> ( ) ;
                 //For<IMediaStorageService> ( ).Use<FileStorageService> ( ).Ctor<string> ( ).Is (StorageConection) ;
@@ -216,8 +232,8 @@ namespace DICOMcloud.Wado
 
                 AzureStorageSupported = true ;
 
-                services.AddScoped(typeof(CloudStorageAccount));
-                services.AddScoped(typeof(IMediaStorageService));
+                services.AddScoped<CloudStorageAccount>();
+                services.AddScoped<IMediaStorageService>();
 
                 //For<CloudStorageAccount> ( ).Use ( @StorageAccount ) ;
                 
@@ -229,10 +245,13 @@ namespace DICOMcloud.Wado
         {
             StorageSettings storageSettings = new StorageSettings ( ) ;
 
+            var validateDuplicateInstance = Config.ValidateDuplicateInstance;
+            var storeOriginalDataset = Config.StoreOriginalDataset;
+            var storeQueryModel = Config.StoreQueryModel;            
 
-            var validateDuplicateInstance = CloudConfigurationManager.GetSetting("app:storecommand.validateDuplicateInstance");
-            var storeOriginalDataset = CloudConfigurationManager.GetSetting("app:storecommand.storeOriginalDataset");
-            var storeQueryModel = CloudConfigurationManager.GetSetting("app:storecommand.storeQueryModel");
+            //var validateDuplicateInstance = CloudConfigurationManager.GetSetting("app:storecommand.validateDuplicateInstance");
+            //var storeOriginalDataset = CloudConfigurationManager.GetSetting("app:storecommand.storeOriginalDataset");
+            //var storeQueryModel = CloudConfigurationManager.GetSetting("app:storecommand.storeQueryModel");
 
             if (bool.TryParse (validateDuplicateInstance, out bool validateDuplicateValue))
             { 
@@ -249,7 +268,7 @@ namespace DICOMcloud.Wado
                 storageSettings.StoreQueryModel = validateDuplicateValue;
             }
 
-            services.AddScoped(typeof(StorageSettings));
+            services.AddScoped<StorageSettings>();
             //For<StorageSettings>().Use (@storageSettings);
         }
 
@@ -308,7 +327,7 @@ namespace DICOMcloud.Wado
 
         public static void EnsureCodecsLoaded (this IWebHostEnvironment _hostingEnvironment) 
         {
-            var path = System.IO.Path.Combine (_hostingEnvironment.WebRootPath, "bin" );
+            var path = System.IO.Path.Combine (_hostingEnvironment.ContentRootPath, "bin" );
             //var path = System.IO.Path.Combine ( System.Web.Hosting.HostingEnvironment.MapPath ( "~/" ), "bin" );
 
             System.Diagnostics.Trace.TraceInformation ( "Path: " + path );
@@ -319,9 +338,14 @@ namespace DICOMcloud.Wado
         static string  StorageConection { get; set; }
         /// <summary>
         static ConnectionStringProvider  ConnectionStringProvider { get; set; }
+        static Config  Config { get; set; }
         /// </summary>
         static CloudStorageAccount       StorageAccount   { get;  set ; }
-        
+
+        //public static IConfiguration Configuration => Configuration1;
+
+        //public static IConfiguration Configuration1 => _configuration;
+
         private static void RemoveAnonymizerTag ( DicomAnonymizer anonymizer, DicomTag tag )
         {
             var parenthesis = new[] { '(', ')' };

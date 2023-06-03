@@ -1,14 +1,17 @@
 ﻿
 using System;
+using System.Threading.Tasks;
 using System.Web.Http.Controllers;
 using System.Web.Http.ModelBinding;
 using DICOMcloud.Wado.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using ModelBinding = Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DICOMcloud.Wado
 {
-    public class QidoRequestModelBinder : IModelBinder
+    public class QidoRequestModelBinder : System.Web.Http.ModelBinding.IModelBinder,ModelBinding.IModelBinder
     {
-        public bool BindModel(HttpActionContext actionContext, ModelBindingContext bindingContext)
+        public bool BindModel(HttpActionContext actionContext, System.Web.Http.ModelBinding.ModelBindingContext bindingContext)
         {
             if (bindingContext.ModelType == typeof(IQidoRequestModel))
             {
@@ -29,6 +32,11 @@ namespace DICOMcloud.Wado
             }
 
             return false ;
+        }
+
+        public Task BindModelAsync(ModelBinding.ModelBindingContext bindingContext)
+        {
+            throw new NotImplementedException();
         }
 
         private class Constants

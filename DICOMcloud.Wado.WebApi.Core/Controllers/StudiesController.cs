@@ -1,6 +1,7 @@
 ﻿using DICOMcloud.Wado.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Net.Http;
 
 namespace DICOMcloud.Wado.WebApi.Controllers
 {
@@ -58,9 +59,11 @@ namespace DICOMcloud.Wado.WebApi.Controllers
         [Route("stowrs")]
         [Route("api/studies/{studyInstanceUID}")]
         [Route("api/studies/")]
-        public async Task<HttpResponseMessage> Post(string studyInstanceUID = null)
+        public async Task<HttpResponseMessage> Post(ActionContext actionContext, string studyInstanceUID = null)
         {
-            WebStoreRequest webStoreRequest = new WebStoreRequest(Request);
+            var httpRequestMessage = Request.HttpContext.Items["__HttpRequestMessage"] as HttpRequestMessage;
+            WebStoreRequest webStoreRequest = new WebStoreRequest(httpRequestMessage);
+            //WebStoreRequest webStoreRequest = new WebStoreRequest(Request);
             IStudyId studyId = null;
 
 
@@ -69,12 +72,14 @@ namespace DICOMcloud.Wado.WebApi.Controllers
                 studyId = new ObjectId() { StudyInstanceUID = studyInstanceUID };
             }
 
-            if (!Request.Content.IsMimeMultipartContent("related"))
+            //if (!Request.Content.IsMimeMultipartContent("related"))
+            if (!httpRequestMessage.Content.IsMimeMultipartContent("related"))
             {
-                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+                throw new System.Web.Http.HttpResponseException(HttpStatusCode.UnsupportedMediaType);
             }
 
-            await Request.Content.ReadAsMultipartAsync(webStoreRequest);
+            await httpRequestMessage.Content.ReadAsMultipartAsync(webStoreRequest);
+            //await Request.Content.ReadAsMultipartAsync(webStoreRequest);
 
             return await StorageService.Store(webStoreRequest, studyId);
         }
