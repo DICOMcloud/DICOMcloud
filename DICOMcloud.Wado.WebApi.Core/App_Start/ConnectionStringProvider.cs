@@ -15,12 +15,7 @@ namespace DICOMcloud.Wado
 
         public ConnectionStringProvider(IConfiguration configuration)
         {
-            _configuration = configuration;
         }
-
-
-        //public ConnectionStringProvider(IConfigurationBuilder configuration)
-         public string ConnectionString =>  _configuration.GetConnectionString("DefaultConnection");
-        //public string ConnectionString => configuration.GetSetting   ( "app:PacsDataArchieve" ) ;
+         public string ConnectionString => _configuration.GetValue<string>("app:PacsStorageConnection");
     }
 }

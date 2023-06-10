@@ -7,7 +7,6 @@ namespace DICOMcloud.Wado
    {
       public static void RegisterGlobalFilters(GlobalFilterCollection filters)
       {
-         //filters.Add(new RequireHttpsAttribute());
          filters.Add(new HandleErrorAttribute());
       }
    }

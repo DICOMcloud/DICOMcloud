@@ -29,17 +29,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.Map("/{resource}.axd/{*pathInfo}", delegate { });
-
-app.MapControllerRoute(
-    name: "DefaultApi",
-    pattern: "api/{controller = \"Home\"}/{id}",
-    defaults: new
-    {
-        id = RouteParameter.Optional
-    });
+app.RegisterRoutes();
 
 app.UseCors("AllowCores");
-
 
 app.Run();

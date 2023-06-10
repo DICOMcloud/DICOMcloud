@@ -1,18 +1,21 @@
-﻿using System.Web.Mvc;
+﻿using System.Web.Http;
+using System.Web.Mvc;
 
 namespace DICOMcloud.Wado
 {
-    public class RouteConfig//: Ihttpconf
+    public static class RouteConfig//: Ihttpconf
    {
-      public static void RegisterRoutes(RouteCollection routes)
+      public static void RegisterRoutes(this WebApplication app)
       {
-         //routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            app.Map("/{resource}.axd/{*pathInfo}", delegate { });
 
-         //routes.m(
-         //    name: "Default",
-         //    url: "{controller}/{action}/{id}",
-         //    defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
-         //);
-      }
+            app.MapControllerRoute(
+                name: "DefaultApi",
+                pattern: "api/{controller = \"Home\"}/{id}",
+                defaults: new
+                {
+                    id = RouteParameter.Optional
+                });            
+        }
    }
 }
