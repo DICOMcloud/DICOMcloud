@@ -34,9 +34,12 @@ namespace DICOMcloud.Wado
             return false ;
         }
 
-        public Task BindModelAsync(ModelBinding.ModelBindingContext bindingContext)
+        public async Task BindModelAsync(ModelBinding.ModelBindingContext bindingContext)
         {
-            throw new NotImplementedException();
+            if (bindingContext.ModelType != typeof(IQidoRequestModel))
+            {
+                throw new NotImplementedException();
+            }
         }
 
         private class Constants

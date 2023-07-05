@@ -11,9 +11,12 @@ namespace DICOMcloud.Wado
 {
     public class RsDeleteRequestModelBinder : RsRequestModelBinder<WebDeleteRequest> ,IModelBinder
     {
-        public Task BindModelAsync(ModelBindingContext bindingContext)
+        public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            throw new NotImplementedException();
+            if (bindingContext.ModelType != typeof(WebDeleteRequest))
+            {
+                throw new NotImplementedException();
+            }
         }
 
         protected override RsRequestModelConverter<WebDeleteRequest> GetConverter ( )

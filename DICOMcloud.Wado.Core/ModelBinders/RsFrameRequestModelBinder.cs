@@ -1,7 +1,9 @@
 ﻿using DICOMcloud.Wado.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,9 +13,15 @@ namespace DICOMcloud.Wado
 {
     public class RsFrameRequestModelBinder : RsRequestModelBinder<IWadoRsFramesRequest>, IModelBinder
     {
-        public Task BindModelAsync(ModelBindingContext bindingContext)
+        public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            throw new NotImplementedException();
+
+
+            if (bindingContext.ModelType != typeof(IWadoRsFramesRequest))
+            {
+                throw new NotImplementedException();
+            }          
+
         }
     }
 }

@@ -15,6 +15,7 @@ using DICOMcloud.DataAccess.Database;
 using DICOMcloud.Wado.Models;
 using Microsoft.WindowsAzure.Storage;
 using DICOMcloud.Wado.WebApi.Core.App_Start;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DICOMcloud.Wado
 {

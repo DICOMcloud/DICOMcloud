@@ -36,9 +36,12 @@ namespace DICOMcloud.Wado
          }
        }
 
-        public Task BindModelAsync(ModelBindingContext bindingContext)
+        public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            throw new NotImplementedException();
+            if (bindingContext.ModelType != typeof(IWadoUriRequest))
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

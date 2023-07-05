@@ -1,5 +1,6 @@
 ﻿using DICOMcloud.Wado.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DICOMcloud.Wado.WebApi.Controllers
 {
@@ -11,7 +12,7 @@ namespace DICOMcloud.Wado.WebApi.Controllers
 
         public FramesController
         (
-            IQidoRsService qidoService, 
+            IQidoRsService qidoService,
             IWadoRsService wadoService
         )
         {
