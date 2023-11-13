@@ -11,6 +11,7 @@ using DICOMcloud.Pacs;
 using DICOMcloud.Pacs.Commands;
 using System.Net;
 using Dicom;
+using DICOMcloud.Wado.Core.WadoResponse;
 
 namespace DICOMcloud.Wado
 {

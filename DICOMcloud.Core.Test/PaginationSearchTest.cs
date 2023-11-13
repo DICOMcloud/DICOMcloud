@@ -1,11 +1,13 @@
 ﻿using Dicom;
-using DICOMcloud.Pacs;
-using DICOMcloud.Media;
-using DICOMcloud.IO;
+using DICOMcloud.Core.Test.Helpers;
+using DICOMcloud.DataAccess;
+using DICOMcloud.DataAccess.Database;
 using DICOMcloud.DataAccess.Database.Schema;
-using DICOMcloud.Core.Test;
+using DICOMcloud.IO;
+using DICOMcloud.Media;
+using DICOMcloud.Pacs;
 
-namespace DICOMcloud.DataAccess.Database.Core.Test
+namespace DICOMcloud.Core.Test
 {
     [TestClass]
     public class PaginationSearchTest

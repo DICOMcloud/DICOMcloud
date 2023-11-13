@@ -1,6 +1,6 @@
 using Dicom;
 using Dicom.Imaging;
-using DICOMcloud;
+using DICOMcloud.Core.Test.Helpers;
 using DICOMcloud.IO;
 using DICOMcloud.Media;
 
@@ -35,8 +35,7 @@ namespace DICOMcloud.Core.Test
         {
             var testDir = Path.Combine(TestDirPath, "convertToXml");
             var xmlConverter = new XmlDicomConverter() { WriteInlineBinary = true };
-
-
+            
             Directory.CreateDirectory(testDir);
             //DicomDataset sourceDS = Helper.GetDicomDataset ( 10 ).Clone ( DicomTransferSyntax.ExplicitVRLittleEndian ) ;
             foreach (string file in Directory.GetFiles(DicomHelpers.GetSampleImagesFolder()))

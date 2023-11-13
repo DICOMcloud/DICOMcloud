@@ -12,6 +12,7 @@ using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using DICOMcloud.Wado.WebApi.Exceptions;
 using DICOMcloud.DataAccess.Database;
+using DICOMcloud.Wado.Core.WadoResponse;
 using DICOMcloud.Wado.Models;
 using Microsoft.WindowsAzure.Storage;
 using DICOMcloud.Wado.WebApi.Core.App_Start;

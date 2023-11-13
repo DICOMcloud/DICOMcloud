@@ -1,4 +1,4 @@
-﻿namespace DICOMcloud.Wado
+﻿namespace DICOMcloud.Wado.Core.WadoResponse
 {
     public interface IRetrieveUrlProvider
     {

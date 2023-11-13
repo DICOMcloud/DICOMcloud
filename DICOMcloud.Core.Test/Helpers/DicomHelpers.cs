@@ -1,6 +1,6 @@
 ﻿using Dicom;
 
-namespace DICOMcloud.Core.Test
+namespace DICOMcloud.Core.Test.Helpers
 {
     public class DicomHelpers
     {

@@ -14,6 +14,7 @@ using DICOMcloud;
 using DICOMcloud.Messaging;
 using Dicom;
 using System.Web.Http;
+using DICOMcloud.Wado.Core.WadoResponse;
 
 namespace DICOMcloud.Wado
 {

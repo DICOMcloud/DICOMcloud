@@ -1,9 +1,8 @@
 ﻿using Dicom;
-using DICOMcloud.Core.Test;
+using DICOMcloud.Core.Test.Helpers;
 using DICOMcloud.DataAccess.Matching;
 
-
-namespace DICOMcloud.DataAccess.Database.Core.Test
+namespace DICOMcloud.Core.Test
 {
     [TestClass]
     public class MatchingConditionTests

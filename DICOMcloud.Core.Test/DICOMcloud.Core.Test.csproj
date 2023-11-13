@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DICOMcloud.Core\DICOMcloud.Core.csproj" />
+    <ProjectReference Include="..\DICOMcloud.DataAccess.Database.Core\DICOMcloud.DataAccess.Database.Core.csproj" />
+    <ProjectReference Include="..\DICOMcloud.Wado.Core\DICOMcloud.Wado.Core.csproj" />
   </ItemGroup>
 
 </Project>

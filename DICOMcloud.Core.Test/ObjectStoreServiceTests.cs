@@ -1,17 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using fo = Dicom;
-using DICOMcloud.Pacs.Commands;
+﻿using Dicom;
+using DICOMcloud.Core.Test.Helpers;
+using DICOMcloud.DataAccess;
 using DICOMcloud.IO;
 using DICOMcloud.Media;
 using DICOMcloud.Pacs;
-using Dicom;
-using DICOMcloud.DataAccess;
-using System.Collections.Generic;
-using DICOMcloud.Core.Test;
+using fo = Dicom;
 
-namespace DICOMcloud.DataAccess.Database.Core.Test
+namespace DICOMcloud.Core.Test
 {
     [TestClass]
     public class ObjectStoreServiceTests

@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=mypassworD@12
+    ports:
+      - "1433:1433"
+    volumes:
+      - dicomcloud_db:/var/opt/mssql
+    networks:
+      - dicomcloud_nk
+
+networks:
+  dicomcloud_nk:
+    driver: bridge
+
+volumes:
+  dicomcloud_db:

@@ -1,15 +1,9 @@
-﻿using System;
-using DICOMcloud;
-using fo = Dicom;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Dicom;
-using System.Collections.Generic;
-using DICOMcloud.DataAccess.Matching;
+﻿using Dicom;
+using DICOMcloud.Core.Test.Helpers;
 using DICOMcloud.DataAccess;
-using DICOMcloud.Core.Test;
+using DICOMcloud.DataAccess.Matching;
 
-namespace DICOMcloud.DataAccess.Database.Core.Test
+namespace DICOMcloud.Core.Test
 {
     [TestClass]
     public class ArchieveDataAccessTests
@@ -20,6 +14,7 @@ namespace DICOMcloud.DataAccess.Database.Core.Test
             Helper = new DicomHelpers ( ) ;
             DataAccessHelper = new DataAccessHelpers ( ) ;
         }
+        
 
         [TestCleanup]
         public void Cleanup ( )

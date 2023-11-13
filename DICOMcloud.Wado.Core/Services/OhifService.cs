@@ -7,6 +7,7 @@ using Dicom;
 using DICOMcloud.DataAccess;
 using DICOMcloud.Extensions;
 using DICOMcloud.Pacs;
+using DICOMcloud.Wado.Core.WadoResponse;
 using DICOMcloud.Wado.Models;
 
 namespace DICOMcloud.Wado
