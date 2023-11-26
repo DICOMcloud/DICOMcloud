@@ -13,15 +13,5 @@ namespace DICOMcloud.Wado
 {
     public class RsFrameRequestModelBinder : RsRequestModelBinder<IWadoRsFramesRequest>, IModelBinder
     {
-        public async Task BindModelAsync(ModelBindingContext bindingContext)
-        {
-
-
-            if (bindingContext.ModelType != typeof(IWadoRsFramesRequest))
-            {
-                throw new NotImplementedException();
-            }          
-
-        }
     }
 }

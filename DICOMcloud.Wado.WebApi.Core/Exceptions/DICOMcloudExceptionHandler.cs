@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -12,49 +14,27 @@ using System.Web.Http.Results;
 
 namespace DICOMcloud.Wado.WebApi.Exceptions
 {
-    public class DICOMcloudExceptionHandler : ExceptionHandler
+    public class DICOMcloudExceptionHandler : IActionFilter, IOrderedFilter
     {
-        //implementation of the DefaultExcpetionHandler:
-        //https://aspnetwebstack.codeplex.com/SourceControl/latest#src/System.Web.Http/ExceptionHandling/DefaultExceptionHandler.cs
-        //This implementation is needed becuase:
-        //https://stackoverflow.com/questions/24189315/exceptions-in-asp-net-web-api-custom-exception-handler-never-reach-top-level-whe/24634485#24634485
-        public override void Handle(ExceptionHandlerContext context)
+        public int Order => int.MaxValue - 10;
+
+        public void OnActionExecuting(ActionExecutingContext context) { }
+
+        public void OnActionExecuted(ActionExecutedContext context)
         {
-            if (context == null)
+            if (context == null || context.Exception == null)
             {
-                throw new ArgumentNullException("context");
-            }
-
-            ExceptionContext   exceptionContext = context.ExceptionContext;
-            Exception          exception        = exceptionContext.Exception;
-            HttpRequestMessage request          = exceptionContext.Request;
-
-            if (request == null)
-            {
-                base.Handle ( context ) ;
-            }
-
-            if (exceptionContext.CatchBlock == ExceptionCatchBlocks.IExceptionFilter)
-            {
-                // The exception filter stage propagates unhandled exceptions by default (when no filter handles the
-                // exception).
                 return;
             }
 
+            Exception? exception = context.Exception;
+
             if ( exception is DCloudException )
             {
-                context.Result = new ResponseMessageResult ( request.CreateErrorResponse ( HttpStatusCode.BadRequest,
-                                                                                           exception.Message));
-            }
-            else
-            {
-                context.Result = new ResponseMessageResult ( request.CreateErrorResponse (HttpStatusCode.InternalServerError, ""));
+                context.Result = new ObjectResult (exception.Message) { StatusCode = (int)HttpStatusCode.BadRequest};
+                
+                context.ExceptionHandled = true;
             }
         }
-    
-       public override bool ShouldHandle(ExceptionHandlerContext context)
-       {
-            return true ;
-       }
     }
 }

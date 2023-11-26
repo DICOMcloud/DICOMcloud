@@ -21,4 +21,8 @@
     <ProjectReference Include="..\DICOMcloud.Wado.Core\DICOMcloud.Wado.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="OutputFormatters\" />
+  </ItemGroup>
+
 </Project>

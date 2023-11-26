@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Net.Http.Headers;
+using Microsoft.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.Headers;
+using Microsoft.AspNetCore.Http;
 
 namespace DICOMcloud.Wado.Models
 {
     public class WadoUriRequest : IWadoUriRequest
     {
-        public HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue> AcceptHeader { get; set; }
-        public HttpHeaderValueCollection<StringWithQualityHeaderValue> AcceptCharsetHeader { get; set; }
+        public IEnumerable<MediaTypeHeaderValue> AcceptHeader { get; set; }
+        public IEnumerable<StringWithQualityHeaderValue> AcceptCharsetHeader { get; set; }
 
         public string RequestType {  get; set; }
         public string ContentType   {  get; set; }
@@ -23,9 +25,9 @@ namespace DICOMcloud.Wado.Models
         public int?   Frame              { get; set; }
         public bool   Anonymize          { get; set; }
         
-        public NameValueCollection        Query            { get; set; }
+        public IQueryCollection           Query            { get; set; }
         public IWadoUriImageRequestParams ImageRequestInfo { get; set; }
-        public HttpRequestHeaders         Headers          { get; set; }
+        public RequestHeaders             Headers          { get; set; }
 
         public override string ToString()
         {

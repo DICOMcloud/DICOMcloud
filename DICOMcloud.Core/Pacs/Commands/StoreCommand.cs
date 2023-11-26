@@ -109,27 +109,29 @@ namespace DICOMcloud.Pacs.Commands
 
         protected virtual DicomMediaLocations[] SaveDicomMedia 
         ( 
-            DicomDataset dicomObject
+            DicomDataset originalDicomObject
         )
         {
             List<DicomMediaLocations> mediaLocations = new List<DicomMediaLocations> ( ) ;
-            DicomDataset storageDataset = dicomObject.Clone(DicomTransferSyntax.ExplicitVRLittleEndian).NotValidated();
-            List<DicomMediaProperties> storedMedia = new List<DicomMediaProperties> ();
-            DicomMediaProperties defaultMedia = new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID);
+            List<DicomMediaProperties> storedMedia   = new List<DicomMediaProperties> ();
+            DicomMediaProperties defaultMedia        = new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID);
+            DicomDataset uncompressedCloneObject     = (originalDicomObject.InternalTransferSyntax != DicomTransferSyntax.ExplicitVRLittleEndian) 
+                                                       ? originalDicomObject.Clone(DicomTransferSyntax.ExplicitVRLittleEndian).NotValidated()
+                                                       : originalDicomObject;
 
-            CreateMedia(mediaLocations,
-                        storageDataset,
-                        defaultMedia);
+            CreateMedia( mediaLocations,
+                         uncompressedCloneObject,
+                         defaultMedia);
 
             storedMedia.Add(defaultMedia);
 
             if (Settings.StoreOriginal)
             {
-                var originalMedia = new DicomMediaProperties(MimeMediaTypes.DICOM, dicomObject.InternalTransferSyntax.UID.UID);
+                var originalMedia = new DicomMediaProperties(MimeMediaTypes.DICOM, originalDicomObject.InternalTransferSyntax.UID.UID);
 
                 if (!storedMedia.Contains(originalMedia))
                 {
-                    CreateMedia(mediaLocations, dicomObject, originalMedia);
+                    CreateMedia(mediaLocations, originalDicomObject, originalMedia);
 
                     storedMedia.Add(originalMedia);
                 }
@@ -144,7 +146,7 @@ namespace DICOMcloud.Pacs.Commands
                             continue;
                     }
 
-                    CreateMedia(mediaLocations, storageDataset, mediaType);
+                    CreateMedia(mediaLocations, uncompressedCloneObject, mediaType);
                 }
                 catch (Exception)
                 {
@@ -218,12 +220,13 @@ namespace DICOMcloud.Pacs.Commands
             ValidateDuplicateInstance = true;
             StoreQueryModel           = true ;
 
-            MediaTypes = new List<DicomMediaProperties> ( ) ;
-        
-            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID ) ) ;
-            MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.Json ) ) ;
-            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.UncompressedData, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID ) ) ;
-            //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.xmlDicom ) ) ;
+            MediaTypes = new List<DicomMediaProperties>
+            {
+                new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID),
+                new DicomMediaProperties(MimeMediaTypes.JsonDicom),
+                new DicomMediaProperties(MimeMediaTypes.UncompressedData, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID),
+                new DicomMediaProperties(MimeMediaTypes.XmlDicom)
+            };
             //MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossless.UID.UID));
             //MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossy.UID.UID));
             //MediaTypes.Add ( new DicomMediaProperties ( MimeMediaTypes.DICOM, DicomTransferSyntax.JPEGProcess14SV1.UID.UID ) ) ;

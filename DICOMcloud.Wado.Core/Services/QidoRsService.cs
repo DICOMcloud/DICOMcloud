@@ -10,6 +10,7 @@ using System.Text;
 using DICOMcloud.IO;
 using Dicom;
 using System;
+using DICOMcloud.Wado.Core.WadoResponse;
 
 namespace DICOMcloud.Wado
 {
@@ -17,7 +18,6 @@ namespace DICOMcloud.Wado
     {
         //TODO: move this to a global config class
         public const string MaximumResultsLimit_ConfigName = "qido:maximumResultsLimit" ;
-        public const string Instance_Header_Name = "X-Dicom-Instance" ;
 
         public int MaximumResultsLimit { get; set; }
         protected IObjectArchieveQueryService QueryService { get; set; }
@@ -53,7 +53,7 @@ namespace DICOMcloud.Wado
             }
         }
 
-        public virtual HttpResponseMessage SearchForStudies
+        public virtual QidoResponse SearchForStudies
         (
             IQidoRequestModel request
         )
@@ -73,7 +73,7 @@ namespace DICOMcloud.Wado
             }  ) ;
         }
 
-        public virtual HttpResponseMessage SearchForSeries(IQidoRequestModel request)
+        public virtual QidoResponse SearchForSeries(IQidoRequestModel request)
         {
             return SearchForDicomEntity ( request, 
             DefaultDicomQueryElements.GetDefaultSeriesQuery ( ),
@@ -88,7 +88,7 @@ namespace DICOMcloud.Wado
             }  ) ;
         }
 
-        public virtual HttpResponseMessage SearchForInstances(IQidoRequestModel request)
+        public virtual QidoResponse SearchForInstances(IQidoRequestModel request)
         {
             return SearchForDicomEntity ( request,
             DefaultDicomQueryElements.GetDefaultInstanceQuery ( ),
@@ -118,7 +118,7 @@ namespace DICOMcloud.Wado
             return queryOptions ;
         }
         
-        private HttpResponseMessage SearchForDicomEntity 
+        private QidoResponse SearchForDicomEntity 
         ( 
             IQidoRequestModel request, 
             DicomDataset dicomSource,
@@ -127,7 +127,7 @@ namespace DICOMcloud.Wado
         {
             if ( null != request.Query )
             {
-                HttpResponseMessage response = null;
+                PagedResult<DicomDataset> result;
                 var matchingParams = request.Query.MatchingElements;
                 var includeParams = request.Query.IncludeElements;
 
@@ -144,177 +144,13 @@ namespace DICOMcloud.Wado
                     InsertDicomElement(dicomSource, queryParam.Key, paramValue);
                 }
 
-                var results = doQuery(QueryService, dicomSource, request); //TODO: move configuration params into their own object
-
-                if (MultipartResponseHelper.IsMultiPartRequest(request))
-                {
-                    response = CreateMultipartResponse(request, results.Result);
-                }
-                else
-                {
-                    response = CreateJsonResponse(results.Result);
-                }
-
-                AddResponseHeaders(request, dicomSource, response, results);
-
-                return response;
+                
+                result = doQuery(QueryService, dicomSource, request);
+                
+                return new QidoResponse(request, dicomSource, result);
             }
 
             return null;
-        }
-
-        private void AddResponseHeaders
-        (            
-            IQidoRequestModel request, 
-            DicomDataset dicomSource,
-            HttpResponseMessage response, 
-            PagedResult<DicomDataset> results
-        )
-        {
-            //special parameters, if included, a representative instance UID (first) will be returned in header for each DS result
-            if (response.IsSuccessStatusCode && request.Query.CustomParameters.ContainsKey("_instance-header"))
-            {
-                AddPreviewInstanceHeader(results.Result, response);
-            }
-
-            AddPaginationHeders(request, response, results);
-
-        }
-
-        private static void AddPaginationHeders(IQidoRequestModel request, HttpResponseMessage response, PagedResult<DicomDataset> results)
-        {
-            LinkHeaderBuilder headerBuilder = new LinkHeaderBuilder ( ) ;
-
-            //TODO: HttpContext.Current is not in core. Inject a headerBuilder as a service with access to httpContext through
-            // something from here: https://stackoverflow.com/questions/38571032/how-to-get-httpcontext-current-in-asp-net-core
-            //response.Headers.Add ( "link", 
-            //                        headerBuilder.GetLinkHeader ( results, HttpContext.Current.Request.Url.AbsoluteUri ) ) ;
-
-            response.Headers.Add ( "X-Total-Count", results.TotalCount.ToString() ) ;
-
-            response.Headers.Add ("Access-Control-Expose-Headers", "link" ) ;
-            response.Headers.Add ("Access-Control-Allow-Headers", "link" ) ;
-            response.Headers.Add ("Access-Control-Expose-Headers", "X-Total-Count" ) ;
-            response.Headers.Add ("Access-Control-Allow-Headers", "X-Total-Count" ) ;
-
-            if ( results.TotalCount > results.Result.Count() )
-            {
-                if ( !request.Limit.HasValue || 
-                     (request.Limit.HasValue && request.Limit.Value > results.PageSize ) )
-                {
-                    response.Headers.Add ("Warning", "299 " + "DICOMcloud" + 
-                    "  \"The number of results exceeded the maximum supported by the server. Additional results can be requested.\"" ) ;
-                    
-                    //DICOM: http://dicom.nema.org/dicom/2013/output/chtml/part18/sect_6.7.html
-                    //Warning: 299 {SERVICE}: "The number of results exceeded the maximum supported by the server. Additional results can be requested.
-                }
-            }
-        }
-
-        private static HttpResponseMessage CreateJsonResponse(IEnumerable<DicomDataset> results)
-        {
-            HttpResponseMessage response;
-            StringBuilder jsonReturn = new StringBuilder ( "[" ) ;
-
-            JsonDicomConverter converter = new JsonDicomConverter ( ) { IncludeEmptyElements = true } ;
-            int count = 0 ;
-
-
-            foreach ( var dsResponse in results )
-            {
-                count++ ;
-
-                jsonReturn.AppendLine (converter.Convert ( dsResponse )) ;
-
-                jsonReturn.Append(",") ;
-            }
-
-            if ( count > 0 )
-            {
-                jsonReturn.Remove ( jsonReturn.Length -1, 1 ) ;
-            }
-
-            jsonReturn.Append("]") ;
-                
-            response = new HttpResponseMessage (System.Net.HttpStatusCode.OK )  { 
-                                                Content = new StringContent ( jsonReturn.ToString ( ), 
-                                                Encoding.UTF8, 
-                                                MimeMediaTypes.Json) } ;    
-            return response;
-        }
-
-        private static HttpResponseMessage CreateMultipartResponse(IQidoRequestModel request, IEnumerable<DicomDataset> results)
-        {
-            HttpResponseMessage response;
-            
-            
-            if ( MultipartResponseHelper.GetSubMediaType ( request.AcceptHeader.FirstOrDefault ( ) ) == MimeMediaTypes.xmlDicom )
-            {
-                MultipartContent multiContent ;
-                        
-
-                response        = new HttpResponseMessage ( ) ;
-                multiContent    = new MultipartContent ( "related", MultipartResponseHelper.DicomDataBoundary ) ;           
-                        
-                response.Content = multiContent ;
-
-                foreach ( var result in results)
-                {
-                    XmlDicomConverter converter = new XmlDicomConverter ( ) ;
-
-                    MultipartResponseHelper.AddMultipartContent ( multiContent, 
-                                                                    new WadoResponse ( new MemoryStream ( Encoding.ASCII.GetBytes ( converter.Convert (result) )), 
-                                                                                        MimeMediaTypes.xmlDicom ) ) ;
-                }
-
-                multiContent.Headers.ContentType.Parameters.Add ( new System.Net.Http.Headers.NameValueHeaderValue ( "type", 
-                                                                                            "\"" + MimeMediaTypes.xmlDicom + "\"" ) ) ;
-            }
-            else
-            {
-                response = new HttpResponseMessage ( System.Net.HttpStatusCode.BadRequest ) ;
-            }
-
-            return response;
-        }
-
-        private void AddPreviewInstanceHeader ( IEnumerable<DicomDataset> results, HttpResponseMessage response ) 
-        {
-            response.Headers.Add ("Access-Control-Expose-Headers", Instance_Header_Name ) ;
-            
-            foreach ( var result in results ) 
-            {
-                var queryDs = DefaultDicomQueryElements.GetDefaultInstanceQuery();
-                string studyUid  = result.GetSingleValueOrDefault<string> ( DicomTag.StudyInstanceUID, "" ) ;
-                string seriesUid = result.GetSingleValueOrDefault<string> ( DicomTag.SeriesInstanceUID, "" ) ;
-                var queryOptions = CreateNewQueryOptions ( ) ;
-            
-                queryDs.AddOrUpdate ( DicomTag.StudyInstanceUID, studyUid );
-                queryDs.AddOrUpdate ( DicomTag.SeriesInstanceUID, seriesUid );
-                queryOptions.Limit  = 1 ;
-                queryOptions.Offset = 0 ;
-            
-                var instances = QueryService.FindObjectInstances (queryDs, queryOptions) ;
-                string queryStudyUid = null, querySeriesUid = null, queryInstanceUid = null ;
-
-                foreach  ( var instance in instances )
-                {
-                    queryStudyUid = instance.GetSingleValueOrDefault<string> ( DicomTag.StudyInstanceUID, "" ) ;
-                    querySeriesUid = instance.GetSingleValueOrDefault<string> ( DicomTag.SeriesInstanceUID, "" ) ;
-                    queryInstanceUid = instance.GetSingleValueOrDefault<string> ( DicomTag.SOPInstanceUID, "" ) ;
-
-                    break ;
-                }
-
-                if ( string.IsNullOrWhiteSpace (queryStudyUid) || string.IsNullOrWhiteSpace ( querySeriesUid) || string.IsNullOrWhiteSpace(queryInstanceUid))
-                {
-                    response.Headers.Add (Instance_Header_Name, "" ) ;
-                }
-                else
-                {
-                    response.Headers.Add (Instance_Header_Name, string.Format ( "{0}:{1}:{2}", queryStudyUid, querySeriesUid, queryInstanceUid) ) ;
-                }
-            }
         }
 
         private void InsertDicomElement(DicomDataset dicomRequest, string paramKey, string paramValue)

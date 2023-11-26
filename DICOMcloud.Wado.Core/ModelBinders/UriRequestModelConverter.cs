@@ -3,7 +3,7 @@ using DICOMcloud.Wado.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
+using Microsoft.AspNetCore.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,15 +15,15 @@ namespace DICOMcloud.Wado
         public UriRequestModelConverter ( )
       { }
 
-        public bool TryParse ( HttpRequestMessage request, out IWadoUriRequest result )
+        public bool TryParse ( HttpRequest request, out IWadoUriRequest result )
         {
             IWadoUriRequest wadoReq = CreateWadoUriRequestModel ( );
 
-            wadoReq.Headers = request.Headers;
-            wadoReq.AcceptHeader = request.Headers.Accept;
-            wadoReq.AcceptCharsetHeader = request.Headers.AcceptCharset;
+            wadoReq.Headers             = request.GetTypedHeaders();
+            wadoReq.AcceptHeader        = wadoReq.Headers.Accept;
+            wadoReq.AcceptCharsetHeader = wadoReq.Headers.AcceptCharset;
 
-            var query = request.RequestUri.ParseQueryString();
+            var query = request.Query;
 
             wadoReq.Query = query;
             wadoReq.RequestType = query[WadoRequestKeys.RequestType];

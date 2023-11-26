@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
+using Microsoft.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using DICOMcloud.Media;
@@ -24,9 +24,9 @@ namespace DICOMcloud.Wado
         }
 
 
-        public static bool IsMultiPartRequest ( IWadoRequestHeader header )
+        public static bool IsMultiPart(MediaTypeHeaderValue header)
         {
-            return ( (MimeMediaType) MimeMediaTypes.MultipartRelated ).IsIn ( header.AcceptHeader ) ;
+            return header.MediaType == MimeMediaTypes.MultipartRelated;
         }
 
         public static void AddMultipartContent ( MultipartContent multiContent, IWadoRsResponse wadoResponse )
@@ -38,7 +38,7 @@ namespace DICOMcloud.Wado
             multiContent.Add ( sContent );
         }
 
-        public static IEnumerable<string> GetRequestedTransferSyntax  (  MediaTypeWithQualityHeaderValue mediaTypeHeader, string defaultTransfer )
+        public static IEnumerable<string> GetRequestedTransferSyntax  (  MediaTypeHeaderValue mediaTypeHeader, string defaultTransfer )
         {
             //TODO: this should be extended to include query parameters in the request?
             List<string> transferSyntaxes ;
@@ -54,18 +54,18 @@ namespace DICOMcloud.Wado
             }
             else
             {
-                transferSyntaxes.AddRange ( transferSyntaxHeader.Select ( n => n.Value ) );
+                transferSyntaxes.AddRange ( transferSyntaxHeader.Select ( n => n.Value.Value ) );
             }
 
             return transferSyntaxes ;
         }
 
-        public static string GetSubMediaType ( MediaTypeWithQualityHeaderValue mediaTypeHeader )
+        public static string GetSubMediaType (MediaTypeHeaderValue mediaTypeHeader )
         {
         
             var subMediaTypeHeader = mediaTypeHeader.Parameters.Where ( n => n.Name == "type" ).FirstOrDefault ( );
 
-            return subMediaTypeHeader.Value.Trim ( '"' ) ;
+            return (subMediaTypeHeader != null) ? subMediaTypeHeader.Value.Value.Trim ( '"' ) : "";
         }
 
     }

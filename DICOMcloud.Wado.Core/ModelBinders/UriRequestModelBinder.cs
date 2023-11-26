@@ -14,34 +14,26 @@ namespace DICOMcloud.Wado
    {
       public UriRequestModelBinder() { }
 
-       public bool BindModel(System.Web.Http.Controllers.HttpActionContext actionContext, ModelBindingContext bindingContext)
+       public Task BindModelAsync(ModelBindingContext bindingContext)
        {
          if (bindingContext.ModelType != typeof(IWadoUriRequest))
          {
-            return false;
+            return Task.CompletedTask;
          }
          
          IWadoUriRequest result ;
             
-         if ( new UriRequestModelConverter ( ).TryParse ( actionContext.Request, out result) )
+         if ( new UriRequestModelConverter ( ).TryParse ( bindingContext.HttpContext.Request, out result) )
          { 
             bindingContext.Model = result;
                
-            return true;
+            return Task.CompletedTask;
          }
          else
          { 
             bindingContext.ModelState.AddModelError( bindingContext.ModelName, "Cannot convert value to Location");
-            return false;
+            return Task.CompletedTask;
          }
        }
-
-        public async Task BindModelAsync(ModelBindingContext bindingContext)
-        {
-            if (bindingContext.ModelType != typeof(IWadoUriRequest))
-            {
-                throw new NotImplementedException();
-            }
-        }
     }
 }

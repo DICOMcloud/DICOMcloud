@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
+using Microsoft.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
 using DICOMcloud.Pacs;
+using Microsoft.AspNetCore.Http.Headers;
 
 namespace DICOMcloud.Wado.Models
 {
     public abstract class WadoRsRequestBase : IWadoRsRequestBase
     {
 
-       public HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue> AcceptHeader
+       public IEnumerable<MediaTypeHeaderValue> AcceptHeader
        {
           get ;
           set ;
        }
 
-       public HttpHeaderValueCollection<StringWithQualityHeaderValue> AcceptCharsetHeader
+       public IEnumerable<StringWithQualityHeaderValue> AcceptCharsetHeader
        {
           get ;
           set ;
        }
 
-        public HttpRequestHeaders Headers { get; set; }
+        public RequestHeaders Headers { get; set; }
 
         public ObjectQueryLevel QueryLevel { get; set; } 
     }

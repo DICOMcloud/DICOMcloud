@@ -3,7 +3,6 @@ using DICOMcloud.Wado.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
@@ -12,6 +11,7 @@ using DICOMcloud.Pacs;
 using fo = Dicom;
 using DICOMcloud.IO;
 using DICOMcloud.Media;
+using Microsoft.Net.Http.Headers;
 
 namespace DICOMcloud.Wado
 {
@@ -62,7 +62,7 @@ namespace DICOMcloud.Wado
                     else
                     {
                         StreamContent sc = new StreamContent ( dcmLocation.GetReadStream ( ) );
-                        sc.Headers.ContentType = new MediaTypeHeaderValue ( mediaType.MediaType );
+                        sc.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(mediaType.MediaType.Value);
                         HttpResponseMessage msg = new HttpResponseMessage ( HttpStatusCode.OK );
 
                         msg.Content = sc;
@@ -95,7 +95,7 @@ namespace DICOMcloud.Wado
         protected virtual IStorageLocation GetLocation ( IWadoUriRequest request, string currentTransfer, MediaTypeHeaderValue mediaType )
         {
             return RetrieveService.RetrieveSopInstance ( request,
-                                                         new DicomMediaProperties ( mediaType.MediaType, currentTransfer ) );
+                                                         new DicomMediaProperties ( mediaType.MediaType.Value, currentTransfer ) );
         }
 
         private static string GetRequestedMediaTransferSyntax ( IWadoUriRequest request, MediaTypeHeaderValue mediaType )
@@ -115,7 +115,7 @@ namespace DICOMcloud.Wado
                 string transferString;
 
 
-                DefaultMediaTransferSyntax.Instance.TryGetValue ( mediaType.MediaType, out transferString );
+                DefaultMediaTransferSyntax.Instance.TryGetValue ( mediaType.MediaType.Value, out transferString );
 
                 currentTransfer = !string.IsNullOrWhiteSpace ( transferString ) ? transferString : "";
             }
@@ -143,10 +143,10 @@ namespace DICOMcloud.Wado
                 transferSyntax = GetRequestedMediaTransferSyntax ( request, mediaTypeHeader );
 
                 //should return only one for URI service
-                foreach ( var result in RetrieveService.GetTransformedSopInstances ( request, MimeMediaTypes.DICOM, defaultDicomTransfer, mediaTypeHeader.MediaType, transferSyntax ) )
+                foreach ( var result in RetrieveService.GetTransformedSopInstances ( request, MimeMediaTypes.DICOM, defaultDicomTransfer, mediaTypeHeader.MediaType.Value, transferSyntax ) )
                 {
                     StreamContent sc        = new StreamContent        (  result.Location.GetReadStream ( ) ) ;
-                    sc.Headers.ContentType  = new MediaTypeHeaderValue ( mediaTypeHeader.MediaType ) ;
+                    sc.Headers.ContentType  = new System.Net.Http.Headers.MediaTypeHeaderValue(mediaTypeHeader.MediaType.Value) ;
                     responseMessage         = new HttpResponseMessage  ( HttpStatusCode.OK ) ;
 
                     responseMessage.Content = sc;
@@ -165,7 +165,7 @@ namespace DICOMcloud.Wado
         protected virtual List<MediaTypeHeaderValue> GetRequestedMimeType(IWadoUriRequest request)
         {
             List<MediaTypeHeaderValue> acceptTypes = new List<MediaTypeHeaderValue>();
-            bool acceptAll = request.AcceptHeader.Contains(AllMimeType, new MediaTypeHeaderComparer ( ) ); 
+            bool acceptAll = request.AcceptHeader.Where( n => n.MediaType == AllMimeType.MediaType).FirstOrDefault() != null; 
 
             if (!string.IsNullOrEmpty(request.ContentType))
             {
@@ -173,11 +173,11 @@ namespace DICOMcloud.Wado
 
                 foreach (string mime in mimeTypes)
                 {
-                    MediaTypeWithQualityHeaderValue mediaType;
+                    MediaTypeHeaderValue mediaType;
 
-                    if (MediaTypeWithQualityHeaderValue.TryParse(mime, out mediaType))
+                    if (MediaTypeHeaderValue.TryParse(mime, out mediaType))
                     {
-                        if (acceptAll || request.AcceptHeader.Contains(mediaType, new MediaTypeHeaderComparer()))
+                        if (acceptAll || request.AcceptHeader.Contains(mediaType))
                         {
                             acceptTypes.Add(mediaType);
                         }
@@ -195,16 +195,16 @@ namespace DICOMcloud.Wado
         private readonly MediaTypeHeaderValue AllMimeType = MediaTypeHeaderValue.Parse ("*/*");
     }
 
-    public class MediaTypeHeaderComparer : IEqualityComparer<MediaTypeHeaderValue>
-    {
-        public bool Equals(MediaTypeHeaderValue x, MediaTypeHeaderValue y)
-        {
-            return string.Compare(x.MediaType, y.MediaType, true) == 0;
-        }
+    //public class MediaTypeHeaderComparer : IEqualityComparer<MediaTypeHeaderValue>
+    //{
+    //    public bool Equals(MediaTypeHeaderValue x, MediaTypeHeaderValue y)
+    //    {
+    //        return string.Compare(x.MediaType, y.MediaType, true) == 0;
+    //    }
 
-        public int GetHashCode(MediaTypeHeaderValue obj)
-        {
-            return obj.MediaType.GetHashCode();
-        }
-    }
+    //    public int GetHashCode(MediaTypeHeaderValue obj)
+    //    {
+    //        return obj.MediaType.GetHashCode();
+    //    }
+    //}
 }

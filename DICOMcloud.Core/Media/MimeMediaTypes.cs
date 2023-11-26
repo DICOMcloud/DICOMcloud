@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace DICOMcloud.Media
 {
@@ -11,9 +7,14 @@ namespace DICOMcloud.Media
     {
         private MimeMediaTypes() { }
 
+        public const string Any = "*/*";
+
+        public const string XML = "application/xml";
         public const string DICOM = "application/dicom";
-        public const string xmlDicom = "application/dicom+xml" ;
-        public const string Json = "application/dicom+json"; //TODO: this is now updated to DICOM 2016, no more application/json
+        public const string XmlDicom = "application/dicom+xml" ;
+        public const string RelatedXmlDicom = "multipart/related; type=\"application/dicom+xml\"";
+        public const string JsonDicom = "application/dicom+json";
+        public const string Json = "application/json";
         public const string UncompressedData = "application/octet-stream" ; //uncompressed bulk data
         public const string Jpeg  = "image/jpeg";
         public const string WebP  = "image/webp";
@@ -82,27 +83,6 @@ namespace DICOMcloud.Media
         public static implicit operator MimeMediaType(string mime)
         {
             return new MimeMediaType(mime);
-        }
-
-        public bool IsIn
-        (
-            HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue> httpHeaderValueCollection
-        )
-        {
-            MediaTypeWithQualityHeaderValue mediaType = null ;
-
-            return IsIn (httpHeaderValueCollection, out mediaType) ;
-        }
-
-        public bool IsIn
-        (
-            HttpHeaderValueCollection<MediaTypeWithQualityHeaderValue> httpHeaderValueCollection,
-            out MediaTypeWithQualityHeaderValue mediaType
-        )
-        {
-            mediaType = httpHeaderValueCollection.FirstOrDefault(n=>n.MediaType.Equals(MimeType, StringComparison.InvariantCultureIgnoreCase )) ;
-
-            return  mediaType != null ;
         }
     }
 }

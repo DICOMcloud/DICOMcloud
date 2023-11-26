@@ -17,6 +17,16 @@ namespace DICOMcloud.Wado
         {
             _configuration = configuration;
         }
-         public string ConnectionString => _configuration.GetValue<string>("app:PacsStorageConnection");
+
+        public string ConnectionString
+        {
+            get
+            {
+                string path = Path.Combine(Directory.GetCurrentDirectory(), "App_Data");
+
+                return _configuration.GetValue<string>("app:PacsDataArchieve").Replace("|DataDirectory|", path);
+            }
+        }
+
     }
 }

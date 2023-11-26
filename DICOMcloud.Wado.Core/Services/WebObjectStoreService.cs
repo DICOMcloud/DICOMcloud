@@ -15,6 +15,9 @@ using DICOMcloud.Messaging;
 using Dicom;
 using System.Web.Http;
 using DICOMcloud.Wado.Core.WadoResponse;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Linq;
+
 
 namespace DICOMcloud.Wado
 {
@@ -29,43 +32,20 @@ namespace DICOMcloud.Wado
             _urlProvider    = urlProvider ;
         }
 
-        public virtual async Task<HttpResponseMessage> Store
+        public virtual async Task<WebStoreResponse> Store
         (
             WebStoreRequest request, 
             IStudyId studyId = null
         )
         {
-            GetDicomHandler getDicomDelegate = CreateDatasetParser(request);
-
-            if (null != getDicomDelegate)
-            {
-                var storeResult = await StoreStudy        ( request, studyId, getDicomDelegate ) ;
-                var result      = new HttpResponseMessage ( storeResult.HttpStatus ) ;
-
-                
-                if (!string.IsNullOrWhiteSpace(storeResult.StatusMessage))
-                {
-                    result.ReasonPhrase =
-                        storeResult.StatusMessage.Length > 512 ?
-                        storeResult.StatusMessage.Substring(0, 512) :
-                        storeResult.StatusMessage;
-                }
-
-                result.Content = CreateResponseContent (request, storeResult);
-
-                return result;
-            }
-            else
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest);
-            }
+            return await StoreStudy ( request, studyId) ;
         }
 
-        public virtual Task<HttpResponseMessage> Delete  ( WebDeleteRequest request )
+        public async virtual Task Delete  ( WebDeleteRequest request )
         {
-            _storageService.Delete ( request.Dataset, request.DeleteLevel )  ;
-                
-            return Task.FromResult( new HttpResponseMessage ( HttpStatusCode.OK ) ) ;
+            await Task.Run( () => { 
+                _storageService.Delete ( request.Dataset, request.DeleteLevel )  ;
+            });
         }
 
         protected virtual fo.DicomDataset GetDicom ( Stream dicomStream )
@@ -95,25 +75,24 @@ namespace DICOMcloud.Wado
             return new JsonDicomConverter();
         }
 
-        protected virtual WadoStoreResponse CreateWadoStoreResponseModel(IStudyId studyId)
+        protected virtual WebStoreResponse CreateWadoStoreResponseModel(IStudyId studyId)
         {
-            return new WadoStoreResponse(studyId, _urlProvider);
+            return new WebStoreResponse(studyId, _urlProvider);
         }
 
-        private async Task<WadoStoreResponse> StoreStudy 
+        private async Task<WebStoreResponse> StoreStudy 
         ( 
             WebStoreRequest request, 
-            IStudyId studyId, 
-            GetDicomHandler getDicom 
+            IStudyId studyId
         )
         {
-            WadoStoreResponse response = CreateWadoStoreResponseModel (studyId);
+            WebStoreResponse response = CreateWadoStoreResponseModel (studyId);
 
-            foreach (var mediaContent in request.Contents)
+
+            await foreach (var mediaContent in request.GetContents())
             {
-                Stream dicomStream = await mediaContent.ReadAsStreamAsync();
-                var dicomDs = getDicom(dicomStream);
-
+                var dicomDs = await CreateDatasetAsync(request.MediaType, mediaContent);
+                
 
                 PublisherSubscriberFactory.Instance.Publish(new WebStoreDatasetProcessingMessage(request, dicomDs));
 
@@ -137,80 +116,54 @@ namespace DICOMcloud.Wado
             return response;
         }
 
-        private GetDicomHandler CreateDatasetParser(WebStoreRequest request)
+        async private Task<DicomDataset> CreateDatasetAsync
+        (
+            string mediaType, MultipartSection multipartSection
+        )
         {
-            GetDicomHandler getDicomDelegate = null ;
-
-
-            switch (request.MediaType)
+            switch (mediaType)
             {
                 case MimeMediaTypes.DICOM:
                 {
-                    getDicomDelegate = GetDicom;
-                }
-                break;
+                    var stream = new MemoryStream();
 
-                case MimeMediaTypes.xmlDicom:
-                {
-                    getDicomDelegate = new GetDicomHandler(delegate (Stream stream)
+                    const int chunkSize = 1024;
+                    var buffer = new byte[chunkSize];
+                    var bytesRead = 0;
+
+                    do
                     {
-                        StreamReader reader = new StreamReader(stream);
-                        string xmlString = reader.ReadToEnd();
+                        bytesRead = await multipartSection.Body.ReadAsync(buffer, 0, buffer.Length);
+                        stream.Write(buffer, 0, bytesRead);
 
+                    } while (bytesRead > 0);
+
+                    stream.Position = 0;
+                    return GetDicom(stream);
+                }
+
+                //TODO: Zade - need to handle reading the buik data for XML
+                case MimeMediaTypes.XmlDicom:
+                {
+                    var xmlString = await multipartSection.ReadAsStringAsync();
                         
-                        return GetXmlConverter().Convert(xmlString);
-                    });
+                    return GetXmlConverter().Convert(xmlString);;
                 }
-                break;
 
-                case MimeMediaTypes.Json:
+                //TODO: Zade - there is no JSON format defined for store yet.
+                case MimeMediaTypes.JsonDicom:
                 {
-                    getDicomDelegate = new GetDicomHandler(delegate (Stream stream)
-                    {
-                        StreamReader reader = new StreamReader(stream);
-                        string jsonString = reader.ReadToEnd();
+                    string jsonString = await multipartSection.ReadAsStringAsync();
 
-
-                        return GetJsonConverter().Convert(jsonString);
-                    });
+                    return GetJsonConverter().Convert(jsonString);
+                    
                 }
-                break;
 
                 default:
                 {
                     throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
                 }
             }
-
-            return getDicomDelegate;
-        }        
-
-        private HttpContent CreateResponseContent
-        (
-            WebStoreRequest request, 
-            WadoStoreResponse storeResult
-        )
-        {
-            HttpContent content;
-            //this is not taking the "q" parameter
-            if (new MimeMediaType(MimeMediaTypes.Json).IsIn(request.AcceptHeader))
-            {
-                IJsonDicomConverter converter = GetJsonConverter();
-
-                content = new StringContent(converter.Convert(storeResult.GetResponseContent()),
-                                                      System.Text.Encoding.UTF8,
-                                                      MimeMediaTypes.Json);
-            }
-            else
-            {
-                IXmlDicomConverter xmlConverter = GetXmlConverter();
-
-                content = new StringContent(xmlConverter.Convert(storeResult.GetResponseContent()),
-                                                    System.Text.Encoding.UTF8,
-                                                    MimeMediaTypes.xmlDicom);
-            }
-
-            return content;
         }
 
         private delegate DicomDataset GetDicomHandler ( Stream stream ) ;

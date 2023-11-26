@@ -5,8 +5,8 @@ namespace DICOMcloud.Wado
 {
     public interface IQidoRsService
     {
-        HttpResponseMessage SearchForInstances ( IQidoRequestModel request );
-        HttpResponseMessage SearchForSeries ( IQidoRequestModel request );
-        HttpResponseMessage SearchForStudies ( IQidoRequestModel request );
+        QidoResponse SearchForInstances ( IQidoRequestModel request );
+        QidoResponse SearchForSeries ( IQidoRequestModel request );
+        QidoResponse SearchForStudies ( IQidoRequestModel request );
     }
 }

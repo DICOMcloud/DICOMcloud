@@ -1,10 +1,11 @@
 ﻿
 using System;
-using System.Net.Http;
-using System.Web.Http.ModelBinding;
-using System.Web.Http.ValueProviders;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using DICOMcloud.Wado.Models;
 using fo = Dicom;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Headers;
+using System.Collections.Generic;
 
 namespace DICOMcloud.Wado
 {
@@ -13,18 +14,18 @@ namespace DICOMcloud.Wado
         public QidoRequestModelConverter ( )
         { }
 
-        public virtual bool TryParse ( HttpRequestMessage request, ModelBindingContext bindingContext, out IQidoRequestModel result )
+        public virtual bool TryParse (HttpRequest request, ModelBindingContext bindingContext, out IQidoRequestModel result )
         {
             IQidoRequestModel wadoReq = CreateModel ( );
+            RequestHeaders headers = request.GetTypedHeaders();
+            wadoReq.AcceptHeader = headers.Accept;
+            wadoReq.AcceptCharsetHeader = headers.AcceptCharset;
 
-            wadoReq.AcceptHeader = request.Headers.Accept;
-            wadoReq.AcceptCharsetHeader = request.Headers.AcceptCharset;
+            var query = request.Query;//.quer.RequestUri.ParseQueryString();
 
-            var query = request.RequestUri.ParseQueryString();
-
-            foreach (var key in query)
+            foreach (var keyValue in query)
             {
-                string queryKey = ((string)key).Trim().ToLower();
+                string queryKey = keyValue.Key.Trim().ToLower();
 
                 if (queryKey == "") { continue; }
 
@@ -34,7 +35,7 @@ namespace DICOMcloud.Wado
                         {
                             bool fuzzy;
 
-                            if (bool.TryParse(query[QidoRequestKeys.FuzzyMatching], out fuzzy))
+                            if (bool.TryParse(keyValue.Value[0], out fuzzy))
                             {
                                 wadoReq.FuzzyMatching = fuzzy;
                             }
@@ -76,7 +77,7 @@ namespace DICOMcloud.Wado
 
                     default:
                         {
-                            string queryValue = query[queryKey].Trim();
+                            string queryValue = keyValue.Value;
 
 
                             if (queryKey.StartsWith("_"))
@@ -114,9 +115,9 @@ namespace DICOMcloud.Wado
             if (!wadoReq.Query.MatchingElements.ContainsKey(studyInstanceUidKey))
             {
                 ValueProviderResult valueResult = valueProvider.GetValue(studyInstanceUidKey);
-                if (valueResult != null)
+                if (valueResult.FirstValue != null)
                 {
-                    string studyInstanceUid = valueResult.RawValue as string;
+                    string studyInstanceUid = valueResult.FirstValue as string;
                     if (!string.IsNullOrEmpty(studyInstanceUid))
                         wadoReq.Query.MatchingElements.Add(studyInstanceUidKey, studyInstanceUid);
                 }
@@ -125,9 +126,9 @@ namespace DICOMcloud.Wado
             if (!wadoReq.Query.MatchingElements.ContainsKey(seriesInstanceUidKey))
             {
                 ValueProviderResult valueResult = valueProvider.GetValue(seriesInstanceUidKey);
-                if (valueResult != null)
+                if (valueResult.FirstValue != null)
                 {
-                    string seriesInstanceUid = valueResult.RawValue as string;
+                    string seriesInstanceUid = valueResult.FirstValue as string;
                     if (!string.IsNullOrEmpty(seriesInstanceUid))
                         wadoReq.Query.MatchingElements.Add(seriesInstanceUidKey, seriesInstanceUid);
                 }
@@ -136,9 +137,9 @@ namespace DICOMcloud.Wado
             if (!wadoReq.Query.MatchingElements.ContainsKey(sopInstanceUidKey))
             {
                 ValueProviderResult valueResult = valueProvider.GetValue(sopInstanceUidKey);
-                if (valueResult != null)
+                if (valueResult.FirstValue != null)
                 {
-                    string sopInstanceUid = valueResult.RawValue as string;
+                    string sopInstanceUid = valueResult.FirstValue as string;
                     if (!string.IsNullOrEmpty(sopInstanceUid))
                         wadoReq.Query.MatchingElements.Add(sopInstanceUidKey, sopInstanceUid);
                 }

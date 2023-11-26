@@ -16,9 +16,9 @@
         public string AnonymizerOptions => _configuration.GetValue<string>("app:anonymizerOptions");
         public string Config_WadoRs_API_URL => _configuration.GetValue<string>(RetrieveUrlProvider.config_WadoRs_API_URL);
         public string Config_WadoUri_API_URL => _configuration.GetValue<string>(RetrieveUrlProvider.config_WadoUri_API_URL);
-        public string ValidateDuplicateInstance => _configuration.GetValue<string>("app:storecommand.validateDuplicateInstance");
-        public string StoreOriginalDataset => _configuration.GetValue<string>("app:storecommand.storeOriginalDataset");
-        public string StoreQueryModel => _configuration.GetValue<string>("app:storecommand.storeQueryModel");
+        public bool ValidateDuplicateInstance => _configuration.GetValue<bool>("storecommand:validateDuplicateInstance");
+        public bool StoreOriginalDataset => _configuration.GetValue<bool>("storecommand:storeOriginalDataset");
+        public bool StoreQueryModel => _configuration.GetValue<bool>("storecommand:storeQueryModel");
         public string CorsEnabled => _configuration.GetValue<string>("cors:enabled");
         public string Origins => _configuration.GetValue<string>("cors:origins");
         public string Headers => _configuration.GetValue<string>("cors:headers");

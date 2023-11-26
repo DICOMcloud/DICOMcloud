@@ -32,7 +32,7 @@ namespace DICOMcloud.Wado.WebApi.Controllers
         [Route("api/studies/{StudyInstanceUID}/series")]
         [Route("api/series")]
         [HttpGet]
-        public HttpResponseMessage SearchForSeries
+        public ActionResult<QidoResponse> SearchForSeries
         (
             [ModelBinder(typeof(QidoRequestModelBinder))]
             IQidoRequestModel request
@@ -44,25 +44,27 @@ namespace DICOMcloud.Wado.WebApi.Controllers
         [HttpGet]
         [Route("wadors/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}")]
         [Route("api/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}")]
-        public HttpResponseMessage GetSeries 
+        public IActionResult GetSeries 
         ( 
             [ModelBinder(typeof(RsSeriesRequestModelBinder))] 
             IWadoRsSeriesRequest request 
         )
         {
-            return WadoService.RetrieveSeries ( request ) ;
+            return new WadoRsResult(WadoService.RetrieveSeries(request));
         }
 
         [HttpDelete]
         [Route("delowrs/studies/{studyInstanceUID}/series/{seriesInstanceUID}")]
         [Route("api/studies/{studyInstanceUID}/series/{seriesInstanceUID}")]
-        public async Task<HttpResponseMessage> DeleteSeries
+        public async Task<IActionResult> DeleteSeries
         (
             [ModelBinder(typeof(RsDeleteRequestModelBinder))]
             WebDeleteRequest request
         )
         {
-            return await StorageService.Delete(request);
+            await StorageService.Delete(request);
+
+            return Ok();
         }
     }
 }

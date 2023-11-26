@@ -23,13 +23,13 @@ namespace DICOMcloud.Wado.WebApi.Controllers
         [HttpGet]
         [Route("wadors/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/instances/{SOPInstanceUID}/frames/{FrameList}")]
         [Route("api/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/instances/{SOPInstanceUID}/frames/{FrameList}")]
-        public HttpResponseMessage GetFrames
+        public IActionResult GetFrames
         (
             [ModelBinder(typeof(RsFrameRequestModelBinder))]
             IWadoRsFramesRequest request
         )
         {
-            return WadoService.RetrieveFrames(request);
+            return new WadoRsResult(WadoService.RetrieveFrames(request));
         }
 
     }

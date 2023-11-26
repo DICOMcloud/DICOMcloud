@@ -25,7 +25,7 @@ namespace DICOMcloud.Wado
 
                 services.AddCors(options =>
                 {
-                    options.AddPolicy("AllowCores",
+                    options.AddPolicy("AllowCors",
                         builder =>
                         {
                             builder.WithOrigins(origins)

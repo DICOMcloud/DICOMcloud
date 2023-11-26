@@ -17,6 +17,8 @@ using DICOMcloud.Wado.Models;
 using Microsoft.WindowsAzure.Storage;
 using DICOMcloud.Wado.WebApi.Core.App_Start;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DICOMcloud.Wado
 {
@@ -34,7 +36,6 @@ namespace DICOMcloud.Wado
             fo.Log.LogManager.SetImplementation ( TraceLogManager.Instance );
 
             config.Services.Add ( typeof(IExceptionLogger), new DICOMcloudExceptionLogger()) ;
-            config.Services.Replace(typeof(IExceptionHandler), new DICOMcloudExceptionHandler());
 
             services.AddSingleton(config);
         }
@@ -101,15 +102,16 @@ namespace DICOMcloud.Wado
 
                 PublisherSubscriberFactory.Instance.Subscribe<WebStoreDatasetProcessingMessage>(services, (message) =>
                 {
-                    var queryParams = message.Request.Request.RequestUri.ParseQueryString ( ) ;
+                    var queryParams = message.Request.Request.Query;
 
                     
                     anonymizer.AnonymizeInPlace(message.Dataset);
 
                     if (null != queryParams)
                     {
-                        foreach ( var queryKey in queryParams.OfType<String>()  )
+                        foreach ( var queryKeyValue in queryParams  )
                         {
+                            var queryKey = queryKeyValue.Key;
                             uint tag ;
 
 
@@ -117,7 +119,7 @@ namespace DICOMcloud.Wado
                             
                             if( uint.TryParse (queryKey, System.Globalization.NumberStyles.HexNumber, null, out tag) )
                             {
-                                message.Dataset.AddOrUpdate(tag, queryParams[queryKey] ) ;
+                                message.Dataset.AddOrUpdate(tag, queryKeyValue.Value) ;
                             }
                         }
                     }
@@ -160,10 +162,12 @@ namespace DICOMcloud.Wado
                 StorageConection = appDataPath + userPathPart ;
             }
             
-            if ( System.IO.Path.IsPathRooted ( StorageConection ) )
+            if ( Path.IsPathRooted ( StorageConection ) )
             {
                 services.AddScoped<IKeyProvider, HashedFileKeyProvider>();
-                services.AddScoped<IMediaStorageService, FileStorageService>();
+                services.AddScoped<IMediaStorageService, FileStorageService> ( (serviceProvider) => { 
+                    return new FileStorageService(StorageConection);
+                });
             }
             else
             {
@@ -178,60 +182,39 @@ namespace DICOMcloud.Wado
 
         static void RegisterStoreCommandSettings(IServiceCollection services)
         {
-            StorageSettings storageSettings = new StorageSettings ( ) ;
+            StorageSettings storageSettings = new StorageSettings();
 
-            var validateDuplicateInstance = Config.ValidateDuplicateInstance;
-            var storeOriginalDataset = Config.StoreOriginalDataset;
-            var storeQueryModel = Config.StoreQueryModel;            
+            storageSettings.ValidateDuplicateInstance = Config.ValidateDuplicateInstance;
+            storageSettings.StoreOriginal             = Config.StoreOriginalDataset;
+            storageSettings.StoreQueryModel           = Config.StoreQueryModel;
 
-            if (bool.TryParse (validateDuplicateInstance, out bool validateDuplicateValue))
-            { 
-                storageSettings.ValidateDuplicateInstance = validateDuplicateValue;
-            }
-
-            if (bool.TryParse(storeOriginalDataset, out bool storeOriginalDatasetValue))
-            {
-                storageSettings.StoreOriginal = storeOriginalDatasetValue;
-            }
-
-            if (bool.TryParse(storeQueryModel, out bool storeQueryModelValue))
-            {
-                storageSettings.StoreQueryModel = validateDuplicateValue;
-            }
-
-            services.AddScoped<StorageSettings>();
+            services.AddSingleton<StorageSettings>(storageSettings);
         }
 
         static void RegisterMediaWriters (IServiceCollection services) 
-        {            
-            services.AddScoped<IDicomMediaWriter, NativeMediaWriter>(provider =>
-            {
-                var name = MimeMediaTypes.DICOM; 
-                return provider.GetServices<NativeMediaWriter>().FirstOrDefault(service => service.GetType().Name == name);
-            });
+        {
+            services.AddScoped<NativeMediaWriter>();
+            services.AddScoped<JsonMediaWriter>();
+            services.AddScoped<XmlMediaWriter>();
+            services.AddScoped<JpegMediaWriter>();
+            services.AddScoped<UncompressedMediaWriter>();
 
-            services.AddScoped<IDicomMediaWriter, JsonMediaWriter>(provider =>
-            {
-                var name = MimeMediaTypes.Json; 
-                return provider.GetServices<JsonMediaWriter>().FirstOrDefault(service => service.GetType().Name == name);
-            });
-            
-            services.AddScoped<IDicomMediaWriter, XmlMediaWriter>(provider =>
-            {
-                var name = MimeMediaTypes.xmlDicom; 
-                return provider.GetServices<XmlMediaWriter>().FirstOrDefault(service => service.GetType().Name == name);
-            });
-
-            services.AddScoped<IDicomMediaWriter, JpegMediaWriter>(provider =>
-            {
-                var name = MimeMediaTypes.Jpeg; 
-                return provider.GetServices<JpegMediaWriter>().FirstOrDefault(service => service.GetType().Name == name);
-            });
-
-            services.AddScoped<IDicomMediaWriter, UncompressedMediaWriter>(provider =>
-            {
-                var name = MimeMediaTypes.UncompressedData; 
-                return provider.GetServices<UncompressedMediaWriter>().FirstOrDefault(service => service.GetType().Name == name);
+            services.AddScoped<Func<string, IDicomMediaWriter?>>(serviceProvider => (key) => {
+                switch (key)
+                {
+                    case MimeMediaTypes.DICOM:
+                        return serviceProvider.GetService<NativeMediaWriter>();
+                    case MimeMediaTypes.JsonDicom:
+                        return serviceProvider.GetService<JsonMediaWriter>();
+                    case MimeMediaTypes.XmlDicom:
+                        return serviceProvider.GetService<XmlMediaWriter>();
+                    case MimeMediaTypes.Jpeg:
+                        return serviceProvider.GetService<JpegMediaWriter>();
+                    case MimeMediaTypes.UncompressedData:
+                        return serviceProvider.GetService<UncompressedMediaWriter>();
+                    default:
+                        throw new KeyNotFoundException(); // or maybe return null, up to you
+                }
             });
            
             services.AddScoped<IDicomMediaWriterFactory, DicomMediaWriterFactory>();

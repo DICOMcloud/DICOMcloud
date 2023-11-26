@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using System.Web.Http.Results;
+using DICOMcloud.Media;
+using System.Text;
 
 namespace DICOMcloud.Wado.WebApi.Controllers
 {
@@ -32,7 +36,7 @@ namespace DICOMcloud.Wado.WebApi.Controllers
         [Route("qidors/studies")]
         [Route("api/studies")]
         [HttpGet]
-        public HttpResponseMessage SearchForStudies
+        public ActionResult<QidoResponse> SearchForStudies
         (
             [ModelBinder(typeof(QidoRequestModelBinder))]
             IQidoRequestModel request
@@ -45,13 +49,13 @@ namespace DICOMcloud.Wado.WebApi.Controllers
         [HttpGet]
         [Route("wadors/studies/{StudyInstanceUID}")]
         [Route("api/studies/{StudyInstanceUID}")]
-        public HttpResponseMessage GetStudies
+        public IActionResult GetStudies
         (
             [ModelBinder(typeof(RsStudiesRequestModelBinder))]
             IWadoRsStudiesRequest request
         )
         {
-            return WadoService.RetrieveStudy(request);
+            return new WadoRsResult(WadoService.RetrieveStudy(request));
         }
 
         [HttpPost]
@@ -59,12 +63,11 @@ namespace DICOMcloud.Wado.WebApi.Controllers
         [Route("stowrs")]
         [Route("api/studies/{studyInstanceUID}")]
         [Route("api/studies/")]
-        public async Task<HttpResponseMessage> Post(ActionContext actionContext, string studyInstanceUID = null)
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> Post(string? studyInstanceUID = null)
         {
-            var httpRequestMessage = Request.HttpContext.Items["__HttpRequestMessage"] as HttpRequestMessage;
-            WebStoreRequest webStoreRequest = new WebStoreRequest(httpRequestMessage);
-            //WebStoreRequest webStoreRequest = new WebStoreRequest(Request);
-            IStudyId studyId = null;
+            WebStoreRequest webStoreRequest = new WebStoreRequest(Request);
+            IStudyId? studyId = null;
 
 
             if (!string.IsNullOrWhiteSpace(studyInstanceUID))
@@ -72,28 +75,26 @@ namespace DICOMcloud.Wado.WebApi.Controllers
                 studyId = new ObjectId() { StudyInstanceUID = studyInstanceUID };
             }
 
-            //if (!Request.Content.IsMimeMultipartContent("related"))
-            if (!httpRequestMessage.Content.IsMimeMultipartContent("related"))
+            if (Request.GetMultipartBoundary() == null)
             {
-                throw new System.Web.Http.HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+                return StatusCode((int)HttpStatusCode.UnsupportedMediaType);
             }
 
-            await httpRequestMessage.Content.ReadAsMultipartAsync(webStoreRequest);
-            //await Request.Content.ReadAsMultipartAsync(webStoreRequest);
-
-            return await StorageService.Store(webStoreRequest, studyId);
+            return new WebStoreResult(await StorageService.Store(webStoreRequest, studyId));
         }
 
         [HttpDelete]
         [Route("delowrs/studies/{studyInstanceUID}")]
         [Route("api/studies/{studyInstanceUID}")]
-        public async Task<HttpResponseMessage> DeleteStudy
+        public async Task<IActionResult> DeleteStudy
         (
             [ModelBinder(typeof(RsDeleteRequestModelBinder))]
             WebDeleteRequest request
         )
         {
-            return await StorageService.Delete(request);
+            await StorageService.Delete(request);
+
+            return Ok();
         }
     }
 }

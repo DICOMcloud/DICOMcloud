@@ -1,4 +1,6 @@
 using DICOMcloud.Wado;
+using DICOMcloud.Wado.WebApi.Core.Types;
+using DICOMcloud.Wado.WebApi.Exceptions;
 using System.Web.Http;
 using System.Web.Mvc;
 
@@ -9,7 +11,12 @@ var configuration = builder.Configuration;
 // Add services to the container.
 
 // Add MVC controllers 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.OutputFormatters.Add(new QidoResponseJSONOutputFormatter());
+    options.OutputFormatters.Add(new QidoResponseXMLOutputFormatter());
+    options.Filters.Add<DICOMcloudExceptionHandler>();
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -32,6 +39,6 @@ app.UseAuthorization();
 
 app.RegisterRoutes();
 
-app.UseCors("AllowCores");
+app.UseCors("AllowCors");
 
 app.Run();

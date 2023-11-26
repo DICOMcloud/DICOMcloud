@@ -11,7 +11,7 @@ namespace DICOMcloud.Media
     public class XmlMediaWriter : DicomMediaWriter
     {
         public XmlMediaWriter ( IMediaStorageService mediaStorage, IDicomMediaIdFactory mediaIdFactory ) 
-        : base ( mediaStorage, new XmlDicomConverter ( ), MimeMediaTypes.xmlDicom, mediaIdFactory )
+        : base ( mediaStorage, new XmlDicomConverter ( ), MimeMediaTypes.XmlDicom, mediaIdFactory )
         {}
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Specialized;
 
 namespace DICOMcloud.Wado.Models
@@ -10,7 +11,7 @@ namespace DICOMcloud.Wado.Models
       string Charset       { get; set; }
       bool   Anonymize     { get; set; }
 
-      NameValueCollection Query { get; set; }
+      IQueryCollection Query { get; set; }
 
       IWadoUriImageRequestParams ImageRequestInfo { get; set ;}
    }

@@ -1,27 +1,33 @@
-﻿
-using DICOMcloud.Wado.Models;
+﻿using DICOMcloud.Wado.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DICOMcloud.Wado
 {
-    public class RsDeleteRequestModelBinder : RsRequestModelBinder<WebDeleteRequest> ,IModelBinder
+    public class RsDeleteRequestModelBinder : IModelBinder
     {
-        public async Task BindModelAsync(ModelBindingContext bindingContext)
+        public Task BindModelAsync(ModelBindingContext bindingContext)
         {
             if (bindingContext.ModelType != typeof(WebDeleteRequest))
             {
-                throw new NotImplementedException();
+                return Task.CompletedTask;
             }
-        }
 
-        protected override RsRequestModelConverter<WebDeleteRequest> GetConverter ( )
-        {
-            return new DeleteRsRequestModelConverter ( ) ;
+            WebDeleteRequest result;
+
+            if (new DeleteRsRequestModelConverter().TryParse(bindingContext, out result))
+            {
+                bindingContext.Result = ModelBindingResult.Success(result);;
+
+                return Task.CompletedTask;
+            }
+            else
+            {
+                bindingContext.Model = ModelBindingResult.Failed();
+                bindingContext.ModelState.AddModelError(bindingContext.ModelName, "Cannot convert value to Location");
+                return Task.CompletedTask;
+            }
+
         }
     }
 }

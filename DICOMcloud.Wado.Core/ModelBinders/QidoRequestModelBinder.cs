@@ -1,17 +1,14 @@
 ﻿
 using System;
 using System.Threading.Tasks;
-using System.Web.Http.Controllers;
-using System.Web.Http.ModelBinding;
 using DICOMcloud.Wado.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using ModelBinding = Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DICOMcloud.Wado
 {
-    public class QidoRequestModelBinder : System.Web.Http.ModelBinding.IModelBinder,ModelBinding.IModelBinder
+    public class QidoRequestModelBinder : IModelBinder
     {
-        public bool BindModel(HttpActionContext actionContext, System.Web.Http.ModelBinding.ModelBindingContext bindingContext)
+        public Task BindModelAsync(ModelBindingContext bindingContext)
         {
             if (bindingContext.ModelType == typeof(IQidoRequestModel))
             {
@@ -19,11 +16,11 @@ namespace DICOMcloud.Wado
                 
                 var theValue = bindingContext.ValueProvider.GetValue ( bindingContext.ModelName);
 
-                if ( new QidoRequestModelConverter ( ).TryParse ( actionContext.Request, bindingContext, out result) )
-                { 
-                    bindingContext.Model = result;
+                if ( new QidoRequestModelConverter ( ).TryParse (bindingContext.HttpContext.Request, bindingContext, out result) )
+                {
+                    bindingContext.Result = ModelBindingResult.Success(result);
                
-                    return true;
+                    return Task.CompletedTask;
                 }
                 else
                 { 
@@ -31,15 +28,7 @@ namespace DICOMcloud.Wado
                 }
             }
 
-            return false ;
-        }
-
-        public async Task BindModelAsync(ModelBinding.ModelBindingContext bindingContext)
-        {
-            if (bindingContext.ModelType != typeof(IQidoRequestModel))
-            {
-                throw new NotImplementedException();
-            }
+            return Task.CompletedTask;
         }
 
         private class Constants

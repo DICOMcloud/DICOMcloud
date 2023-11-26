@@ -5,16 +5,16 @@ namespace DICOMcloud.Wado
 {
     public interface IWadoRsService
     {
-        HttpResponseMessage RetrieveStudy(IWadoRsStudiesRequest request);
-        HttpResponseMessage RetrieveSeries(IWadoRsSeriesRequest request);
-        HttpResponseMessage RetrieveInstance(IWadoRsInstanceRequest request);
-        HttpResponseMessage RetrieveFrames(IWadoRsFramesRequest request);
+        WadoRsResponse RetrieveStudy(IWadoRsStudiesRequest request);
+        WadoRsResponse RetrieveSeries(IWadoRsSeriesRequest request);
+        WadoRsResponse RetrieveInstance(IWadoRsInstanceRequest request);
+        WadoRsResponse RetrieveFrames(IWadoRsFramesRequest request);
 
-        HttpResponseMessage RetrieveBulkData(IWadoRsInstanceRequest request);
-        HttpResponseMessage RetrieveBulkData(IWadoRsFramesRequest request);
+        WadoRsResponse RetrieveBulkData(IWadoRsInstanceRequest request);
+        WadoRsResponse RetrieveBulkData(IWadoRsFramesRequest request);
         
-        HttpResponseMessage RetrieveStudyMetadata(IWadoRsStudiesRequest request);
-        HttpResponseMessage RetrieveSeriesMetadata(IWadoRsSeriesRequest request);
-        HttpResponseMessage RetrieveInstanceMetadata(IWadoRsInstanceRequest request);
+        WadoRsResponse RetrieveStudyMetadata(IWadoRsStudiesRequest request);
+        WadoRsResponse RetrieveSeriesMetadata(IWadoRsSeriesRequest request);
+        WadoRsResponse RetrieveInstanceMetadata(IWadoRsInstanceRequest request);
     }
 }

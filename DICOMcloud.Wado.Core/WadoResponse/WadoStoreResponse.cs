@@ -15,7 +15,7 @@ using DICOMcloud.Wado.Core.WadoResponse;
 
 namespace DICOMcloud.Wado
 {
-    public class WadoStoreResponse
+    public class WebStoreResponse
     {
         private DicomDataset _dataset ;
         public IRetrieveUrlProvider UrlProvider { get; set; }
@@ -26,13 +26,13 @@ namespace DICOMcloud.Wado
         private bool _successAdded = false ;
         private bool _failureAdded = false ;
 
-        public WadoStoreResponse ( )
+        public WebStoreResponse ( )
         : this ( null, null )
         {
 
         }
 
-        public WadoStoreResponse ( IStudyId studyId, IRetrieveUrlProvider urlProvider = null)
+        public WebStoreResponse ( IStudyId studyId, IRetrieveUrlProvider urlProvider = null)
         {
             _dataset         = new DicomDataset ( ).NotValidated();
             UrlProvider      = urlProvider?? new RetrieveUrlProvider( ) ;

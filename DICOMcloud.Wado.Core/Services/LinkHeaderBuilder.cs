@@ -71,7 +71,7 @@ namespace DICOMcloud.Wado
             string firstLink ;
             string prevLink ;
 
-            
+
             currentRoute = RemovePaginationTokens ( currentRoute ) ;
 
             if ( Next ( pagedResult, currentRoute, out nextLink ) )

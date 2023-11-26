@@ -34,7 +34,7 @@ namespace DICOMcloud.Wado.WebApi.Controllers
         [Route("api/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/instances")]
         [Route("api/studies/{StudyInstanceUID}/instances")]
         [Route("api/instances")]
-        public HttpResponseMessage SearchForInstances
+        public ActionResult<QidoResponse> SearchForInstances
         (
             [ModelBinder(typeof(QidoRequestModelBinder))]
             IQidoRequestModel request
@@ -46,25 +46,27 @@ namespace DICOMcloud.Wado.WebApi.Controllers
         [HttpGet]
         [Route("wadors/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/instances/{SOPInstanceUID}")]
         [Route("api/studies/{StudyInstanceUID}/series/{SeriesInstanceUID}/instances/{SOPInstanceUID}")]
-        public HttpResponseMessage GetInstance
+        public IActionResult GetInstance
         (
             [ModelBinder(typeof(RsObjectRequestModelBinder))]
             IWadoRsInstanceRequest request
         )
         {
-            return WadoService.RetrieveInstance(request);
+            return new WadoRsResult(WadoService.RetrieveInstance(request));
         }
 
         [HttpDelete]
         [Route("delowrs/studies/{studyInstanceUID}/series/{seriesInstanceUID}/instances/{sopInstanceUID}")]
         [Route("api/studies/{studyInstanceUID}/series/{seriesInstanceUID}/instances/{sopInstanceUID}")]
-        public async Task<HttpResponseMessage> DeleteInstance
+        public async Task<IActionResult> DeleteInstance
         (
             [ModelBinder(typeof(RsDeleteRequestModelBinder))]
             WebDeleteRequest request
         )
         {
-            return await StorageService.Delete(request);
+            await StorageService.Delete(request);
+
+            return Ok();
         }
 
     }

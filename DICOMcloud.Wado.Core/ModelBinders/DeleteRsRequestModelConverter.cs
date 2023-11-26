@@ -8,7 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using DICOMcloud.Pacs;
 using Dicom;
-using System.Web.Http.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Http;
+using DICOMcloud.Extensions;
 
 namespace DICOMcloud.Wado
 {
@@ -18,18 +20,19 @@ namespace DICOMcloud.Wado
         { }
 
 
-        public override bool TryParse ( HttpRequestMessage request, ModelBindingContext bindingContext, out WebDeleteRequest result )
+        public override bool TryParse (ModelBindingContext bindingContext, out WebDeleteRequest result )
         {
-            var studyParam    = bindingContext.ValueProvider.GetValue ("studyInstanceUID") ;
-            var seriesParam   = bindingContext.ValueProvider.GetValue ("seriesInstanceUID") ;
-            var instanceParam = bindingContext.ValueProvider.GetValue ("sopInstanceUID" ) ;
+            var studyParam    = bindingContext.ValueProvider.GetValue("studyInstanceUID");
+            var seriesParam   = bindingContext.ValueProvider.GetValue("seriesInstanceUID");
+            var instanceParam = bindingContext.ValueProvider.GetValue("sopInstanceUID");
 
 
+            studyParam.IsNullOrEmpty();
             result = null ;
 
-            if ( null == studyParam  && 
-                 null == seriesParam  && 
-                 null == instanceParam  )
+            if ( studyParam.IsNullOrEmpty() && 
+                 seriesParam.IsNullOrEmpty() && 
+                 instanceParam.IsNullOrEmpty())
             {
                 return false ;
             }
@@ -41,23 +44,23 @@ namespace DICOMcloud.Wado
                     DeleteLevel = ObjectQueryLevel.Unknown 
                 } ;
 
-                if ( null != studyParam ) 
+                if ( !studyParam.IsNullOrEmpty()) 
                 { 
-                    result.Dataset.Add ( DicomTag.StudyInstanceUID, studyParam.AttemptedValue ) ; 
+                    result.Dataset.Add ( DicomTag.StudyInstanceUID, studyParam.FirstOrDefault()) ; 
                     
                     result.DeleteLevel = ObjectQueryLevel.Study ;
                 }
 
-                if ( null != seriesParam  ) 
+                if ( !seriesParam.IsNullOrEmpty()) 
                 { 
-                    result.Dataset.Add ( DicomTag.StudyInstanceUID, seriesParam.AttemptedValue ) ;
+                    result.Dataset.Add ( DicomTag.StudyInstanceUID, seriesParam.FirstOrDefault()) ;
 
                     result.DeleteLevel = ObjectQueryLevel.Series ;
                 }
                 
-                if ( null != instanceParam ) 
+                if ( !instanceParam.IsNullOrEmpty()) 
                 { 
-                    result.Dataset.Add ( DicomTag.StudyInstanceUID, instanceParam.AttemptedValue ) ; 
+                    result.Dataset.Add ( DicomTag.StudyInstanceUID, instanceParam.FirstOrDefault()) ; 
 
                     result.DeleteLevel = ObjectQueryLevel.Instance ;
                 }

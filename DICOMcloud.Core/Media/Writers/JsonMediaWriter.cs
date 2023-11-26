@@ -12,7 +12,7 @@ namespace DICOMcloud.Media
     public class JsonMediaWriter : DicomMediaWriter
     {
         public JsonMediaWriter ( IMediaStorageService mediaStorage, IDicomMediaIdFactory mediaFactory ) 
-        : base ( mediaStorage, new JsonDicomConverter ( ), MimeMediaTypes.Json, mediaFactory )
+        : base ( mediaStorage, new JsonDicomConverter ( ), MimeMediaTypes.JsonDicom, mediaFactory )
         {}
     }
 }
