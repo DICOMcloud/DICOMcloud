@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DICOMcloud.Wado.Models
+﻿namespace DICOMcloud.Wado.Models
 {
     public interface IQidoRequestModel : IWadoRequestHeader
     {

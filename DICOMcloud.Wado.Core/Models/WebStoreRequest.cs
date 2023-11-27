@@ -32,7 +32,7 @@ namespace DICOMcloud.Wado.Models
             AcceptCharsetHeader = Headers.AcceptCharset ;
             AcceptHeader        = Headers.Accept ;
 
-            var dicomType = Headers.ContentType.Parameters.Where(n => n.Name == "type").FirstOrDefault();
+            var dicomType = Headers.ContentType.Parameters.FirstOrDefault(n => n.Name == "type");
 
             if ( dicomType != null ) 
             {
