@@ -12,46 +12,32 @@ using DICOMcloud.IO;
 using System;
 using DICOMcloud.Wado.Core.WadoResponse;
 using FellowOakDicom;
+using DICOMcloud.Wado.Core.Types;
 
 namespace DICOMcloud.Wado
 {
     public class QidoRsService : IQidoRsService
     {
-        //TODO: move this to a global config class
-        public const string MaximumResultsLimit_ConfigName = "qido:maximumResultsLimit" ;
-
         public int MaximumResultsLimit { get; set; }
         protected IObjectArchieveQueryService QueryService { get; set; }
         protected IDicomMediaIdFactory MediaIdFactory { get; set; }
         protected IMediaStorageService StorageService { get; set; }
+        protected QidoRsServiceConfig Config { get; set; }
 
-        public QidoRsService ( IObjectArchieveQueryService queryService ): this (queryService, null, null ) {}
-
-        public QidoRsService ( IObjectArchieveQueryService queryService, IDicomMediaIdFactory mediaIdFactory, IMediaStorageService storageService )
+        public QidoRsService 
+        ( 
+            IObjectArchieveQueryService queryService, 
+            IDicomMediaIdFactory mediaIdFactory, 
+            IMediaStorageService storageService,
+            QidoRsServiceConfig config
+        )
         {
             QueryService   = queryService ;
             MediaIdFactory = mediaIdFactory;
             StorageService = storageService ;
+            Config         = config;
 
-            var maxResultLimit = System.Configuration.ConfigurationManager.AppSettings[MaximumResultsLimit_ConfigName] ;
-
-            if (!string.IsNullOrWhiteSpace(maxResultLimit))
-            {
-                int maxResultValue ;
-
-                if ( int.TryParse (maxResultLimit, out maxResultValue))
-                {
-                    MaximumResultsLimit = maxResultValue ;
-                }
-                else
-                {
-                    throw new ArgumentException (MaximumResultsLimit_ConfigName + " must be a valid integer");
-                }
-            }
-            else
-            {
-                MaximumResultsLimit = 12 ;            
-            }
+            MaximumResultsLimit = config.MaxResultLimit?? 12 ;
         }
 
         public virtual QidoResponse SearchForStudies

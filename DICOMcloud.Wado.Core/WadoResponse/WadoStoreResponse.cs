@@ -33,10 +33,10 @@ namespace DICOMcloud.Wado
 
         }
 
-        public WebStoreResponse ( IStudyId studyId, IRetrieveUrlProvider urlProvider = null)
+        public WebStoreResponse ( IStudyId studyId, IRetrieveUrlProvider urlProvider)
         {
             _dataset         = new DicomDataset ( ).NotValidated();
-            UrlProvider      = urlProvider?? new RetrieveUrlProvider( ) ;
+            UrlProvider      = urlProvider;
             StudyId          = studyId;
             HttpStatus       = HttpStatusCode.Unused ;
             StatusMessage    = "" ;

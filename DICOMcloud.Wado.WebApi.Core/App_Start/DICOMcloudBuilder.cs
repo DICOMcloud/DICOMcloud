@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.DependencyInjection;
 using FellowOakDicom;
 using FellowOakDicom.Imaging.NativeCodec;
+using DICOMcloud.Wado.Core.Types;
 
 namespace DICOMcloud.Wado
 {
@@ -28,11 +29,13 @@ namespace DICOMcloud.Wado
     {
         static bool AzureStorageSupported { get; set; }
         static string StorageConection { get; set; }
+        static QidoRsServiceConfig QidoRsServiceConfig { get; set; }
         static ConnectionStringProvider ConnectionStringProvider { get; set; }
         static Config Config { get; set; }
         static CloudStorageAccount StorageAccount { get; set; }
+        static WebApplicationBuilder App;
 
-        public static void ConfigureLogging (IServiceCollection services)
+        private static void ConfigureLogging (IServiceCollection services)
         {
             var config = new HttpConfiguration();
             //TODO:new logging should uses standard aspnet core. 
@@ -43,8 +46,10 @@ namespace DICOMcloud.Wado
             services.AddSingleton(config);
         }
 
-        public static void  Build (this IServiceCollection services)
+        public static void  BuildDICOMcloud (this IServiceCollection services, WebApplicationBuilder app)
         {
+            Init(app);
+
             RegisterAnonymizer(services) ;
 
             RegisterComponents (services) ;
@@ -57,11 +62,13 @@ namespace DICOMcloud.Wado
 
         }
         
-        public static  void Init (this WebApplicationBuilder _Builder)
+        public static  void Init (WebApplicationBuilder _Builder)
         {
+            App = _Builder;
             ConnectionStringProvider =  new ConnectionStringProvider (_Builder.Configuration ) ;
             Config =  new Config (_Builder.Configuration ) ;
             StorageConection         = Config.StorageConection ;
+            QidoRsServiceConfig = new QidoRsServiceConfig(_Builder.Configuration);
             var supportPreSignedUrl = Config.SupportPreSignedUrl;
 
             // For backward compatability - Feb-1-2020
@@ -132,15 +139,14 @@ namespace DICOMcloud.Wado
 
         static void RegisterComponents (IServiceCollection services)
         {
+            services.AddSingleton(QidoRsServiceConfig);
+
             services.AddScoped<IConnectionStringProvider, ConnectionStringProvider>();
             services.AddScoped<DbSchemaProvider, StorageDbSchemaProvider>();
             services.AddScoped<IDatabaseFactory, SqlDatabaseFactory>();
             services.AddScoped<ISortingStrategyFactory, SortingStrategyFactory>();
             services.AddScoped<ObjectArchieveDataAdapter>();
             services.AddScoped<IObjectArchieveDataAccess, ObjectArchieveDataAccess>();
-
-            IRetrieveUrlProvider urlProvider = new RetrieveUrlProvider(Config.Config_WadoRs_API_URL, Config.Config_WadoUri_API_URL);
-
             services.AddScoped<IDCloudCommandFactory, DCloudCommandFactory>();
             services.AddScoped<IObjectArchieveQueryService, ObjectArchieveQueryService>();
             services.AddScoped<IObjectStoreService, ObjectStoreService>();
@@ -151,7 +157,8 @@ namespace DICOMcloud.Wado
             services.AddScoped<IWadoUriService, WadoUriService>();
             services.AddScoped<IOhifService, OhifService>();
             services.AddScoped<IDicomMediaIdFactory, DicomMediaIdFactory>();
-            services.AddScoped<IRetrieveUrlProvider, RetrieveUrlProvider>();
+            
+            services.AddSingleton<IRetrieveUrlProvider>(new RetrieveUrlProvider(App.Configuration));
 
             RegisterStoreCommandSettings(services);
 

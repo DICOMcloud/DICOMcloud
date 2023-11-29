@@ -5,30 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using DICOMcloud;
 using DICOMcloud.Wado.Core.WadoResponse;
+using Microsoft.Extensions.Configuration;
 
 namespace DICOMcloud.Wado
 {
     public class RetrieveUrlProvider : IRetrieveUrlProvider
     {
+        public RetrieveUrlProvider (IConfiguration config)
+        {
+            string wadoRsUrl = config[config_WadoRs_API_URL];
+            string wadoUriUrl = config[config_WadoUri_API_URL];
+
+
+            wadoRsUrl = wadoRsUrl ?? "";
+            wadoUriUrl = wadoUriUrl ?? "";
+
+            Init(wadoRsUrl, wadoUriUrl);
+        }
+
         public static string config_WadoRs_API_URL = "app:WadoRsUrl" ;
         public static string config_WadoUri_API_URL = "app:WadoUriUrl" ;
 
-        public RetrieveUrlProvider( )
-        {
-            string wadoRsUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoRs_API_URL] ;
-            string wadoUriUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoUri_API_URL] ;
-            
-
-            wadoRsUrl = wadoRsUrl ?? "" ;
-            wadoUriUrl = wadoUriUrl ?? "" ;
-
-            Init ( wadoRsUrl, wadoUriUrl ) ;
-        }
-
-        public RetrieveUrlProvider( string wadoRsUrl, string wadoUriUrl )
-        {
-            Init ( wadoRsUrl, wadoUriUrl ) ;
-        }
 
         public string GetStudyUrl(IStudyId study)
         {
