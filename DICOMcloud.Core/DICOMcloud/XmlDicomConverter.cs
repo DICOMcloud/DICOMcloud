@@ -1,4 +1,4 @@
-﻿using Dicom;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.IO;
-using Dicom.Imaging;
+
+using FellowOakDicom;
+using FellowOakDicom.Imaging;
 
 namespace DICOMcloud
 {
@@ -193,13 +195,13 @@ namespace DICOMcloud
 
         protected virtual void WriteVR_Binary ( DicomItem item, XmlWriter writer )
         {
-            Dicom.IO.Buffer.IByteBuffer buffer = GetItemBuffer ( item );
+            FellowOakDicom.IO.Buffer.IByteBuffer buffer = GetItemBuffer ( item );
 
-            if ( buffer is Dicom.IO.Buffer.IBulkDataUriByteBuffer )
+            if ( buffer is FellowOakDicom.IO.Buffer.IBulkDataUriByteBuffer )
             {
                 writer.WriteStartElement ( Constants.ELEMENT_BULKDATA );
                 //TODO: what about uuid? how is this represented in foDicom? IO.Buffer.IBulkDataUUIDByteBuffer                
-                writer.WriteAttributeString ( Constants.ATTRIBUTE_BULKDATAURI, ( (Dicom.IO.Buffer.IBulkDataUriByteBuffer) buffer ).BulkDataUri );
+                writer.WriteAttributeString ( Constants.ATTRIBUTE_BULKDATAURI, ( (FellowOakDicom.IO.Buffer.IBulkDataUriByteBuffer) buffer ).BulkDataUri );
                 writer.WriteEndElement ( );
             }
             else
@@ -246,7 +248,8 @@ namespace DICOMcloud
                 {
                     writer.WriteStartElement ( Utilities.PersonNameComponents.PN_Components[compIndex] ) ;
 
-                    DicomPersonName pn = new DicomPersonName ( element.Tag, writer.Settings.Encoding, pnComponents[compIndex]  ) ;
+                    DicomPersonName pn = new DicomPersonName ( element.Tag, new Encoding[]{writer.Settings.Encoding}, 
+                    new FellowOakDicom.IO.Buffer.LazyByteBuffer(() => writer.Settings.Encoding.GetBytes(pnComponents[compIndex]))) ;
 
                     writer.WriteElementString ( Utilities.PersonNameParts.PN_Family, pn.Last ) ;
                     writer.WriteElementString ( Utilities.PersonNameParts.PN_Given, pn.First ) ;
@@ -429,7 +432,7 @@ namespace DICOMcloud
                 }
 
                 personNameValue = personNameValue.TrimEnd ( '\\' ) ;
-                ds.AddOrUpdate<string> ( dicomVr, tag, Encoding.Default, personNameValue ) ;
+                ds.AddOrUpdate<string> ( dicomVr, tag, personNameValue ) ;
             }
             else if ( Utilities.IsBinaryVR ( dicomVr ) )
             {
@@ -437,7 +440,7 @@ namespace DICOMcloud
 
                 if ( null != dataElement )
                 {
-                    Dicom.IO.Buffer.IByteBuffer data ;
+                    FellowOakDicom.IO.Buffer.IByteBuffer data ;
 
 
                     if ( dataElement.Name == Constants.ELEMENT_BULKDATA )
@@ -445,14 +448,14 @@ namespace DICOMcloud
                         string uri = dataElement.Attribute(Constants.ATTRIBUTE_BULKDATAURI).Value ;
 
 
-                        data = new Dicom.IO.Buffer.BulkDataUriByteBuffer ( uri ) ;
+                        data = new FellowOakDicom.IO.Buffer.BulkDataUriByteBuffer ( uri ) ;
                     }
                     else
                     {
                         var base64 = System.Convert.FromBase64String ( dataElement.Value ) ;
 
 
-                        data = new Dicom.IO.Buffer.MemoryByteBuffer ( base64 ) ;
+                        data = new FellowOakDicom.IO.Buffer.MemoryByteBuffer ( base64 ) ;
                     }
 
                     if ( tag == DicomTag.PixelData && level == 0 )
@@ -463,7 +466,7 @@ namespace DICOMcloud
                     }
                     else
                     {
-                        ds.AddOrUpdate<Dicom.IO.Buffer.IByteBuffer> ( dicomVr, tag, data ) ;
+                        ds.AddOrUpdate<FellowOakDicom.IO.Buffer.IByteBuffer> ( dicomVr, tag, data ) ;
                     }
                 }
             }
@@ -476,7 +479,7 @@ namespace DICOMcloud
                     TransferSyntax = DicomTransferSyntax.Parse ( values.FirstOrDefault ( ) ) ;
                 }
 
-                ds.AddOrUpdate<string> ( dicomVr, tag, Encoding.Default, values.ToArray ( ) );
+                ds.AddOrUpdate<string> ( dicomVr, tag, values.ToArray ( ) );
             }
         }
 

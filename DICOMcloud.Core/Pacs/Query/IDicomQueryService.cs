@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
 using fo = Dicom;
 using DICOMcloud.DataAccess;
+using FellowOakDicom;
 
 namespace DICOMcloud.Pacs
 {
     public interface IDicomQueryService
     {
-        IEnumerable<fo.DicomDataset> Find 
+        IEnumerable<DicomDataset> Find 
         ( 
-            fo.DicomDataset request, 
+            DicomDataset request, 
             IQueryOptions options,
             string queryLevel
         ) ;
 
-        PagedResult<fo.DicomDataset> FindPaged
+        PagedResult<DicomDataset> FindPaged
         ( 
-            fo.DicomDataset request, 
+            DicomDataset request, 
             IQueryOptions options,
             string queryLevel
         ) ;

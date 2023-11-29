@@ -4,9 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using fo = Dicom ;
 using DICOMcloud.IO;
-
+using FellowOakDicom;
 
 namespace DICOMcloud.Media
 {
@@ -54,7 +53,7 @@ namespace DICOMcloud.Media
 
         protected override void Upload 
         ( 
-            fo.DicomDataset dicomDataset, 
+            DicomDataset dicomDataset, 
             int frame, 
             IStorageLocation location, 
             DicomMediaProperties mediaProperties )

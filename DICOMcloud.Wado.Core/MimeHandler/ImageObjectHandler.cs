@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Dicom.Imaging;
-using Dicom.Imaging.Codec;
+
+using FellowOakDicom.Imaging.Codec;
 using DICOMcloud.IO;
 
 using DICOMcloud.Media;

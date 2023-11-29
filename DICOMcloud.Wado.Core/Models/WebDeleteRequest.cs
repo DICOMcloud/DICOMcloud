@@ -1,11 +1,12 @@
 ﻿
+using FellowOakDicom;
 using fo = Dicom;
 
 namespace DICOMcloud.Wado.Models
 {
     public class WebDeleteRequest
     {
-        public fo.DicomDataset Dataset
+        public DicomDataset Dataset
         {
             get ;
             set ;

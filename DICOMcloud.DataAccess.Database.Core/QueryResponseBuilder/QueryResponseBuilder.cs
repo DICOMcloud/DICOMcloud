@@ -2,7 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Dicom;
+
+using FellowOakDicom;
 
 namespace DICOMcloud.DataAccess.Database
 {
@@ -179,7 +180,7 @@ namespace DICOMcloud.DataAccess.Database
                     
                 if (valueType == typeof(String)) //shortcut
                 {
-                    CurrentData.CurrentDs.AddOrUpdate<string>(dicomTag, System.Text.Encoding.Default , (string) value);
+                    CurrentData.CurrentDs.AddOrUpdate<string>(dicomTag, (string) value);
                 }
                 else if (valueType == typeof(DateTime))
                 {
@@ -242,7 +243,7 @@ namespace DICOMcloud.DataAccess.Database
             {
                 foreach (var personName in CurrentData.CurrentPersonNames)
                 {
-                   CurrentData.CurrentDs.AddOrUpdate( personName.Key,System.Text.Encoding.Default , personName.Value.ToString());
+                   CurrentData.CurrentDs.AddOrUpdate( personName.Key, personName.Value.ToString());
                 }
             }
 

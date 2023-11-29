@@ -2,7 +2,8 @@
 using System.Data;
 using System.Linq;
 using DICOMcloud.DataAccess.Database.Schema;
-using Dicom;
+
+using FellowOakDicom;
 
 namespace DICOMcloud.DataAccess.Database.Commands
 {

@@ -1,5 +1,4 @@
-﻿using Dicom.Imaging.Codec;
-using DICOMcloud.IO;
+﻿using DICOMcloud.IO;
 using DICOMcloud;
 using DICOMcloud.DataAccess;
 using DICOMcloud.Media;
@@ -8,7 +7,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DICOMcloud.Messaging;
-using Dicom;
+
+using FellowOakDicom;
+using FellowOakDicom.Imaging.Codec;
 
 namespace DICOMcloud.Pacs.Commands
 {

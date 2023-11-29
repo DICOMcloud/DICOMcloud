@@ -1,6 +1,7 @@
-﻿using Dicom;
+﻿
 using DICOMcloud.DataAccess;
 using DICOMcloud.Wado.Models;
+using FellowOakDicom;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,5 +1,6 @@
-﻿using Dicom;
+﻿
 using DICOMcloud.IO;
+using FellowOakDicom;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,9 +26,9 @@ namespace DICOMcloud
         //TODO: is this used? update with fo-dicom
         public Stream Convert ( DicomDataset ds )
         {
-            //fo.DicomDataset command = new fo.DicomDataset () ;
+            //DicomDataset command = new DicomDataset () ;
 
-            //command[fo.DicomTag.TransferSyntaxUid] = ds[fo.DicomTag.TransferSyntaxUid] ;
+            //command[DicomTag.TransferSyntaxUid] = ds[DicomTag.TransferSyntaxUid] ;
             //DicomMessage message = new DicomMessage (command, ds) ;
 
             

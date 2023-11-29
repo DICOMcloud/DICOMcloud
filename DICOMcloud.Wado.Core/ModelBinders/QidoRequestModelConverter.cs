@@ -6,6 +6,7 @@ using fo = Dicom;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Headers;
 using System.Collections.Generic;
+using FellowOakDicom;
 
 namespace DICOMcloud.Wado
 {
@@ -108,9 +109,9 @@ namespace DICOMcloud.Wado
         /// <param name="wadoReq"></param>
         private void CheckAndFillUids(IValueProvider valueProvider, IQidoRequestModel wadoReq)
         {
-            string studyInstanceUidKey = fo.DicomTag.StudyInstanceUID.DictionaryEntry.Keyword.ToLower();
-            string seriesInstanceUidKey = fo.DicomTag.SeriesInstanceUID.DictionaryEntry.Keyword.ToLower();
-            string sopInstanceUidKey = fo.DicomTag.SOPInstanceUID.DictionaryEntry.Keyword.ToLower();
+            string studyInstanceUidKey = DicomTag.StudyInstanceUID.DictionaryEntry.Keyword.ToLower();
+            string seriesInstanceUidKey = DicomTag.SeriesInstanceUID.DictionaryEntry.Keyword.ToLower();
+            string sopInstanceUidKey = DicomTag.SOPInstanceUID.DictionaryEntry.Keyword.ToLower();
 
             if (!wadoReq.Query.MatchingElements.ContainsKey(studyInstanceUidKey))
             {

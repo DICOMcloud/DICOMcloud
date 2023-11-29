@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FellowOakDicom;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace DICOMcloud.Media
 {
     public class DicomMediaWriterParameters
     {
-        public fo.DicomDataset Dataset
+        public DicomDataset Dataset
         {
             get; 
             set;

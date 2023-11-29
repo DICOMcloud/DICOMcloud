@@ -1,6 +1,7 @@
-﻿using Dicom;
+﻿
 using DICOMcloud.Core.Test.Helpers;
 using DICOMcloud.DataAccess.Matching;
+using FellowOakDicom;
 
 namespace DICOMcloud.Core.Test
 {

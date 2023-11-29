@@ -4,8 +4,9 @@ using DICOMcloud.DataAccess.Database.Schema;
 using DICOMcloud.DataAccess.Matching;
 using System;
 using System.Collections.Generic;
-using Dicom;
+
 using System.Linq;
+using FellowOakDicom;
 
 namespace DICOMcloud.DataAccess
 {

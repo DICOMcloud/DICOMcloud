@@ -4,7 +4,7 @@ using DICOMcloud.DataAccess.Matching;
 using System;
 using System.Collections.Generic;
 using fo = Dicom;
-
+using FellowOakDicom;
 
 namespace DICOMcloud.Pacs
 {
@@ -13,36 +13,36 @@ namespace DICOMcloud.Pacs
         public ObjectArchieveQueryService ( IObjectArchieveDataAccess dataAccess ) : base ( dataAccess )
         {}
 
-        public IEnumerable<fo.DicomDataset> FindStudies 
+        public IEnumerable<DicomDataset> FindStudies 
         ( 
-            fo.DicomDataset request, 
+            DicomDataset request, 
             IQueryOptions options
         )
         {
             return Find ( request, options, Enum.GetName (typeof(ObjectQueryLevel), ObjectQueryLevel.Study ) ) ;
         }
 
-        public IEnumerable<fo.DicomDataset> FindObjectInstances
+        public IEnumerable<DicomDataset> FindObjectInstances
         (
-            fo.DicomDataset request,
+            DicomDataset request,
             IQueryOptions options
         )
         {
             return Find ( request, options, Enum.GetName (typeof(ObjectQueryLevel), ObjectQueryLevel.Instance ) ) ;
         }
 
-        public IEnumerable<fo.DicomDataset> FindSeries
+        public IEnumerable<DicomDataset> FindSeries
         (
-            fo.DicomDataset request,
+            DicomDataset request,
             IQueryOptions options
         )
         {
             return Find ( request, options, Enum.GetName (typeof(ObjectQueryLevel), ObjectQueryLevel.Series ) ) ;
         }
 
-        protected override IEnumerable<fo.DicomDataset> DoFind
+        protected override IEnumerable<DicomDataset> DoFind
         (
-           fo.DicomDataset request,
+           DicomDataset request,
            IQueryOptions options,
            string queryLevel,
            IEnumerable<IMatchingCondition> conditions
@@ -52,36 +52,36 @@ namespace DICOMcloud.Pacs
         }
 
 
-        public PagedResult<fo.DicomDataset> FindStudiesPaged
+        public PagedResult<DicomDataset> FindStudiesPaged
         ( 
-            fo.DicomDataset request, 
+            DicomDataset request, 
             IQueryOptions options
         )
         {
             return FindPaged ( request, options, Enum.GetName (typeof(ObjectQueryLevel), ObjectQueryLevel.Study ) ) ;
         }
 
-        public PagedResult<fo.DicomDataset> FindObjectInstancesPaged
+        public PagedResult<DicomDataset> FindObjectInstancesPaged
         (
-            fo.DicomDataset request,
+            DicomDataset request,
             IQueryOptions options
         )
         {
             return FindPaged ( request, options, Enum.GetName (typeof(ObjectQueryLevel), ObjectQueryLevel.Instance ) ) ;
         }
 
-        public PagedResult<fo.DicomDataset> FindSeriesPaged
+        public PagedResult<DicomDataset> FindSeriesPaged
         (
-            fo.DicomDataset request,
+            DicomDataset request,
             IQueryOptions options
         )
         {
             return FindPaged ( request, options, Enum.GetName (typeof(ObjectQueryLevel), ObjectQueryLevel.Series ) ) ;
         }
 
-        protected override PagedResult<fo.DicomDataset> DoFindPaged
+        protected override PagedResult<DicomDataset> DoFindPaged
         (
-           fo.DicomDataset request,
+           DicomDataset request,
            IQueryOptions options,
            string queryLevel,
            IEnumerable<IMatchingCondition> conditions

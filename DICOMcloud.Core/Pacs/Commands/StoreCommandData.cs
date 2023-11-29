@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DICOMcloud.DataAccess;
+using FellowOakDicom;
 using fo = Dicom;
 
 
@@ -16,7 +17,7 @@ namespace DICOMcloud.Pacs.Commands
             Metadata = new InstanceMetadata ( );
         }
 
-        public fo.DicomDataset Dataset { get; set; }
+        public DicomDataset Dataset { get; set; }
         public InstanceMetadata Metadata { get ; set; }
     }
 }

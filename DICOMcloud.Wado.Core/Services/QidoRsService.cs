@@ -8,9 +8,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using DICOMcloud.IO;
-using Dicom;
+
 using System;
 using DICOMcloud.Wado.Core.WadoResponse;
+using FellowOakDicom;
 
 namespace DICOMcloud.Wado
 {
@@ -237,7 +238,7 @@ namespace DICOMcloud.Wado
 
             if ( !Char.IsDigit (tagString[0]))
             {
-                var element = Dicom.DicomDictionary.Default.Where ( n=>n.Keyword.ToLower( ) == tagString.ToLower()).FirstOrDefault ( ) ;
+                var element = FellowOakDicom.DicomDictionary.Default.Where ( n=>n.Keyword.ToLower( ) == tagString.ToLower()).FirstOrDefault ( ) ;
 
                 if ( null == element )
                 {

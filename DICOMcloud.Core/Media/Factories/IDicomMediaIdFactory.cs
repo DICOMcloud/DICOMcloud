@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DICOMcloud.IO;
 using DICOMcloud;
 using fo = Dicom ;
+using FellowOakDicom;
 
 namespace DICOMcloud.Media
 {
@@ -15,7 +16,7 @@ namespace DICOMcloud.Media
 
         IMediaId Create
         ( 
-            fo.DicomDataset dataset, 
+            DicomDataset dataset, 
             int frame, 
             string mediaType,
             string transferSyntax

@@ -8,7 +8,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using fo = Dicom;
-using Dicom;
+
+using FellowOakDicom;
 
 namespace DICOMcloud.DataAccess.Database
 {
@@ -287,7 +288,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
             {
                 foreach ( var condition in conditions )
                 {
-                    if ( condition.VR == fo.DicomVR.PN )
+                    if ( condition.VR ==  DicomVR.PN )
                     { 
                         List<PersonNameData> pnValues = new List<PersonNameData> ( ) ;
 
@@ -416,7 +417,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
         {
             foreach ( var dicomParam in dicomParameters )
             {
-                if ( dicomParam.VR == fo.DicomVR.PN )
+                if ( dicomParam.VR ==  DicomVR.PN )
                 { 
                     List<PersonNameData> pnValues ;
 
@@ -465,28 +466,28 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
             if ( condition is RangeMatching )
             {
                 RangeMatching  rangeCondition  = (RangeMatching) condition ;
-                fo.DicomItem dateElement     = rangeCondition.DateElement ;
-                fo.DicomItem timeElement     = rangeCondition.TimeElement ;
+                DicomItem dateElement     = rangeCondition.DateElement ;
+                DicomItem timeElement     = rangeCondition.TimeElement ;
                 
                 
-                return GetDateTimeValues ( (fo.DicomElement) dateElement, (fo.DicomElement) timeElement ) ;
+                return GetDateTimeValues ( (DicomElement) dateElement, (DicomElement) timeElement ) ;
             }
-            else if ( condition.VR.Equals ( fo.DicomVR.DA ) || condition.VR.Equals ( fo.DicomVR.DT ) )
+            else if ( condition.VR.Equals ( DicomVR.DA ) || condition.VR.Equals ( DicomVR.DT ) )
             {
-                fo.DicomElement dateElement = null ;
-                fo.DicomElement timeElement = null ;
+                DicomElement dateElement = null ;
+                DicomElement timeElement = null ;
 
                 foreach ( var element in condition.Elements )
                 {
-                    if ( element.ValueRepresentation.Equals ( fo.DicomVR.DA ) )
+                    if ( element.ValueRepresentation.Equals ( DicomVR.DA ) )
                     {
-                        dateElement = (fo.DicomElement) element ;
+                        dateElement = (DicomElement) element ;
                         continue ;
                     }
 
-                    if ( element.ValueRepresentation.Equals ( fo.DicomVR.TM ) )
+                    if ( element.ValueRepresentation.Equals ( DicomVR.TM ) )
                     { 
-                        timeElement = (fo.DicomElement) element ;
+                        timeElement = (DicomElement) element ;
                     }
                 }
 
@@ -498,7 +499,7 @@ StorageDbSchemaProvider.MetadataTable.OwnerColumn ) ;
             }
         }
 
-        private IList<string> GetDateTimeValues ( fo.DicomElement dateElement, fo.DicomElement timeElement )
+        private IList<string> GetDateTimeValues ( DicomElement dateElement, DicomElement timeElement )
         {
             List<string> values = new List<string> ( ) ; 
             int dateValuesCount = dateElement == null ? 0 : (int)dateElement.Count;

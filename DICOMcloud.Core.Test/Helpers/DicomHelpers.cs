@@ -1,4 +1,5 @@
-﻿using Dicom;
+﻿
+using FellowOakDicom;
 
 namespace DICOMcloud.Core.Test.Helpers
 {

@@ -1,5 +1,5 @@
 ﻿using System.Net.Http.Headers;
-using Dicom;
+
 using DICOMcloud.Core.Test.Helpers;
 using DICOMcloud.DataAccess;
 using DICOMcloud.IO;
@@ -7,6 +7,7 @@ using DICOMcloud.Media;
 using DICOMcloud.Pacs;
 using DICOMcloud.Wado;
 using DICOMcloud.Wado.Models;
+using FellowOakDicom;
 using Microsoft.AspNetCore.Http;
 using fo = Dicom;
 
@@ -56,10 +57,10 @@ namespace DICOMcloud.Core.Test
                 DicomHelper.GetDicomDataset (2)
             };
 
-            var request = new HttpRequestMessage();
+            var request = new HttpRequest();
             WebStoreRequest webStoreRequest = new WebStoreRequest(request);
 
-            request.Headers.Accept.Add (new MediaTypeWithQualityHeaderValue(MimeMediaTypes.Json));
+            request.Headers.Accept.Add (new MediaTypeWithQualityHeaderValue(MimeMediaTypes.JsonDicom));
             
             webStoreRequest.MediaType = MimeMediaTypes.DICOM;
 
@@ -149,9 +150,13 @@ namespace DICOMcloud.Core.Test
             // If you need to simulate other parts of the HttpContext, you can modify the context object here
 
             QidoRequestModel requestModel = new QidoRequestModel();
-            var headers = new HttpClient().DefaultRequestHeaders;
+            //var headers = new HttpClient().DefaultRequestHeaders;
+            HeaderDictionary headersDic = new HeaderDictionary
+            {
+                { "Accept", new Microsoft.Extensions.Primitives.StringValues(MimeMediaTypes.JsonDicom) }
+            };
+            var headers = new Microsoft.AspNetCore.Http.Headers.RequestHeaders(headersDic);
 
-            headers.Accept.Add(new MediaTypeWithQualityHeaderValue(MimeMediaTypes.Json));
             requestModel.AcceptHeader = headers.Accept;
             requestModel.Headers = headers;
             requestModel.Query = new QidoQuery();
@@ -189,21 +194,21 @@ namespace DICOMcloud.Core.Test
 
         private void Pacs_Delete_Simple ()
         {
-            var study1    = GetUidElement ( fo.DicomTag.StudyInstanceUID, DicomHelper.Study1UID) ;
-            var study2    = GetUidElement ( fo.DicomTag.StudyInstanceUID, DicomHelper.Study2UID) ;
-            var study3    = GetUidElement ( fo.DicomTag.StudyInstanceUID, DicomHelper.Study3UID) ;
-            var series2   = GetUidElement ( fo.DicomTag.SeriesInstanceUID, DicomHelper.Series2UID) ;
-            var series3   = GetUidElement ( fo.DicomTag.SeriesInstanceUID, DicomHelper.Series3UID) ;
-            var instance3 = GetUidElement ( fo.DicomTag.SOPInstanceUID, DicomHelper.Instance3UID) ;
+            var study1    = GetUidElement ( DicomTag.StudyInstanceUID, DicomHelper.Study1UID) ;
+            var study2    = GetUidElement ( DicomTag.StudyInstanceUID, DicomHelper.Study2UID) ;
+            var study3    = GetUidElement ( DicomTag.StudyInstanceUID, DicomHelper.Study3UID) ;
+            var series2   = GetUidElement ( DicomTag.SeriesInstanceUID, DicomHelper.Series2UID) ;
+            var series3   = GetUidElement ( DicomTag.SeriesInstanceUID, DicomHelper.Series3UID) ;
+            var instance3 = GetUidElement ( DicomTag.SOPInstanceUID, DicomHelper.Instance3UID) ;
 
-            StoreService.Delete ( new fo.DicomDataset ( study1 ), ObjectQueryLevel.Study ) ;
-            StoreService.Delete ( new fo.DicomDataset ( study2, series2 ), ObjectQueryLevel.Series ) ;
-            StoreService.Delete ( new fo.DicomDataset ( study3, series3, instance3 ), ObjectQueryLevel.Instance ) ;
+            StoreService.Delete ( new DicomDataset ( study1 ), ObjectQueryLevel.Study ) ;
+            StoreService.Delete ( new DicomDataset ( study2, series2 ), ObjectQueryLevel.Series ) ;
+            StoreService.Delete ( new DicomDataset ( study3, series3, instance3 ), ObjectQueryLevel.Instance ) ;
         }
 
-        private fo.DicomUniqueIdentifier GetUidElement (fo.DicomTag tag, string uid )
+        private DicomUniqueIdentifier GetUidElement (DicomTag tag, string uid )
         {
-            return new fo.DicomUniqueIdentifier ( tag, uid ) ;
+            return new DicomUniqueIdentifier ( tag, uid ) ;
         }
 
 

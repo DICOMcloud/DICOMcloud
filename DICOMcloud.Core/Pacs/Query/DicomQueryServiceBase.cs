@@ -1,5 +1,6 @@
 ﻿using DICOMcloud.DataAccess;
 using DICOMcloud.DataAccess.Matching;
+using FellowOakDicom;
 using System.Collections.Generic;
 using fo = Dicom;
 
@@ -16,9 +17,9 @@ namespace DICOMcloud.Pacs
             QueryDataAccess = queryDataAccess ;
         }
 
-        public IEnumerable<fo.DicomDataset> Find 
+        public IEnumerable<DicomDataset> Find 
         ( 
-            fo.DicomDataset request, 
+            DicomDataset request, 
             IQueryOptions options,
             string queryLevel
         )
@@ -32,9 +33,9 @@ namespace DICOMcloud.Pacs
             return DoFind ( request, options, queryLevel, conditions );
         }
 
-        public PagedResult<fo.DicomDataset> FindPaged
+        public PagedResult<DicomDataset> FindPaged
         ( 
-            fo.DicomDataset request, 
+            DicomDataset request, 
             IQueryOptions options,
             string queryLevel
         ) 
@@ -50,24 +51,24 @@ namespace DICOMcloud.Pacs
 
         protected virtual IEnumerable<IMatchingCondition> BuildConditions
         (
-            fo.DicomDataset request,
+            DicomDataset request,
             ConditionFactory condFactory
         )
         {
             return condFactory.ProcessDataSet ( request ) ;
         }
 
-        protected abstract IEnumerable<fo.DicomDataset> DoFind
+        protected abstract IEnumerable<DicomDataset> DoFind
         (
-            fo.DicomDataset request,
+            DicomDataset request,
             IQueryOptions options, 
             string queryLevel,
             IEnumerable<IMatchingCondition> conditions
         ) ;
 
-        protected abstract PagedResult<fo.DicomDataset> DoFindPaged
+        protected abstract PagedResult<DicomDataset> DoFindPaged
         (
-            fo.DicomDataset request,
+            DicomDataset request,
             IQueryOptions options, 
             string queryLevel,
             IEnumerable<IMatchingCondition> conditions

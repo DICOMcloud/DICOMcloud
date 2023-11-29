@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using fo = Dicom;
-using Dicom.Imaging ;
+
 using DICOMcloud.IO;
 using DICOMcloud.Media ;
-using Dicom;
+
+using FellowOakDicom;
+using FellowOakDicom.Imaging;
 
 namespace DICOMcloud.Media
 {
@@ -52,7 +54,7 @@ namespace DICOMcloud.Media
                 List<IStorageLocation> locations      = new List<IStorageLocation> ( ) ;
                 var                    dataset        = GetMediaDataset ( mediaParameters.Dataset, mediaParameters.MediaInfo ) ;
                 string                 transferSyntax = ( !string.IsNullOrWhiteSpace (mediaParameters.MediaInfo.TransferSyntax ) ) ? ( mediaParameters.MediaInfo.TransferSyntax ) : "" ;
-                var                    pixelDataItem  = dataset.GetDicomItem<DicomItem>(fo.DicomTag.PixelData);
+                var                    pixelDataItem  = dataset.GetDicomItem<DicomItem>(DicomTag.PixelData);
 
                 if (StoreMultiFrames && pixelDataItem != null)
                 {
@@ -119,13 +121,13 @@ namespace DICOMcloud.Media
         
         }
 
-        protected virtual fo.DicomDataset GetMediaDataset ( fo.DicomDataset data, DicomMediaProperties mediaInfo )
+        protected virtual DicomDataset GetMediaDataset ( DicomDataset data, DicomMediaProperties mediaInfo )
         {
             return data ;
         }
 
         protected abstract bool StoreMultiFrames { get; }
 
-        protected abstract void Upload(fo.DicomDataset dataset, int frame, IStorageLocation storeLocation, DicomMediaProperties mediaProperties );
+        protected abstract void Upload(DicomDataset dataset, int frame, IStorageLocation storeLocation, DicomMediaProperties mediaProperties );
     }
 }

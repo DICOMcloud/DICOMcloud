@@ -1,9 +1,10 @@
-﻿using Dicom;
+﻿
 using DICOMcloud.Core.Test.Helpers;
 using DICOMcloud.DataAccess;
 using DICOMcloud.IO;
 using DICOMcloud.Media;
 using DICOMcloud.Pacs;
+using FellowOakDicom;
 using fo = Dicom;
 
 namespace DICOMcloud.Core.Test
@@ -87,7 +88,7 @@ namespace DICOMcloud.Core.Test
 
             System.Diagnostics.Trace.TraceInformation ( "Path: " + path );
 
-            fo.Imaging.Codec.TranscoderManager.LoadCodecs ( path ) ;
+             Imaging.Codec.TranscoderManager.LoadCodecs ( path ) ;
         }
 
         [TestMethod]
@@ -101,15 +102,15 @@ namespace DICOMcloud.Core.Test
             
             foreach ( string file in Directory.GetFiles (DicomHelpers.GetSampleImagesFolder ( ) ) )
             {
-                var dataset = fo.DicomFile.Open ( file ).Dataset ;
+                var dataset =  DicomFile.Open ( file ).Dataset ;
 
                 //reason is to shorten the path where the DS is stored. 
                 //location include the UIDs, so make sure your storage
                 // folder is close to the root when keeping the original UIDs
-                dataset.AddOrUpdate ( fo.DicomTag.PatientID, "Patient_" + counter ) ;
-                dataset.AddOrUpdate ( fo.DicomTag.StudyInstanceUID, "1112." + counter ) ;
-                dataset.AddOrUpdate ( fo.DicomTag.SeriesInstanceUID, "1113." + counter ) ;
-                dataset.AddOrUpdate ( fo.DicomTag.SOPInstanceUID, "1114." + counter ) ;
+                dataset.AddOrUpdate (  DicomTag.PatientID, "Patient_" + counter ) ;
+                dataset.AddOrUpdate (  DicomTag.StudyInstanceUID, "1112." + counter ) ;
+                dataset.AddOrUpdate (  DicomTag.SeriesInstanceUID, "1113." + counter ) ;
+                dataset.AddOrUpdate (  DicomTag.SOPInstanceUID, "1114." + counter ) ;
                 
                 StoreService.StoreDicom ( dataset, new DataAccess.InstanceMetadata ( ) ) ;
 
@@ -119,21 +120,21 @@ namespace DICOMcloud.Core.Test
 
         private void Pacs_Delete_Simple ()
         {
-            var study1    = GetUidElement ( fo.DicomTag.StudyInstanceUID, DicomHelper.Study1UID) ;
-            var study2    = GetUidElement ( fo.DicomTag.StudyInstanceUID, DicomHelper.Study2UID) ;
-            var study3    = GetUidElement ( fo.DicomTag.StudyInstanceUID, DicomHelper.Study3UID) ;
-            var series2   = GetUidElement ( fo.DicomTag.SeriesInstanceUID, DicomHelper.Series2UID) ;
-            var series3   = GetUidElement ( fo.DicomTag.SeriesInstanceUID, DicomHelper.Series3UID) ;
-            var instance3 = GetUidElement ( fo.DicomTag.SOPInstanceUID, DicomHelper.Instance3UID) ;
+            var study1    = GetUidElement (  DicomTag.StudyInstanceUID, DicomHelper.Study1UID) ;
+            var study2    = GetUidElement (  DicomTag.StudyInstanceUID, DicomHelper.Study2UID) ;
+            var study3    = GetUidElement (  DicomTag.StudyInstanceUID, DicomHelper.Study3UID) ;
+            var series2   = GetUidElement (  DicomTag.SeriesInstanceUID, DicomHelper.Series2UID) ;
+            var series3   = GetUidElement (  DicomTag.SeriesInstanceUID, DicomHelper.Series3UID) ;
+            var instance3 = GetUidElement (  DicomTag.SOPInstanceUID, DicomHelper.Instance3UID) ;
 
-            StoreService.Delete ( new fo.DicomDataset ( study1 ), ObjectQueryLevel.Study ) ;
-            StoreService.Delete ( new fo.DicomDataset ( study2, series2 ), ObjectQueryLevel.Series ) ;
-            StoreService.Delete ( new fo.DicomDataset ( study3, series3, instance3 ), ObjectQueryLevel.Instance ) ;
+            StoreService.Delete ( new  DicomDataset ( study1 ), ObjectQueryLevel.Study ) ;
+            StoreService.Delete ( new  DicomDataset ( study2, series2 ), ObjectQueryLevel.Series ) ;
+            StoreService.Delete ( new  DicomDataset ( study3, series3, instance3 ), ObjectQueryLevel.Instance ) ;
         }
 
-        private fo.DicomUniqueIdentifier GetUidElement (fo.DicomTag tag, string uid )
+        private  DicomUniqueIdentifier GetUidElement ( DicomTag tag, string uid )
         {
-            return new fo.DicomUniqueIdentifier ( tag, uid ) ;
+            return new  DicomUniqueIdentifier ( tag, uid ) ;
         }
 
 

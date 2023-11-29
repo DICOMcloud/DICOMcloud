@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FellowOakDicom;
 
 namespace DICOMcloud.DataAccess.Matching
 {
     public class ConditionFactory : DicomDataParameterFactory<IMatchingCondition>
     {
-        private static RangeMatching      studyDateTime = new RangeMatching ( new List<uint> ( ), (uint) fo.DicomTag.StudyDate ) ;
+        private static RangeMatching      studyDateTime = new RangeMatching ( new List<uint> ( ), (uint) DicomTag.StudyDate ) ;
         private static IMatchingCondition seqMatching = new SequenceMatching ( ) ;
         private static IMatchingCondition uidMatching = new ListofUIDMatching ( ) ;
         private static IMatchingCondition rngMatching = new RangeMatching ( ) ;
@@ -21,8 +22,8 @@ namespace DICOMcloud.DataAccess.Matching
         {
             IList<uint> supportedTags = studyDateTime.SupportedTags ;
 
-            supportedTags.Add ( (uint) fo.DicomTag.StudyDate);
-            supportedTags.Add ( (uint) fo.DicomTag.StudyTime);
+            supportedTags.Add ( (uint) DicomTag.StudyDate);
+            supportedTags.Add ( (uint) DicomTag.StudyTime);
         }
 
         public ConditionFactory ( )

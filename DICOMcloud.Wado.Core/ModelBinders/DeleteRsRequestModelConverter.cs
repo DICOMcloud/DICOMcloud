@@ -7,10 +7,11 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using DICOMcloud.Pacs;
-using Dicom;
+
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Http;
 using DICOMcloud.Extensions;
+using FellowOakDicom;
 
 namespace DICOMcloud.Wado
 {

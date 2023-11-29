@@ -1,49 +1,50 @@
 ﻿using System.Collections.Generic;
 using DICOMcloud.DataAccess;
+using FellowOakDicom;
 using fo = Dicom;
 
 namespace DICOMcloud.Pacs
 {
     public interface IObjectArchieveQueryService
     {
-        IEnumerable<fo.DicomDataset> FindStudies 
+        IEnumerable<DicomDataset> FindStudies 
         ( 
-            fo.DicomDataset request, 
+            DicomDataset request, 
             IQueryOptions options
 
         ) ;
 
-        IEnumerable<fo.DicomDataset> FindObjectInstances
+        IEnumerable<DicomDataset> FindObjectInstances
         (
-            fo.DicomDataset request,
+            DicomDataset request,
             IQueryOptions options
 
         ) ;
 
-        IEnumerable<fo.DicomDataset> FindSeries
+        IEnumerable<DicomDataset> FindSeries
         (
-            fo.DicomDataset request,
+            DicomDataset request,
             IQueryOptions options
         ) ;
 
 
-        PagedResult<fo.DicomDataset> FindStudiesPaged
+        PagedResult<DicomDataset> FindStudiesPaged
         ( 
-            fo.DicomDataset request, 
+            DicomDataset request, 
             IQueryOptions options
 
         ) ;
 
-        PagedResult<fo.DicomDataset> FindObjectInstancesPaged
+        PagedResult<DicomDataset> FindObjectInstancesPaged
         (
-            fo.DicomDataset request,
+            DicomDataset request,
             IQueryOptions options
 
         ) ;
 
-        PagedResult<fo.DicomDataset> FindSeriesPaged
+        PagedResult<DicomDataset> FindSeriesPaged
         (
-            fo.DicomDataset request,
+            DicomDataset request,
             IQueryOptions options
         ) ;
     }

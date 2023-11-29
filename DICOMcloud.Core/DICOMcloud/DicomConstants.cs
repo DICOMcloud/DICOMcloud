@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FellowOakDicom;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,11 +10,11 @@ namespace DICOMcloud
 {
     static class Utilities
     {
-        public static bool IsBinaryVR ( fo.DicomVR dicomVr ) 
+        public static bool IsBinaryVR ( DicomVR dicomVr ) 
         {
-            return ( dicomVr == fo.DicomVR.OB || dicomVr == fo.DicomVR.OD ||
-                     dicomVr == fo.DicomVR.OF || dicomVr == fo.DicomVR.OW ||
-                     dicomVr == fo.DicomVR.OL || dicomVr == fo.DicomVR.UN ) ;
+            return ( dicomVr == DicomVR.OB || dicomVr == DicomVR.OD ||
+                     dicomVr == DicomVR.OF || dicomVr == DicomVR.OW ||
+                     dicomVr == DicomVR.OL || dicomVr == DicomVR.UN ) ;
         }
 
         public class PersonNameParts

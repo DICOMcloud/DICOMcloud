@@ -1,4 +1,5 @@
-﻿using Dicom;
+﻿
+using FellowOakDicom;
 using System;
 using System.Collections.Generic;
 using System.Linq;

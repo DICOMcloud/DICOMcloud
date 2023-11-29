@@ -1,4 +1,4 @@
-﻿using Dicom;
+﻿
 using DICOMcloud.DataAccess;
 using DICOMcloud.Wado.Models;
 using Microsoft.Net.Http.Headers;

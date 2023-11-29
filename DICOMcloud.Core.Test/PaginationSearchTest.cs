@@ -1,4 +1,4 @@
-﻿using Dicom;
+﻿
 using DICOMcloud.Core.Test.Helpers;
 using DICOMcloud.DataAccess;
 using DICOMcloud.DataAccess.Database;
@@ -6,6 +6,7 @@ using DICOMcloud.DataAccess.Database.Schema;
 using DICOMcloud.IO;
 using DICOMcloud.Media;
 using DICOMcloud.Pacs;
+using FellowOakDicom;
 
 namespace DICOMcloud.Core.Test
 {

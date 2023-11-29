@@ -9,6 +9,7 @@ using fo = Dicom;
 using System.IO;
 using DICOMcloud.Media;
 using DICOMcloud.IO;
+using FellowOakDicom;
 
 namespace DICOMcloud.Wado
 {
@@ -24,7 +25,7 @@ namespace DICOMcloud.Wado
 
         protected override WadoResponse DoProcess(IWadoUriRequest request, string mimeType)
         {
-            fo.DicomFile df = fo.DicomFile.Open (Location.GetReadStream ( )) ;//TODO: check how the toolkit loads the image in memory or not. we do not need to load it
+            DicomFile df = DicomFile.Open (Location.GetReadStream ( )) ;//TODO: check how the toolkit loads the image in memory or not. we do not need to load it
             WadoResponse response = new WadoResponse ( ) ;
 
 

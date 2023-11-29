@@ -23,8 +23,10 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="fo-dicom" Version="4.0.8" />
+    <PackageReference Include="fo-dicom" Version="5.1.1" />
     <PackageReference Include="fo-dicom.ImageSharp" Version="4.0.8" />
+    <PackageReference Include="fo-dicom.Imaging.ImageSharp" Version="5.1.0" />
+    <PackageReference Include="fo-dicom.NetCore" Version="4.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="PubSub" Version="4.0.2" />

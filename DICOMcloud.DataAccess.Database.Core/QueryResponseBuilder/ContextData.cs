@@ -1,6 +1,7 @@
 ﻿using DICOMcloud.DataAccess;
 using System.Collections.Generic;
-using Dicom;
+
+using FellowOakDicom;
 
 namespace DICOMcloud.DataAccess.Database
 {

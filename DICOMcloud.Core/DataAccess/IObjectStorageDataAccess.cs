@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using Dicom;
+
 using DICOMcloud;
 using DICOMcloud.DataAccess.Matching;
+using FellowOakDicom;
 
 namespace DICOMcloud.DataAccess
 {

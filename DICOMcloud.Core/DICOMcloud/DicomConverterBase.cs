@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Linq;
-using Dicom;
+
+using FellowOakDicom;
 
 namespace DICOMcloud
 {
     public abstract partial class DicomConverterBase
     {
-        protected virtual Dicom.IO.Buffer.IByteBuffer GetItemBuffer ( DicomItem item )
+        protected virtual FellowOakDicom.IO.Buffer.IByteBuffer GetItemBuffer ( DicomItem item )
         {
-            Dicom.IO.Buffer.IByteBuffer buffer;
+            FellowOakDicom.IO.Buffer.IByteBuffer buffer;
 
 
             if ( item is DicomFragmentSequence )
@@ -21,7 +22,7 @@ namespace DICOMcloud
                 
                 
                 buffer = dicomfragmentSq.Fragments.Count == 1 ? dicomfragmentSq.Fragments[0] :
-                                                                new Dicom.IO.Buffer.CompositeByteBuffer ( dicomfragmentSq.Fragments.ToArray ( ) );
+                                                                new FellowOakDicom.IO.Buffer.CompositeByteBuffer ( dicomfragmentSq.Fragments.ToArray ( ) );
             }
             else
             {

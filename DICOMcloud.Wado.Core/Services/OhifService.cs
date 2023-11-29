@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Dicom;
+
 using DICOMcloud.DataAccess;
 using DICOMcloud.Extensions;
 using DICOMcloud.Pacs;
 using DICOMcloud.Wado.Core.WadoResponse;
 using DICOMcloud.Wado.Models;
+using FellowOakDicom;
 
 namespace DICOMcloud.Wado
 {
@@ -103,7 +104,7 @@ namespace DICOMcloud.Wado
         {
             DicomDataset ds = new DicomDataset().NotValidated();
 
-            ds.Add(Dicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
+            ds.Add(FellowOakDicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
             ds.Add(DicomTag.SeriesInstanceUID, "");
             ds.Add(DicomTag.PatientID, "");
             ds.Add(DicomTag.PatientName, "");
@@ -119,7 +120,7 @@ namespace DICOMcloud.Wado
         {
             DicomDataset ds = new DicomDataset().NotValidated();
 
-            ds.Add(Dicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
+            ds.Add(FellowOakDicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
             ds.Add(DicomTag.SeriesInstanceUID, seriesId.SeriesInstanceUID);
             ds.Add(DicomTag.PatientID, "");
             ds.Add(DicomTag.PatientName, "");
@@ -135,7 +136,7 @@ namespace DICOMcloud.Wado
         {
             DicomDataset ds = new DicomDataset().NotValidated();
 
-            ds.Add(Dicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
+            ds.Add(FellowOakDicom.DicomTag.StudyInstanceUID, studyId.StudyInstanceUID);
             ds.Add(DicomTag.SeriesInstanceUID, seriesId.SeriesInstanceUID);
             ds.Add(DicomTag.PatientID, "");
             ds.Add(DicomTag.PatientName, "");

@@ -12,12 +12,12 @@ using DICOMcloud.Media;
 using DICOMcloud.DataAccess;
 using DICOMcloud;
 using DICOMcloud.Messaging;
-using Dicom;
+
 using System.Web.Http;
 using DICOMcloud.Wado.Core.WadoResponse;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Linq;
-
+using FellowOakDicom;
 
 namespace DICOMcloud.Wado
 {
@@ -48,19 +48,19 @@ namespace DICOMcloud.Wado
             });
         }
 
-        protected virtual fo.DicomDataset GetDicom ( Stream dicomStream )
+        protected virtual DicomDataset GetDicom ( Stream dicomStream )
         {
-            fo.DicomFile dicom ;
+            DicomFile dicom ;
 
 
-            dicom = fo.DicomFile.Open ( dicomStream, FileReadOption.ReadLargeOnDemand ) ;
+            dicom = DicomFile.Open ( dicomStream, FileReadOption.ReadLargeOnDemand ) ;
 
             dicom.Dataset.NotValidated();
 
             return dicom.Dataset ;
         }
 
-        protected virtual InstanceMetadata CreateObjectMetadata ( fo.DicomDataset dataset, WebStoreRequest request )
+        protected virtual InstanceMetadata CreateObjectMetadata ( DicomDataset dataset, WebStoreRequest request )
         {
             return new InstanceMetadata ( ) { } ;
         }

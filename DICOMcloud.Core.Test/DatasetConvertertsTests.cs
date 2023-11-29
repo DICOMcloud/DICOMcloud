@@ -1,8 +1,10 @@
-using Dicom;
-using Dicom.Imaging;
+
+
 using DICOMcloud.Core.Test.Helpers;
 using DICOMcloud.IO;
 using DICOMcloud.Media;
+using FellowOakDicom;
+using FellowOakDicom.Imaging;
 
 namespace DICOMcloud.Core.Test
 {

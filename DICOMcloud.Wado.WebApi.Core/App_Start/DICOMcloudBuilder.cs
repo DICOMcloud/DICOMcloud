@@ -1,4 +1,4 @@
-﻿using Dicom;
+﻿
 //using DICOMcloud.Azure.IO;
 using DICOMcloud.DataAccess;
 using DICOMcloud.DataAccess.Database.Schema;
@@ -19,6 +19,8 @@ using DICOMcloud.Wado.WebApi.Core.App_Start;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.DependencyInjection;
+using FellowOakDicom;
+using FellowOakDicom.Imaging.NativeCodec;
 
 namespace DICOMcloud.Wado
 {
@@ -33,7 +35,8 @@ namespace DICOMcloud.Wado
         public static void ConfigureLogging (IServiceCollection services)
         {
             var config = new HttpConfiguration();
-            fo.Log.LogManager.SetImplementation ( TraceLogManager.Instance );
+            //TODO:new logging should uses standard aspnet core. 
+            //FellowOakDicom.Log.LogManager.SetImplementation ( TraceLogManager.Instance );
 
             config.Services.Add ( typeof(IExceptionLogger), new DICOMcloudExceptionLogger()) ;
 
@@ -219,15 +222,6 @@ namespace DICOMcloud.Wado
            
             services.AddScoped<IDicomMediaWriterFactory, DicomMediaWriterFactory>();
             services.AddScoped<IJsonDicomConverter, JsonDicomConverter>();
-        }
-
-        public static void EnsureCodecsLoaded (this IWebHostEnvironment _hostingEnvironment) 
-        {
-            var path = System.IO.Path.Combine (_hostingEnvironment.ContentRootPath, "bin" );
-
-            System.Diagnostics.Trace.TraceInformation ( "Path: " + path );
-
-            fo.Imaging.Codec.TranscoderManager.LoadCodecs ( path ) ;
         }
 
         

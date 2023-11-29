@@ -6,6 +6,7 @@ using DICOMcloud.DataAccess;
 using DICOMcloud.Media;
 using DICOMcloud.Pacs.Commands;
 using fo = Dicom;
+using FellowOakDicom;
 
 namespace DICOMcloud.Pacs
 {
@@ -24,7 +25,7 @@ namespace DICOMcloud.Pacs
         
         public DCloudCommandResult StoreDicom
         ( 
-            fo.DicomDataset dataset,
+            DicomDataset dataset,
             InstanceMetadata metadata
         )
         {
@@ -40,7 +41,7 @@ namespace DICOMcloud.Pacs
         //Example: the request dataset has a date range, wild-card or SOP Class UID...
         public DCloudCommandResult Delete
         ( 
-            fo.DicomDataset request,
+            DicomDataset request,
             ObjectQueryLevel  level
         )
         {

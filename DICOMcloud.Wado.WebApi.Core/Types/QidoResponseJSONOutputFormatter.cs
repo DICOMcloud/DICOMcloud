@@ -1,8 +1,9 @@
-﻿using Dicom;
+﻿
 using DICOMcloud.DataAccess;
 using DICOMcloud.Media;
 using DICOMcloud.Pacs;
 using DICOMcloud.Wado.Models;
+using FellowOakDicom;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc.Formatters;

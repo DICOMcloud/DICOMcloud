@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using fo = Dicom;
-using Dicom.Imaging.Render;
-using Dicom.Imaging;
-using Dicom.Imaging.Codec ;
+﻿using FellowOakDicom.Imaging.Render;
+
+using FellowOakDicom.Imaging.Codec ;
 using DICOMcloud.IO;
 using System.IO;
-using Dicom;
+using FellowOakDicom;
+using FellowOakDicom.Imaging;
 
 namespace DICOMcloud.Media
 {
@@ -37,19 +32,19 @@ namespace DICOMcloud.Media
 
         public override bool CanUpload(DicomDataset ds, int frame)
         {
-            var pixelDataItem = ds.GetDicomItem<DicomItem>(fo.DicomTag.PixelData);
+            var pixelDataItem = ds.GetDicomItem<DicomItem>(DicomTag.PixelData);
 
             return pixelDataItem != null;
         }
 
-        protected override fo.DicomDataset GetMediaDataset ( fo.DicomDataset data, DicomMediaProperties mediaInfo )
+        protected override DicomDataset GetMediaDataset ( DicomDataset data, DicomMediaProperties mediaInfo )
         {
             return base.GetMediaDataset ( data, mediaInfo ) ;
         }
 
         protected override void Upload 
         ( 
-            fo.DicomDataset dicomObject, 
+            DicomDataset dicomObject, 
             int frame, 
             IStorageLocation storeLocation, 
             DicomMediaProperties mediaProperties 
@@ -57,9 +52,9 @@ namespace DICOMcloud.Media
         {
             var frameIndex = frame - 1 ;
             var dicomImage = new DicomImage(dicomObject, frameIndex);
-            var image = dicomImage.RenderImage(frameIndex);
+            FellowOakDicom.Imaging.IImage image = dicomImage.RenderImage(frameIndex);
             var bitmap = image.AsSharpImage();
-            var stream = new MemoryStream ( ) ;
+            var stream = new MemoryStream ();
 
             bitmap.Save(stream, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FellowOakDicom;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,12 +22,12 @@ namespace DICOMcloud
             XmlConverter = xmlconverter ;
         }
 
-        public Stream Convert(fo.DicomDataset ds)
+        public Stream Convert(DicomDataset ds)
         {
             return new MemoryStream ( ASCIIEncoding.UTF8.GetBytes ( XmlConverter.Convert (ds)));
         }
 
-        public fo.DicomDataset Convert ( Stream xmlStream )
+        public DicomDataset Convert ( Stream xmlStream )
         {
             StreamReader reader    = new StreamReader (xmlStream) ;
             string       xmlString = reader.ReadToEnd ( ) ;

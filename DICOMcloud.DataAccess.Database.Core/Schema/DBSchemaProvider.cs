@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FellowOakDicom;
 
 namespace DICOMcloud.DataAccess.Database.Schema
 {
@@ -19,7 +20,7 @@ namespace DICOMcloud.DataAccess.Database.Schema
             SchemaSource  = source ;
         }
 
-        public  string GetTableName ( fo.DicomTag tag )
+        public  string GetTableName ( DicomTag tag )
         {
                 IList<ColumnInfo> columns = null ;
             if ( SchemaSource.Tags.TryGetValue ( (uint)tag, out columns ) )

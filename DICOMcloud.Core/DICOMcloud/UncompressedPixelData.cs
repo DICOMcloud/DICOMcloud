@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Dicom;
+
 using fo = Dicom ;
-using Dicom.Imaging ;
-using Dicom.Imaging.Codec;
+
+using FellowOakDicom.Imaging.Codec;
+using FellowOakDicom;
+using FellowOakDicom.Imaging;
 
 namespace DICOMcloud
 {
     public class UncompressedPixelDataWrapper
     {
-        public UncompressedPixelDataWrapper ( fo.DicomDataset ds )
+        public UncompressedPixelDataWrapper ( DicomDataset ds )
         {
             if (ds.InternalTransferSyntax.IsEncapsulated)
             {
@@ -27,7 +29,7 @@ namespace DICOMcloud
             PixelData = DicomPixelData.Create(Dataset);
         }
 
-        public fo.DicomDataset Dataset { get; private set; }
+        public DicomDataset Dataset { get; private set; }
 
         public DicomPixelData PixelData
         {

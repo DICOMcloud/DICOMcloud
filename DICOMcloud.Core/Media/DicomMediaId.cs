@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DICOMcloud.IO;
 using DICOMcloud;
 using fo = Dicom;
+using FellowOakDicom;
 
 namespace DICOMcloud.Media
 {
@@ -36,16 +37,16 @@ namespace DICOMcloud.Media
 
         public DicomMediaId 
         ( 
-            fo.DicomDataset dataset, 
+            DicomDataset dataset, 
             int frame, 
             string mediaType,
             string transferSyntax
         )
         {
             var dicomObject   = new ObjectId ( ) {
-            StudyInstanceUID  = dataset.GetValueOrDefault(fo.DicomTag.StudyInstanceUID, 0, "" ),
-            SeriesInstanceUID = dataset.GetValueOrDefault ( fo.DicomTag.SeriesInstanceUID, 0,""), 
-            SOPInstanceUID    = dataset.GetValueOrDefault ( fo.DicomTag.SOPInstanceUID, 0, ""),
+            StudyInstanceUID  = dataset.GetValueOrDefault(DicomTag.StudyInstanceUID, 0, "" ),
+            SeriesInstanceUID = dataset.GetValueOrDefault(DicomTag.SeriesInstanceUID, 0,""), 
+            SOPInstanceUID    = dataset.GetValueOrDefault(DicomTag.SOPInstanceUID, 0, ""),
             Frame             = frame } ;
             
             Init ( dicomObject, mediaType, transferSyntax ) ;

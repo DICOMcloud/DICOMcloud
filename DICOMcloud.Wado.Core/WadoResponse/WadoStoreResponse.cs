@@ -10,8 +10,9 @@ using DICOMcloud;
 using DICOMcloud.Pacs;
 using DICOMcloud.Pacs.Commands;
 using System.Net;
-using Dicom;
+
 using DICOMcloud.Wado.Core.WadoResponse;
+using FellowOakDicom;
 
 namespace DICOMcloud.Wado
 {

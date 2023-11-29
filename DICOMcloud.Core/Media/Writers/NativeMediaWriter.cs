@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DICOMcloud.IO;
-using Dicom;
-using Dicom.Imaging ;
-using Dicom.Imaging.Codec;
+using FellowOakDicom;
+using FellowOakDicom.Imaging ;
+using FellowOakDicom.Imaging.Codec;
 
 namespace DICOMcloud.Media
 {

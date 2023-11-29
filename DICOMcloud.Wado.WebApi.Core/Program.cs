@@ -1,6 +1,11 @@
+using BitMiracle.LibJpeg;
 using DICOMcloud.Wado;
 using DICOMcloud.Wado.WebApi.Core.Types;
 using DICOMcloud.Wado.WebApi.Exceptions;
+using FellowOakDicom;
+using FellowOakDicom.Imaging.NativeCodec;
+using Microsoft.VisualBasic;
+using System;
 using System.Web.Http;
 using System.Web.Mvc;
 
@@ -22,6 +27,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Build();
 
+new DicomSetupBuilder().RegisterServices(s => 
+    s.AddFellowOakDicom()
+    .AddLogging()
+    .AddTranscoderManager<NativeTranscoderManager>())
+    .Build();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -30,8 +41,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();    
 }
-
-app.Environment.EnsureCodecsLoaded();
 
 app.UseHttpsRedirection();
 
