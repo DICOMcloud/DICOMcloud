@@ -1,30 +1,30 @@
-﻿using DICOMcloud.Messaging;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Queue;
-using Newtonsoft.Json;
-using System;
+﻿//using DICOMcloud.Messaging;
+//using Microsoft.WindowsAzure.Storage;
+//using Microsoft.WindowsAzure.Storage.Queue;
+//using Newtonsoft.Json;
+//using System;
 
-namespace DICOMcloud.Azure.Messaging
-{
-    public class AzureMessageSender : IMessageSender
-    {
-        public CloudStorageAccount StorageAccount { get; set; }
+//namespace DICOMcloud.Azure.Messaging
+//{
+//    public class AzureMessageSender : IMessageSender
+//    {
+//        public CloudStorageAccount StorageAccount { get; set; }
         
-        public AzureMessageSender ( CloudStorageAccount storageAccount )
-        {
-            StorageAccount = storageAccount ;
-        }
+//        public AzureMessageSender ( CloudStorageAccount storageAccount )
+//        {
+//            StorageAccount = storageAccount ;
+//        }
 
-        public void SendMessage ( ITransportMessage message, TimeSpan? delay = default (TimeSpan?) ) 
-        {
-            var client = StorageAccount.CreateCloudQueueClient ( ) ;
+//        public void SendMessage ( ITransportMessage message, TimeSpan? delay = default (TimeSpan?) ) 
+//        {
+//            var client = StorageAccount.CreateCloudQueueClient ( ) ;
         
-            var queue = client.GetQueueReference ( message.Name ) ;    
+//            var queue = client.GetQueueReference ( message.Name ) ;    
         
-            queue.CreateIfNotExists ( ) ;
+//            queue.CreateIfNotExists ( ) ;
             
-            queue.AddMessage ( new CloudQueueMessage(JsonConvert.SerializeObject(message) ),
-                               null, delay, null, new OperationContext ( ) { ClientRequestID = message.ID} );    
-        }
-    }
-}
+//            queue.AddMessage ( new CloudQueueMessage(JsonConvert.SerializeObject(message) ),
+//                               null, delay, null, new OperationContext ( ) { ClientRequestID = message.ID} );    
+//        }
+//    }
+//}

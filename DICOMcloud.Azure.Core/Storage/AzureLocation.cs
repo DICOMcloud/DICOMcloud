@@ -1,8 +1,11 @@
 ﻿using DICOMcloud.IO;
-using Microsoft.WindowsAzure.Storage.Blob;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
 using System;
 using System.IO;
 using System.Net;
+using System.Reflection.Metadata;
 
 namespace DICOMcloud.Azure.IO
 {
@@ -11,7 +14,7 @@ namespace DICOMcloud.Azure.IO
         private long? _size ;
         private IMediaId _mediaId;
 
-        public AzureLocation ( ICloudBlob blob, IMediaId id = null )
+        public AzureLocation ( BlobClient blob, IMediaId id = null )
         {
             Blob  = blob;
             _mediaId = id;        
@@ -36,7 +39,7 @@ namespace DICOMcloud.Azure.IO
         { 
             get
             {
-                return Blob.Properties.ContentType ;
+                return Blob.GetProperties().Value.ContentType;
             } 
         }
 
@@ -50,10 +53,7 @@ namespace DICOMcloud.Azure.IO
             }
             else if ( Blob.Exists ( ) )
             {
-
-                Blob.FetchAttributes ( ) ;
-
-                _size = Blob.Properties.Length ;
+                _size = Blob.GetProperties().Value.ContentLength;
 
                 return _size.Value ;
             }
@@ -64,28 +64,18 @@ namespace DICOMcloud.Azure.IO
             }
         }
 
-        public virtual Uri GetReadUrl(DateTimeOffset? startTime, DateTimeOffset? expiryTime)
+        public virtual Uri GetReadUrl(DateTimeOffset expiryTime)
         {
-            var sasToken = Blob.GetSharedAccessSignature(new SharedAccessBlobPolicy()
-                {
-                    Permissions = SharedAccessBlobPermissions.Read,
-                    SharedAccessStartTime = startTime,
-                    SharedAccessExpiryTime = expiryTime
-                });
+            var sasToken = Blob.GenerateSasUri(BlobSasPermissions.Read, expiryTime);
             
             var blobUrl = string.Format("{0}{1}", Blob.Uri.AbsoluteUri, sasToken);
 
             return new Uri(blobUrl);
         }
 
-        public virtual Uri GetWriteUrl(DateTimeOffset? startTime, DateTimeOffset? expiryTime)
+        public virtual Uri GetWriteUrl(DateTimeOffset expiryTime)
         {
-            var sasToken = Blob.GetSharedAccessSignature(new SharedAccessBlobPolicy()
-            {
-                Permissions = SharedAccessBlobPermissions.Write,
-                SharedAccessStartTime = startTime,
-                SharedAccessExpiryTime = expiryTime
-            });
+            var sasToken = Blob.GenerateSasUri(BlobSasPermissions.Write, expiryTime);
 
             var blobUrl = string.Format("{0}{1}", Blob.Uri.AbsoluteUri, sasToken);
 
@@ -96,29 +86,21 @@ namespace DICOMcloud.Azure.IO
         {
             get
             {
-                return Blob.Metadata["meta"] ;
+                return Blob.GetProperties().Value.Metadata["meta"];
             }
 
             set
             {
-                Blob.Metadata["meta"] = value ;
+                var meta = Blob.GetProperties().Value.Metadata;
+
+                meta["meta"] = value;
+                Blob.SetMetadata(meta);
             }
         }
 
         protected override void DoDelete()
         {
-            try
-            {
                 Blob.Delete ();
-            }
-            catch ( Microsoft.WindowsAzure.Storage.StorageException ex )
-            {
-                //if blob doesn't exist for any reason then it is already deleted.
-                if ( ex.RequestInformation.HttpStatusCode != (int) HttpStatusCode.NotFound )
-                {
-                    throw ;
-                }
-            }
         }
 
         protected override Stream DoDownload()
@@ -128,43 +110,45 @@ namespace DICOMcloud.Azure.IO
 
         protected override void DoDownload(Stream stream)
         {
-            Blob.DownloadToStream ( stream ) ;
+            Blob.DownloadTo(stream);
         }
 
         protected override void DoUpload(Stream stream, string contentType)
         {
-            Blob.Properties.ContentType = contentType;
-            Blob.UploadFromStream (stream);
-            
-            WriteMetadata ( ) ;
+            var options = new BlobUploadOptions()
+            {
+                HttpHeaders = new BlobHttpHeaders() { ContentType = contentType }
+            };
+
+            Blob.Upload(stream, options);
         }
 
         protected override void DoUpload ( byte[] buffer, string contentType)
         {
-            Blob.Properties.ContentType = contentType;
-            Blob.UploadFromByteArray ( buffer, 0, buffer.Length ) ;
-            WriteMetadata ( ) ;
+            var options = new BlobUploadOptions() 
+            { 
+                HttpHeaders = new BlobHttpHeaders() { ContentType = contentType } 
+            };
+            
+            Blob.Upload(new BinaryData(buffer), options);
         }
 
         protected override void DoUpload(string filename, string contentType)
         {
-            Blob.Properties.ContentType = contentType;
-            Blob.UploadFromFile (filename ) ;
-            WriteMetadata( ) ;
+            var options = new BlobUploadOptions()
+            {
+                HttpHeaders = new BlobHttpHeaders() { ContentType = contentType }
+            };
+
+            Blob.Upload(filename, options) ;
          }
 
         protected override Stream DoGetReadStream()
         {
-            return Blob.OpenRead ( ) ;
+            return Blob.OpenRead();
         }
 
-        private void WriteMetadata ( )
-        {
-            Blob.SetMetadata ( ) ;
-            //__Blob.SetProperties ( ) ;
-        }
-
-        public ICloudBlob Blob
+        public BlobClient Blob
         {
             get; 
             set; 

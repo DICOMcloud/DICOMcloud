@@ -64,21 +64,17 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
     <PackageReference Include="Microsoft.Azure.KeyVault.Core" Version="3.0.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Data.Edm" Version="5.8.4" />
     <PackageReference Include="Microsoft.Data.OData" Version="5.8.4" />
     <PackageReference Include="Microsoft.Data.Services.Client" Version="5.8.4" />
-    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.3" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Spatial" Version="5.8.4" />
-    <PackageReference Include="WindowsAzure.Storage" Version="9.3.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DICOMcloud.Core\DICOMcloud.Core.csproj" />
   </ItemGroup>
-  <PropertyGroup>
-    <PostBuildEvent>call "$(ProjectDir)../Resources\Build\copyAssembly.bat" "$(ProjectDir)../dist" "$(ConfigurationName)" $(TargetPath)</PostBuildEvent>
-  </PropertyGroup>
+  <PropertyGroup />
 </Project>

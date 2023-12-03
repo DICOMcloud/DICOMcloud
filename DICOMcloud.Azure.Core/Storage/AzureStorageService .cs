@@ -1,51 +1,40 @@
-﻿using DICOMcloud.Extensions;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using DICOMcloud.Extensions;
 using DICOMcloud.IO;
-using Microsoft.Azure;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
+
 using System.Collections.Generic;
 
 namespace DICOMcloud.Azure.IO
 {
     public class AzureStorageService : MediaStorageService//, IEnumerable<IStorageContainer>
     {
-        public AzureStorageService ( string connectionName )
-        : this ( CloudStorageAccount.Parse( CloudConfigurationManager.GetSetting(connectionName) ) )
-        {}
-
-        public AzureStorageService ( CloudStorageAccount storageAccount )
+        public AzureStorageService (string connectionString )
         {
-            // Create a blob client for interacting with the blob service.
-            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-            
-            Init(blobClient);
+            __ConnectionString = connectionString;
+            __CloudClient = new BlobServiceClient(connectionString);
+            __KeyProvider = new AzureKeyProvider();
         }
 
         protected override IStorageContainer GetContainer(string containerKey)
         {
             containerKey = GetValidContainerKey ( containerKey );
 
-            CloudBlobContainer cloudContainer = __CloudClient.GetContainerReference ( containerKey );
+            var cloudContainer = __CloudClient.GetBlobContainerClient ( containerKey );
 
             cloudContainer.CreateIfNotExists ( );
 
-            return new AzureContainer ( cloudContainer );
+            return new AzureContainer ( cloudContainer, __ConnectionString);
         }
 
-        protected override IEnumerable<IStorageContainer> GetContainers ( string containerKey ) 
+        protected override IEnumerable<IStorageContainer> GetContainers ( string parentContainerKey ) 
         {
-            containerKey = GetValidContainerKey ( containerKey );
+            parentContainerKey = GetValidContainerKey ( parentContainerKey );
 
-            foreach ( var container in __CloudClient.ListContainers ( containerKey, ContainerListingDetails.None ) )
+            foreach ( var container in __CloudClient.GetBlobContainers(BlobContainerTraits.None, BlobContainerStates.None, parentContainerKey))
             {
-                yield return GetContainer ( containerKey ) ;
+                yield return GetContainer (container.Name) ;
             }
-        }
-
-        private void Init(CloudBlobClient blobClient)
-        {
-            __CloudClient = blobClient;
-            __KeyProvider = new AzureKeyProvider ( ) ;
         }
 
         protected override IKeyProvider GetKeyProvider()
@@ -57,7 +46,7 @@ namespace DICOMcloud.Azure.IO
         {
             containerKey = GetValidContainerKey ( containerKey );
 
-            CloudBlobContainer cloudContainer = __CloudClient.GetContainerReference ( containerKey ) ;
+            var cloudContainer = __CloudClient.GetBlobContainerClient ( containerKey ) ;
 
             return cloudContainer.Exists ( ) ;
         }
@@ -71,8 +60,10 @@ namespace DICOMcloud.Azure.IO
             return containerKey;
         }
 
-        private CloudBlobClient __CloudClient { get; set; }
-        private IKeyProvider __KeyProvider { get; set; }
+        private string __ConnectionString;
+
+        private BlobServiceClient __CloudClient { get; set; }
+        private IKeyProvider      __KeyProvider { get; set; }
 
         private static char[] __Separators = "!@#$%^&*()+=[]{}\\|;':\",.<>/?~`".ToCharArray ( )  ;
     }

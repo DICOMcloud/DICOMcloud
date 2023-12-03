@@ -9,8 +9,8 @@ namespace DICOMcloud.IO
 {
     public interface IPreSignedUrlStorageLocation : IStorageLocation
     {
-        Uri GetReadUrl  ( DateTimeOffset? startTime, DateTimeOffset? expiryTime );
-        Uri GetWriteUrl ( DateTimeOffset? startTime, DateTimeOffset? expiryTime );
+        Uri GetReadUrl  ( DateTimeOffset expiryTime );
+        Uri GetWriteUrl ( DateTimeOffset expiryTime );
     }
 
 

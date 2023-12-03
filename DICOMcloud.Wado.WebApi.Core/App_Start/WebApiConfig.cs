@@ -1,7 +1,6 @@
 ﻿//using Microsoft.Azure;
 using DICOMcloud.Wado.WebApi.Core.App_Start;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.Azure;
 using System;
 using System.Collections.Generic;
 using System.Linq;

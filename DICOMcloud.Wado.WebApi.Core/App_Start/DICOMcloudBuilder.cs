@@ -1,27 +1,22 @@
 ﻿
 //using DICOMcloud.Azure.IO;
+using DICOMcloud.Azure.IO;
 using DICOMcloud.DataAccess;
+using DICOMcloud.DataAccess.Database;
 using DICOMcloud.DataAccess.Database.Schema;
 using DICOMcloud.IO;
 using DICOMcloud.Media;
 using DICOMcloud.Messaging;
 using DICOMcloud.Pacs;
 using DICOMcloud.Pacs.Commands;
-using fo = Dicom;
-using System.Web.Http;
-using System.Web.Http.ExceptionHandling;
-using DICOMcloud.Wado.WebApi.Exceptions;
-using DICOMcloud.DataAccess.Database;
+using DICOMcloud.Wado.Core.Types;
 using DICOMcloud.Wado.Core.WadoResponse;
 using DICOMcloud.Wado.Models;
-using Microsoft.WindowsAzure.Storage;
 using DICOMcloud.Wado.WebApi.Core.App_Start;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using Microsoft.Extensions.DependencyInjection;
+using DICOMcloud.Wado.WebApi.Exceptions;
 using FellowOakDicom;
-using FellowOakDicom.Imaging.NativeCodec;
-using DICOMcloud.Wado.Core.Types;
+using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
 
 namespace DICOMcloud.Wado
 {
@@ -32,7 +27,6 @@ namespace DICOMcloud.Wado
         static QidoRsServiceConfig QidoRsServiceConfig { get; set; }
         static ConnectionStringProvider ConnectionStringProvider { get; set; }
         static Config Config { get; set; }
-        static CloudStorageAccount StorageAccount { get; set; }
         static WebApplicationBuilder App;
 
         private static void ConfigureLogging (IServiceCollection services)
@@ -181,12 +175,9 @@ namespace DICOMcloud.Wado
             }
             else
             {
-                StorageAccount = CloudStorageAccount.Parse ( StorageConection ) ;
-
-                AzureStorageSupported = true ;
-
-                services.AddScoped<CloudStorageAccount>();
-                services.AddScoped<IMediaStorageService>();
+                services.AddScoped<IMediaStorageService, AzureStorageService>((serviceProvider) => { 
+                    return new AzureStorageService(StorageConection);
+                });
             }
         }
 
