@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 
 using DICOMcloud.Core.Test.Helpers;
 using DICOMcloud.DataAccess;
@@ -9,6 +10,7 @@ using DICOMcloud.Wado;
 using DICOMcloud.Wado.Models;
 using FellowOakDicom;
 using Microsoft.AspNetCore.Http;
+using Moq;
 using fo = Dicom;
 
 namespace DICOMcloud.Core.Test
@@ -47,55 +49,71 @@ namespace DICOMcloud.Core.Test
             DataAccessHelper.EmptyDatabase ( ) ;
         }
 
+
         [TestMethod]
-        public async Task Web_Storage_Simple ( )
+        public async Task Web_Storage_Simple()
         {
-            DicomDataset[] storeDs = new DicomDataset[] 
-            { 
-                DicomHelper.GetDicomDataset (0),
-                DicomHelper.GetDicomDataset (1),
-                DicomHelper.GetDicomDataset (2)
+            DicomDataset[] storeDs = new DicomDataset[]
+            {
+                DicomHelper.GetDicomDataset(0),
+                DicomHelper.GetDicomDataset(1),
+                DicomHelper.GetDicomDataset(2)
             };
 
-            var request = new HttpRequest();
-            WebStoreRequest webStoreRequest = new WebStoreRequest(request);
+            // Setting up the mock HttpContext and HttpRequest
+            var context = new Mock<HttpContext>();
+            var request = new Mock<HttpRequest>();
 
-            request.Headers.Accept.Add (new MediaTypeWithQualityHeaderValue(MimeMediaTypes.JsonDicom));
+            var headers = new HeaderDictionary();
+            var bodyStream = new MemoryStream();
+            var response = new Mock<HttpResponse>();
             
-            webStoreRequest.MediaType = MimeMediaTypes.DICOM;
-
+            response.Setup(res => res.Body).Returns(new MemoryStream());
+            context.Setup(ctx => ctx.Request).Returns(request.Object);
+            context.Setup(ctx => ctx.Response).Returns(response.Object);
+            request.SetupGet(r => r.Headers).Returns(headers);
+            request.SetupGet(r => r.Body).Returns(bodyStream);
+            request.SetupGet(r => r.ContentType).Returns("multipart/related");
+            request.Object.Headers.Add("Accept",   MimeMediaTypes.Json);
+            request.Object.Headers.Add("ContentType",  "multipart/related");
             var mimeType = "application/dicom";
             var multiContent = new MultipartContent("related", "DICOM DATA BOUNDARY");
-
-            multiContent.Headers.ContentType?.Parameters.Add(new System.Net.Http.Headers.NameValueHeaderValue("type", "\"" + mimeType + "\""));
-
+            multiContent.Headers.ContentType.Parameters.Add(new NameValueHeaderValue("type", "\"" + mimeType + "\""));
+            
             foreach (var ds in storeDs)
             {
-                DicomFile dicomFile = new DicomFile(ds);
-                MemoryStream ms = new MemoryStream ();
-            
+                var dicomFile = new DicomFile(ds);
+                var ms = new MemoryStream();
+
                 dicomFile.Save(ms);
                 ms.Position = 0;
-            
-                StreamContent sContent = new StreamContent(ms);
 
-                sContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(mimeType);
+                var sContent = new StreamContent(ms);
+                sContent.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
 
                 multiContent.Add(sContent);
-                webStoreRequest.Request.Content = multiContent;
-                webStoreRequest.Contents.Add(sContent);
             }
 
+            // Assigning multipart content to the mock request
+            bodyStream = new MemoryStream();
+            multiContent.CopyToAsync(bodyStream).Wait();
+            bodyStream.Position = 0;
+            request.SetupGet(r => r.Body).Returns(bodyStream);
+            request.Object.GetTypedHeaders().ContentType = new Microsoft.Net.Http.Headers.MediaTypeHeaderValue("multipart/related");
+            request.Object.GetTypedHeaders().ContentType.Parameters.Add(new Microsoft.Net.Http.Headers.NameValueHeaderValue("type", "\"" + mimeType + "\""));
+            // Creating WebStoreRequest with the mock HttpRequest
+            WebStoreRequest webStoreRequest = new WebStoreRequest(request.Object);
+            webStoreRequest.MediaType = MimeMediaTypes.DICOM;
+            // Perform the test
             var storeResult = await WebStoreService.Store(webStoreRequest);
 
             Assert.IsNotNull(storeResult);
-            Assert.IsTrue(storeResult.IsSuccessStatusCode);
+            Assert.IsTrue(storeResult.HttpStatus is >= HttpStatusCode.OK and < HttpStatusCode.MultipleChoices);
 
-            ValidateStoredMatchQuery (storeDs);
-
-            Pacs_Delete_Simple ( ) ;
+            ValidateStoredMatchQuery(storeDs);
+            Pacs_Delete_Simple();
         }
-
+        
         [TestMethod]
         public void Web_SearchForStudies_SequenceTest( )
         {
@@ -110,7 +128,7 @@ namespace DICOMcloud.Core.Test
             var result = WebQueryService.SearchForStudies(requestModel);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.IsSuccessStatusCode);
+            Assert.IsTrue(result.Result.TotalCount > 0);
         }
 
         // private static QidoRequestModel GetQueryRequest()
@@ -129,43 +147,32 @@ namespace DICOMcloud.Core.Test
         //     requestModel.Query = new QidoQuery();
         //     return requestModel;
         // }
-         
+        
         private static QidoRequestModel GetQueryRequest()
         {
-            var context = new DefaultHttpContext
-            {
-                Request =
-                {
-                    Scheme = "https",
-                    Host = new HostString("localhost:3000"),
-                    PathBase = "",
-                    Path = "/"
-                },
-                Response =
-                {
-                    Body = new MemoryStream()
-                }
-            };
+            var context = new Mock<HttpContext>();
+            var request = new Mock<HttpRequest>();
 
-            // If you need to simulate other parts of the HttpContext, you can modify the context object here
+            var headers = new HeaderDictionary();
+            var bodyStream = new MemoryStream();
+            var response = new Mock<HttpResponse>();
+            response.Setup(res => res.Body).Returns(new MemoryStream());
 
+            context.Setup(ctx => ctx.Request).Returns(request.Object);
+            context.Setup(ctx => ctx.Response).Returns(response.Object);
+            request.SetupGet(r => r.Headers).Returns(headers);
+            request.SetupGet(r => r.Body).Returns(bodyStream);
+            request.SetupGet(r => r.ContentType).Returns("multipart/related");
+            request.SetupGet(r => r.Host).Returns(new HostString("https://localhost:3000"));
+            
             QidoRequestModel requestModel = new QidoRequestModel();
-            //var headers = new HttpClient().DefaultRequestHeaders;
-            HeaderDictionary headersDic = new HeaderDictionary
-            {
-                { "Accept", new Microsoft.Extensions.Primitives.StringValues(MimeMediaTypes.JsonDicom) }
-            };
-            var headers = new Microsoft.AspNetCore.Http.Headers.RequestHeaders(headersDic);
-
-            requestModel.AcceptHeader = headers.Accept;
-            requestModel.Headers = headers;
+            context.Object.Request.Headers["Accept"] = MimeMediaTypes.Json;
+            requestModel.AcceptHeader = request.Object.GetTypedHeaders().Accept;
+            requestModel.Headers = request.Object.GetTypedHeaders();
             requestModel.Query = new QidoQuery();
-
-            // If you need to use the simulated HttpContext in your tests, you can set it to the requestModel or any other object
-            // requestModel.HttpContext = context; 
-
             return requestModel;
         }
+
 
         private void ValidateStoredMatchQuery(DicomDataset[] storedDs)
         {

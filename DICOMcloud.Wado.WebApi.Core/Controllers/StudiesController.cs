@@ -1,11 +1,8 @@
 ﻿using DICOMcloud.Wado.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Net.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using System.Web.Http.Results;
-using DICOMcloud.Media;
-using System.Text;
+
 
 namespace DICOMcloud.Wado.WebApi.Controllers
 {
