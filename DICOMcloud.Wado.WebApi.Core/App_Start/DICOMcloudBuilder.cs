@@ -188,6 +188,7 @@ namespace DICOMcloud.Wado
             storageSettings.ValidateDuplicateInstance = Config.ValidateDuplicateInstance;
             storageSettings.StoreOriginal             = Config.StoreOriginalDataset;
             storageSettings.StoreQueryModel           = Config.StoreQueryModel;
+            storageSettings.MediaTypes                = Config.MediaTypes;
 
             services.AddSingleton<StorageSettings>(storageSettings);
         }

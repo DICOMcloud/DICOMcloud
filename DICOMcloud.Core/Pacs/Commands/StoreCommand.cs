@@ -235,7 +235,7 @@ namespace DICOMcloud.Pacs.Commands
             //MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.Jpeg));
         }
 
-        public IList<DicomMediaProperties> MediaTypes { get; private set ;}
+        public IList<DicomMediaProperties> MediaTypes { get; set ;}
    
         public bool StoreOriginal { get; set; }
         public bool ValidateDuplicateInstance { get; set; }

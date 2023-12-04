@@ -1,4 +1,6 @@
-﻿namespace DICOMcloud.Wado.WebApi.Core.App_Start
+﻿using DICOMcloud.Media;
+
+namespace DICOMcloud.Wado.WebApi.Core.App_Start
 {
     public class Config
     {
@@ -19,6 +21,7 @@
         public bool ValidateDuplicateInstance => _configuration.GetValue<bool>("storecommand:validateDuplicateInstance");
         public bool StoreOriginalDataset => _configuration.GetValue<bool>("storecommand:storeOriginalDataset");
         public bool StoreQueryModel => _configuration.GetValue<bool>("storecommand:storeQueryModel");
+        public IList<DicomMediaProperties> MediaTypes => _configuration.GetSection("storecommand:mediaTypes").Get<List<DicomMediaProperties>>();
         public string CorsEnabled => _configuration.GetValue<string>("cors:enabled");
         public string Origins => _configuration.GetValue<string>("cors:origins");
         public string Headers => _configuration.GetValue<string>("cors:headers");

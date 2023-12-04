@@ -16,9 +16,15 @@ namespace DICOMcloud.Wado.Core.Types
 
         public QidoRsServiceConfig(IConfiguration configuration) 
         {
-            _configuration = configuration;
+            MaxResultLimit = configuration.GetValue<int?>(MaximumResultsLimit_ConfigName);
         }
 
-        public int? MaxResultLimit => _configuration.GetValue<int?>(MaximumResultsLimit_ConfigName);
+
+        public QidoRsServiceConfig(int maxRestultLimit)
+        {
+            MaxResultLimit = MaxResultLimit;
+        }
+
+        public int? MaxResultLimit { get; set; }
     }
 }
