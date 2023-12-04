@@ -3,6 +3,7 @@ using DICOMcloud.Wado;
 using DICOMcloud.Wado.WebApi.Core.Types;
 using DICOMcloud.Wado.WebApi.Exceptions;
 using FellowOakDicom;
+using FellowOakDicom.Imaging;
 using FellowOakDicom.Imaging.NativeCodec;
 using Microsoft.VisualBasic;
 using System;
@@ -29,8 +30,10 @@ builder.Services.BuildDICOMcloud(builder);
 new DicomSetupBuilder().RegisterServices(s => 
     s.AddFellowOakDicom()
     .AddLogging()
-    .AddTranscoderManager<NativeTranscoderManager>())
-    .Build();
+    .AddTranscoderManager<NativeTranscoderManager>()
+    .AddImageManager<ImageSharpImageManager>())
+.SkipValidation()
+.Build();
 
 var app = builder.Build();
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Web;
-using DICOMcloud.DataAccess.Database;
-using SixLabors.ImageSharp;
+﻿using DICOMcloud.DataAccess.Database;
 
 namespace DICOMcloud.Wado
 {

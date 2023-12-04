@@ -5,6 +5,8 @@ using DICOMcloud.IO;
 using DICOMcloud.Media;
 using FellowOakDicom;
 using FellowOakDicom.Imaging;
+using FellowOakDicom.Imaging.NativeCodec;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DICOMcloud.Core.Test
 {
@@ -105,7 +107,7 @@ namespace DICOMcloud.Core.Test
         [TestMethod]
         public void ConvertToJpeg()
         {
-            ImageManager.SetImplementation(new ImageSharpImageManager());
+            EnsureCodecsLoaded();
             var testDir = Path.Combine(TestDirPath, "convertToJPG");
             var storageService = new FileStorageService(testDir);
             var jpgWriter = new JpegMediaWriter(storageService, new DicomMediaIdFactory());
@@ -119,6 +121,23 @@ namespace DICOMcloud.Core.Test
                 var mediaProp = new DicomMediaProperties(MimeMediaTypes.Jpeg);
                 jpgWriter.CreateMedia(new DicomMediaWriterParameters(){ Dataset = sourceDS, MediaInfo = mediaProp });
             }
+        }
+
+        protected virtual void EnsureCodecsLoaded()
+        {
+            var path = Environment.CurrentDirectory; //System.IO.Path.Combine ( System.Web.Hosting.HostingEnvironment.MapPath ( "~/" ), "bin" );
+
+            System.Diagnostics.Trace.TraceInformation("Path: " + path);
+
+            new DicomSetupBuilder().RegisterServices(s =>
+                s.AddFellowOakDicom()
+                .AddLogging()
+                .AddTranscoderManager<NativeTranscoderManager>()
+                .AddImageManager<ImageSharpImageManager>())
+                .SkipValidation()
+                .Build();
+
+            //FellowOakDicom.Imaging.Codec.TranscoderManager. Imaging.Codec.TranscoderManager.LoadCodecs ( path ) ;
         }
     }
 }

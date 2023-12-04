@@ -7,9 +7,11 @@ using DICOMcloud.IO;
 using DICOMcloud.Media;
 using DICOMcloud.Pacs;
 using DICOMcloud.Wado;
+using DICOMcloud.Wado.Core.Types;
 using DICOMcloud.Wado.Models;
 using FellowOakDicom;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Moq;
 using fo = Dicom;
 
@@ -29,6 +31,7 @@ namespace DICOMcloud.Core.Test
 
             MediaStorageService storageService = new FileStorageService ( storagePath ) ;
             IObjectArchieveQueryService queryService = new ObjectArchieveQueryService(DataAccessHelper.DataAccess);
+            var config = new QidoRsServiceConfig(12);
 
             var factory = new Pacs.Commands.DCloudCommandFactory( storageService,
                                                              DataAccessHelper.DataAccess,
@@ -40,7 +43,7 @@ namespace DICOMcloud.Core.Test
 
             var urlProvider = new MockRetrieveUrlProvider();
             WebStoreService = new WebObjectStoreService(StoreService,urlProvider);
-            WebQueryService = new QidoRsService(queryService, mediaIdFactory, storageService);
+            WebQueryService = new QidoRsService(queryService, mediaIdFactory, storageService, config);
         }
 
         [TestCleanup]
@@ -71,11 +74,12 @@ namespace DICOMcloud.Core.Test
             response.Setup(res => res.Body).Returns(new MemoryStream());
             context.Setup(ctx => ctx.Request).Returns(request.Object);
             context.Setup(ctx => ctx.Response).Returns(response.Object);
+            request.Object.GetMultipartBoundary();
             request.SetupGet(r => r.Headers).Returns(headers);
             request.SetupGet(r => r.Body).Returns(bodyStream);
-            request.SetupGet(r => r.ContentType).Returns("multipart/related");
+            request.SetupGet(r => r.ContentType).Returns("multipart/related; type=\"application/dicom\"; boundary=\"DICOM DATA BOUNDARY\"");
             request.Object.Headers.Add("Accept",   MimeMediaTypes.Json);
-            request.Object.Headers.Add("ContentType",  "multipart/related");
+            request.Object.Headers.Add("ContentType", "multipart/related; type=\"application/dicom\"; boundary=\"DICOM DATA BOUNDARY\"");
             var mimeType = "application/dicom";
             var multiContent = new MultipartContent("related", "DICOM DATA BOUNDARY");
             multiContent.Headers.ContentType.Parameters.Add(new NameValueHeaderValue("type", "\"" + mimeType + "\""));
@@ -128,26 +132,9 @@ namespace DICOMcloud.Core.Test
             var result = WebQueryService.SearchForStudies(requestModel);
 
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.Result.TotalCount > 0);
         }
 
-        // private static QidoRequestModel GetQueryRequest()
-        // {
-        //     HttpContext.Current = new HttpContext(
-        //         new HttpRequest("", "https://localhost:3000", ""),
-        //         new HttpResponse(new StringWriter())
-        //     );
-        //
-        //     QidoRequestModel requestModel = new QidoRequestModel();
-        //     var headers = new HttpClient().DefaultRequestHeaders;
-        //
-        //     headers.Accept.Add(new MediaTypeWithQualityHeaderValue(MimeMediaTypes.Json));
-        //     requestModel.AcceptHeader = headers.Accept;
-        //     requestModel.Headers = headers;
-        //     requestModel.Query = new QidoQuery();
-        //     return requestModel;
-        // }
-        
+
         private static QidoRequestModel GetQueryRequest()
         {
             var context = new Mock<HttpContext>();

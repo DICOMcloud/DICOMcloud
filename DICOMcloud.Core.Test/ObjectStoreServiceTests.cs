@@ -5,7 +5,9 @@ using DICOMcloud.IO;
 using DICOMcloud.Media;
 using DICOMcloud.Pacs;
 using FellowOakDicom;
-using fo = Dicom;
+using FellowOakDicom.Imaging;
+using FellowOakDicom.Imaging.NativeCodec;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DICOMcloud.Core.Test
 {
@@ -88,7 +90,15 @@ namespace DICOMcloud.Core.Test
 
             System.Diagnostics.Trace.TraceInformation ( "Path: " + path );
 
-             Imaging.Codec.TranscoderManager.LoadCodecs ( path ) ;
+            new DicomSetupBuilder().RegisterServices(s =>
+                s.AddFellowOakDicom()
+                .AddLogging()
+                .AddTranscoderManager<NativeTranscoderManager >()
+                .AddImageManager<ImageSharpImageManager>())
+                .SkipValidation()
+                .Build();
+
+             //FellowOakDicom.Imaging.Codec.TranscoderManager. Imaging.Codec.TranscoderManager.LoadCodecs ( path ) ;
         }
 
         [TestMethod]

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="fo-dicom" Version="5.1.1" />
+    <PackageReference Include="fo-dicom.Codecs" Version="5.11.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="Moq" Version="4.20.69" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
