@@ -13,7 +13,7 @@ namespace DICOMcloud.Core.Test
         public void Initialize ( ) 
         {
             Helper = new DicomHelpers ( ) ;
-            DataAccessHelper = new DataAccessHelpers ( ) ;
+            DataAccessHelper = new DataAccessHelpers ( );
         }
         
 

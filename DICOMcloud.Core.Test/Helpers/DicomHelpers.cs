@@ -48,6 +48,11 @@ namespace DICOMcloud.Core.Test.Helpers
             return Path.Combine ( DicomHelpers.GetBaseFolder ( ), "resources", "sampleimages" ) ;
         }
 
+        public static string GetSampleDatabaseFolder()
+        {
+            return Path.Combine(DicomHelpers.GetBaseFolder(), "resources", "database");
+        }
+
         public static string   TestFolderName = "Test_Data" ;
 
         public DicomDataset GetDicomDataset ( uint dsNumber) 
@@ -185,7 +190,8 @@ namespace DICOMcloud.Core.Test.Helpers
             ds.Add (DicomTag.StudyDescription, "test-description");
             ds.Add ( DicomTag.SeriesInstanceUID, Series1UID );
             ds.Add ( DicomTag.SeriesNumber, 1 );
-            ds.Add ( DicomTag.Modality, "XA" );
+            //ds.Add ( DicomTag.Modality, "XA" );
+            ds.Add(DicomTag.Modality, "IVOCT");
             ds.Add ( DicomTag.SOPInstanceUID, Instance1UID );
             ds.Add ( DicomTag.SOPClassUID, SOPClass1UID);
             ds.Add ( DicomTag.InstanceNumber, 1 );

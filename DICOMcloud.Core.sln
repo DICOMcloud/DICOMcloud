@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{59B93221-120D-4BF7-8C5A-CC2765145395}"
+	ProjectSection(SolutionItems) = preProject
+		Test_Data\database\DICOMcloud.mdf = Test_Data\database\DICOMcloud.mdf
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A7BE32E4-56B3-4D99-845E-554E39843F97}"
 EndProject
@@ -22,6 +25,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DICOMcloud.DataAccess.Database.Core.Test", "TestProject1\DICOMcloud.DataAccess.Database.Core.Test.csproj", "{13494DB3-4FB2-44C5-BF47-9CB224799312}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DICOMcloud.Azure.Core", "DICOMcloud.Azure.Core\DICOMcloud.Azure.Core.csproj", "{DFBF6081-FE56-47D6-9402-4236DBEECF2A}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DICOMcloud.SqlServerDatabase", "DICOMcloud.SqlServerDatabase\DICOMcloud.SqlServerDatabase.sqlproj", "{76F0A64D-B491-4C48-8FE6-9423E1C90D21}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{34A38670-7FD0-4375-BAA2-2FAD40B79261}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -162,6 +169,33 @@ Global
 		{DFBF6081-FE56-47D6-9402-4236DBEECF2A}.Test|x64.Build.0 = Debug|Any CPU
 		{DFBF6081-FE56-47D6-9402-4236DBEECF2A}.Test|x86.ActiveCfg = Debug|Any CPU
 		{DFBF6081-FE56-47D6-9402-4236DBEECF2A}.Test|x86.Build.0 = Debug|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Debug|x64.Build.0 = Debug|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Debug|x64.Deploy.0 = Debug|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Debug|x86.Build.0 = Debug|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Debug|x86.Deploy.0 = Debug|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Release|x64.ActiveCfg = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Release|x64.Build.0 = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Release|x64.Deploy.0 = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Release|x86.ActiveCfg = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Release|x86.Build.0 = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Release|x86.Deploy.0 = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Test|Any CPU.ActiveCfg = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Test|Any CPU.Build.0 = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Test|Any CPU.Deploy.0 = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Test|x64.ActiveCfg = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Test|x64.Build.0 = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Test|x64.Deploy.0 = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Test|x86.ActiveCfg = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Test|x86.Build.0 = Release|Any CPU
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21}.Test|x86.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -173,6 +207,7 @@ Global
 		{C9813EF1-71BF-48B2-BBF9-DA231B771A9F} = {59B93221-120D-4BF7-8C5A-CC2765145395}
 		{13494DB3-4FB2-44C5-BF47-9CB224799312} = {59B93221-120D-4BF7-8C5A-CC2765145395}
 		{DFBF6081-FE56-47D6-9402-4236DBEECF2A} = {8A37B518-B8AC-4785-94D2-F1EA6A8BA027}
+		{76F0A64D-B491-4C48-8FE6-9423E1C90D21} = {34A38670-7FD0-4375-BAA2-2FAD40B79261}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C07843A2-55D3-44F9-A338-8DEFD93E1540}

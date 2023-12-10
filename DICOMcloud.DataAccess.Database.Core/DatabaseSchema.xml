@@ -35,7 +35,7 @@
       <column name="Series_StudyKey" table="Series" foreign="true" defenition="[Series_StudyKey] [bigint] NOT NULL" tag="" />
       <column name="SeriesInstanceUid" table="Series" modelKey="true" defenition="[SeriesInstanceUid] [nchar](64) NOT NULL" tag="2097166" />
       <column name="SeriesNumber" table="Series" isNum="true" defenition="[SeriesNumber] [int] NULL" tag="2097169" />
-      <column name="Modality" table="Series" defenition="[Modality] [char](2) NOT NULL" tag="524384" />
+      <column name="Modality" table="Series" defenition="[Modality] [nchar](16) NOT NULL" tag="524384" />
       <column name="SeriesDescription" table="Series" defenition="[SeriesDescription] [nchar](64) NULL" tag="528446" />
 
       <column name="ObjectInstanceKey" table="ObjectInstance" key="true" defenition="[ObjectInstanceKey] [bigint] NOT NULL" tag="" />

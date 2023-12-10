@@ -9,13 +9,17 @@ namespace DICOMcloud.Core.Test.Helpers
 {
     public class DataAccessHelpers
     {
+        private string DbName;
+
         public DataAccessHelpers()
             : this("DICOMcloud.mdf")
         { }
         
         private DataAccessHelpers ( string dbName ) 
         {
-            string dbPath = Path.Combine(DicomHelpers.GetTestDataFolder("database"), dbName);
+            DbName = dbName;
+
+            string dbPath = Path.Combine(DicomHelpers.GetSampleDatabaseFolder(), dbName);
 
             DbSchemaProvider schemaProvider = new StorageDbSchemaProvider ( ) ;
             string connectionString = "Data Source=(LocalDb)\\MSSQLLocalDB;AttachDbFilename=" + dbPath + ";Initial Catalog=" + dbName + ";Integrated Security=True" ;
