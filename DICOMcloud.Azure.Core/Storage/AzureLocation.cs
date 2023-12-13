@@ -66,20 +66,22 @@ namespace DICOMcloud.Azure.IO
 
         public virtual Uri GetReadUrl(DateTimeOffset expiryTime)
         {
-            var sasToken = Blob.GenerateSasUri(BlobSasPermissions.Read, expiryTime);
-            
-            var blobUrl = string.Format("{0}{1}", Blob.Uri.AbsoluteUri, sasToken);
+            BlobSasBuilder saasBuilder = new BlobSasBuilder();
 
-            return new Uri(blobUrl);
+            saasBuilder.SetPermissions(BlobSasPermissions.Read);
+            saasBuilder.ExpiresOn = expiryTime;
+            saasBuilder.StartsOn = DateTimeOffset.UtcNow;
+            return Blob.GenerateSasUri(saasBuilder);
         }
 
         public virtual Uri GetWriteUrl(DateTimeOffset expiryTime)
         {
-            var sasToken = Blob.GenerateSasUri(BlobSasPermissions.Write, expiryTime);
+            BlobSasBuilder saasBuilder = new BlobSasBuilder();
 
-            var blobUrl = string.Format("{0}{1}", Blob.Uri.AbsoluteUri, sasToken);
-
-            return new Uri(blobUrl);
+            saasBuilder.SetPermissions(BlobSasPermissions.Write);
+            saasBuilder.ExpiresOn = expiryTime;
+            saasBuilder.StartsOn = DateTimeOffset.UtcNow;
+            return Blob.GenerateSasUri(saasBuilder);
         }
 
         public override string Metadata

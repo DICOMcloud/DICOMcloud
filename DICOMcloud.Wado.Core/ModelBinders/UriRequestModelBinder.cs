@@ -20,13 +20,13 @@ namespace DICOMcloud.Wado
          {
             return Task.CompletedTask;
          }
-         
+
          IWadoUriRequest result ;
-            
+
          if ( new UriRequestModelConverter ( ).TryParse ( bindingContext.HttpContext.Request, out result) )
-         { 
-            bindingContext.Model = result;
-               
+         {
+            bindingContext.Result = ModelBindingResult.Success(result);
+
             return Task.CompletedTask;
          }
          else

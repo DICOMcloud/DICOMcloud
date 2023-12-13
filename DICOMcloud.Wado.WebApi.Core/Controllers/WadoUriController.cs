@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using DICOMcloud.Wado.Models;
+using DICOMcloud.Wado.WebApi;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DICOMcloud.Wado.Controllers
@@ -17,15 +18,13 @@ namespace DICOMcloud.Wado.Controllers
         [HttpGet]
         [Route("wadouri")]
         [Route("api/wadouri")]       
-        public HttpResponseMessage Get
+        public IActionResult Get
         (
             [ModelBinder(typeof(UriRequestModelBinder))]
             IWadoUriRequest request
         )
         {
-            if (null == request) { return new HttpResponseMessage(HttpStatusCode.BadRequest ); }
-
-            return ServiceHandler.GetInstance(request);
-      }
+            return new WadoUriResult(ServiceHandler.GetInstance(request));
+        }
    }
 }

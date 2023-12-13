@@ -25,7 +25,7 @@ namespace DICOMcloud.Wado
             RetrieveService = retrieveService ;
         }
 
-        public virtual HttpResponseMessage GetInstance ( IWadoUriRequest request )
+        public virtual WadoUriResponse GetInstance ( IWadoUriRequest request )
         {
             //validation code should go in here
             if (null == request || string.Compare(request.RequestType, "WADO", true ) != 0 )
@@ -51,28 +51,22 @@ namespace DICOMcloud.Wado
                 {
                     if (DicomWebServerSettings.Instance.SupportPreSignedUrls && dcmLocation is IPreSignedUrlStorageLocation)
                     {
-                        var expiry = DateTime.Now.AddHours(DicomWebServerSettings.Instance.PreSignedUrlReadExpiryTimeInHours);
+                        var expiry = DateTimeOffset.UtcNow.AddHours(DicomWebServerSettings.Instance.PreSignedUrlReadExpiryTimeInHours);
                         Uri locationUrl = ((IPreSignedUrlStorageLocation)dcmLocation).GetReadUrl (expiry);
-                        HttpResponseMessage msg = new HttpResponseMessage(HttpStatusCode.Redirect);
-
-                        msg.Headers.Location = locationUrl;
-
-                        return msg;
+                        
+                        return new WadoUriResponse(locationUrl.OriginalString);
                     }
                     else
                     {
                         StreamContent sc = new StreamContent ( dcmLocation.GetReadStream ( ) );
                         sc.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(mediaType.MediaType.Value);
-                        HttpResponseMessage msg = new HttpResponseMessage ( HttpStatusCode.OK );
-
-                        msg.Content = sc;
-
-                        return msg;
+                        
+                        return new WadoUriResponse(sc);
                     }
                 }
             }
 
-            HttpResponseMessage responseMessage ;
+            WadoUriResponse responseMessage ;
 
             if ( TryOnDemandTransform ( request, mediaTypeHeader, out responseMessage ) )
             {
@@ -82,13 +76,13 @@ namespace DICOMcloud.Wado
 
             if ( mediaTypeHeader.Where ( n=>n.MediaType == MimeMediaTypes.DICOM ).FirstOrDefault ( ) != null )
             {
-                return new HttpResponseMessage ( HttpStatusCode.NotFound ) { Content = new StringContent ( "Image not found" ) } ;
+                return new WadoUriResponse ( ) { StatusCode = HttpStatusCode.NotFound };
             }
             else
             {
                 //6.3.2 Body of Non-DICOM Media Type Response
                 //The HTTP behavior is that an error (406 - Not Acceptable) is returned if the required media type cannot be served.
-                return new HttpResponseMessage ( HttpStatusCode.NotAcceptable ) ;
+                return new WadoUriResponse ( ) { StatusCode = HttpStatusCode.NotAcceptable };
             }
         }
 
@@ -127,7 +121,7 @@ namespace DICOMcloud.Wado
         ( 
             IWadoUriRequest request, 
             List<MediaTypeHeaderValue> mediaTypeHeaderList, 
-            out HttpResponseMessage responseMessage 
+            out WadoUriResponse responseMessage 
         )
         {
             string defaultDicomTransfer ;
@@ -145,11 +139,10 @@ namespace DICOMcloud.Wado
                 //should return only one for URI service
                 foreach ( var result in RetrieveService.GetTransformedSopInstances ( request, MimeMediaTypes.DICOM, defaultDicomTransfer, mediaTypeHeader.MediaType.Value, transferSyntax ) )
                 {
-                    StreamContent sc        = new StreamContent        (  result.Location.GetReadStream ( ) ) ;
-                    sc.Headers.ContentType  = new System.Net.Http.Headers.MediaTypeHeaderValue(mediaTypeHeader.MediaType.Value) ;
-                    responseMessage         = new HttpResponseMessage  ( HttpStatusCode.OK ) ;
 
-                    responseMessage.Content = sc;
+                    StreamContent sc        = new StreamContent (  result.Location.GetReadStream ( ) ) ;
+                    sc.Headers.ContentType  = new System.Net.Http.Headers.MediaTypeHeaderValue(mediaTypeHeader.MediaType.Value) ;
+                    responseMessage         = new WadoUriResponse (sc);
 
                     return true ;
                 }
