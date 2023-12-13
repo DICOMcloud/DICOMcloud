@@ -27,7 +27,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.BuildDICOMcloud(builder);
 
-new DicomSetupBuilder().RegisterServices(s => 
+new DicomSetupBuilder().RegisterServices(s =>
     s.AddFellowOakDicom()
     .AddLogging()
     .AddTranscoderManager<NativeTranscoderManager>()
@@ -38,7 +38,7 @@ new DicomSetupBuilder().RegisterServices(s =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();    
