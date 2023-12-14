@@ -1,4 +1,5 @@
 ﻿using DICOMcloud.Wado.Models;
+using DICOMcloud.Wado.WebApi.Core.Types;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DICOMcloud.Wado.WebApi.Controllers
@@ -32,13 +33,13 @@ namespace DICOMcloud.Wado.WebApi.Controllers
         [Route("api/studies/{StudyInstanceUID}/series")]
         [Route("api/series")]
         [HttpGet]
-        public ActionResult<QidoResponse> SearchForSeries
+        public IActionResult SearchForSeries
         (
             [ModelBinder(typeof(QidoRequestModelBinder))]
             IQidoRequestModel request
         )
         {
-            return QidoService.SearchForSeries(request);
+            return new QidoResult(QidoService.SearchForSeries(request));
         }
 
         [HttpGet]

@@ -6,38 +6,86 @@ using DICOMcloud.Wado.Models;
 using FellowOakDicom;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
+using System.Net;
 using System.Text;
 
 namespace DICOMcloud.Wado.WebApi.Core.Types
 {
-    public class QidoResponseJSONOutputFormatter: TextOutputFormatter
+    public class QidoResult : IActionResult
     {
         public const string Instance_Header_Name = "X-Dicom-Instance";
+        public QidoResponse Response {  get; set;}
+        private static MediaTypeHeaderValue XML_MEDIA_TYPE = MediaTypeHeaderValue.Parse("multipart/related; type = \"application/dicom+xml\"" );
+        private static MediaTypeHeaderValue DJSON_MEDIA_TYPE = MediaTypeHeaderValue.Parse(MimeMediaTypes.JsonDicom);
+        private static MediaTypeHeaderValue JSON_MEDIA_TYPE = MediaTypeHeaderValue.Parse(MimeMediaTypes.Json);
+        private static MediaTypeHeaderValue ANY_MEDIA_TYPE = MediaTypeHeaderValue.Parse(MimeMediaTypes.Any);
 
-        public QidoResponseJSONOutputFormatter() 
+        public QidoResult(QidoResponse response) 
         {
-            SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse(MimeMediaTypes.JsonDicom));
-            SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse(MimeMediaTypes.Json));
-
-            SupportedEncodings.Add(Encoding.UTF8);
+            Response = response;
         }
 
-        protected override bool CanWriteType(Type? type)
-                => typeof(QidoResponse).IsAssignableFrom(type);
 
-
-        public override Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
+        public Task ExecuteResultAsync(ActionContext context)
         {
-            var qidoResponse = context.Object as QidoResponse;
+
+            var qidoResponse = Response;
             var httpContext = context.HttpContext;
             var response = httpContext.Response;
             var archiveService = context.HttpContext.RequestServices.GetService<IObjectArchieveQueryService>();
-            
+
+            response.StatusCode = (int)HttpStatusCode.OK;
+
             AddResponseHeaders(qidoResponse, response, archiveService);
 
-            return httpContext.Response.WriteAsync(CreateJsonResponse(qidoResponse.Result.Result), selectedEncoding);
+            foreach ( var accept in Response.Request.AcceptHeader)
+            { 
+                if (accept.MediaType == XML_MEDIA_TYPE.MediaType) 
+                {
+                    response.ContentType = accept.MediaType.Value;
+
+                    return CreateXMLResponse(Response.Result.Result).CopyToAsync(response.Body);
+                }
+                else if ( accept.MediaType == DJSON_MEDIA_TYPE.MediaType || 
+                          accept.MediaType == JSON_MEDIA_TYPE.MediaType)
+                {
+
+                    response.ContentType = accept.MediaType.Value;
+                    return httpContext.Response.WriteAsync(CreateJsonResponse(qidoResponse.Result.Result));
+                }
+
+            }
+
+            response.ContentType = MimeMediaTypes.Json;
+
+            return httpContext.Response.WriteAsync(CreateJsonResponse(qidoResponse.Result.Result));
+        }
+
+        private MultipartContent CreateXMLResponse(IEnumerable<DicomDataset> results)
+        {
+            var multiContent = new MultipartContent("related", MultipartResponseHelper.DicomDataBoundary);
+            QidoResponse? qidoResponse = Response;
+
+            if (qidoResponse != null && qidoResponse.Result != null && qidoResponse.Result.TotalCount > 0)
+            {
+                foreach (var result in qidoResponse.Result.Result)
+                {
+                    XmlDicomConverter converter = new XmlDicomConverter();
+
+                    MultipartResponseHelper.AddMultipartContent(multiContent,
+                                                                  new WadoResponse(new MemoryStream(Encoding.ASCII.GetBytes(converter.Convert(result))),
+                                                                                    MimeMediaTypes.XmlDicom));
+                }
+
+                multiContent.Headers.ContentType.Parameters.Add(new System.Net.Http.Headers.NameValueHeaderValue("type",
+                                                                "\"" + MimeMediaTypes.XmlDicom + "\""));
+            }
+
+            return multiContent;
         }
 
         private static string CreateJsonResponse(IEnumerable<DicomDataset> results)
@@ -143,5 +191,7 @@ namespace DICOMcloud.Wado.WebApi.Core.Types
 
             AddPaginationHeders(qidoResponse, response);
         }
+
+
     }
 }

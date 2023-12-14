@@ -18,8 +18,6 @@ var configuration = builder.Configuration;
 // Add MVC controllers 
 builder.Services.AddControllers(options =>
 {
-    options.OutputFormatters.Add(new QidoResponseJSONOutputFormatter());
-    options.OutputFormatters.Add(new QidoResponseXMLOutputFormatter());
     options.Filters.Add<DICOMcloudExceptionHandler>();
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
