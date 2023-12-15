@@ -14,27 +14,51 @@ using System.Web.Http.Results;
 
 namespace DICOMcloud.Wado.WebApi.Exceptions
 {
-    public class DICOMcloudExceptionHandler : IActionFilter, IOrderedFilter
+    public class DICOMcloudExceptionHandler
     {
-        public int Order => int.MaxValue - 10;
+        private RequestDelegate _next;
+        private ILogger<DICOMcloudExceptionHandler> _logger;
 
-        public void OnActionExecuting(ActionExecutingContext context) { }
-
-        public void OnActionExecuted(ActionExecutedContext context)
+        public DICOMcloudExceptionHandler(RequestDelegate next, ILogger<DICOMcloudExceptionHandler> logger)
         {
-            if (context == null || context.Exception == null)
+            _next = next;
+            _logger = logger;
+        }
+
+        public async Task InvokeAsync(HttpContext httpContext)
+        {
+            try
             {
-                return;
+                await _next(httpContext);
+            }
+            catch (Exception ex)
+            {
+                await HandleExceptionAsync(httpContext, ex);
+            }
+        }
+
+        public async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        {
+            //context.Response.ContentType = "application/json";
+            var response = context.Response;
+
+            var errorMessage = "";
+
+            switch (exception)
+            {
+                case DCloudException ex:
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    errorMessage = ex.Message;
+                    break;
+                default:
+                    response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    errorMessage = "Internal server error!";
+                    break;
             }
 
-            Exception? exception = context.Exception;
-
-            if ( exception is DCloudException )
-            {
-                context.Result = new ObjectResult (exception.Message) { StatusCode = (int)HttpStatusCode.BadRequest};
-                
-                context.ExceptionHandled = true;
-            }
+            _logger.LogError(exception.Message);
+            
+            await context.Response.WriteAsync(errorMessage);
         }
     }
 }

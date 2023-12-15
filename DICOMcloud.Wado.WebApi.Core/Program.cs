@@ -18,7 +18,7 @@ var configuration = builder.Configuration;
 // Add MVC controllers 
 builder.Services.AddControllers(options =>
 {
-    options.Filters.Add<DICOMcloudExceptionHandler>();
+    //options.Filters.Add<DICOMcloudExceptionHandler>();
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -35,6 +35,7 @@ new DicomSetupBuilder().RegisterServices(s =>
 
 var app = builder.Build();
 
+app.UseMiddleware<DICOMcloudExceptionHandler>();
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 {
